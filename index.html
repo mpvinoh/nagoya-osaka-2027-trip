@@ -108,16 +108,38 @@
           <!-- Left: Hotel Cards -->
           <div id="hotels-cards-container"></div>
 
-          <!-- Right: Sticky Live Google Map + Walking Konbini Strip -->
-          <aside id="hotel-map-card" class="sticky-pane">
+          <!-- Right (Top on Mobile): Sticky Schematic Animated Map + Google Map Toggle -->
+          <aside id="hotel-map-card" class="sticky-pane map-card-mobile-first">
             <div class="card">
+              <!-- Quick Hotel Switcher Pills -->
+              <div id="map-quick-pills" class="quick-hotel-pills" aria-label="快速切換住宿地圖"></div>
+
               <div style="margin-bottom: 10px;">
-                <span class="chip chip-brand" style="margin-bottom: 6px;">📍 Google Maps 即時位置預覽</span>
                 <h3 id="map-hotel-title" style="margin: 0; font-size: 17px; font-weight: 800;">載入中...</h3>
                 <p id="map-hotel-sub" style="margin: 3px 0 0; font-size: 12.5px; color: var(--text-secondary);"></p>
               </div>
 
-              <div class="map-frame-wrap">
+              <!-- 2-Mode Switcher: Schematic Animation vs Detailed Google Maps -->
+              <div class="map-mode-tabs" role="tablist">
+                <button id="btn-mode-schematic" type="button" class="map-mode-btn active" onclick="setMapMode('schematic')">
+                  ✨ 周邊關係小動畫圖（秒懂）
+                </button>
+                <button id="btn-mode-gmap" type="button" class="map-mode-btn" onclick="setMapMode('gmap')">
+                  🗺️ Google 仔細街道圖
+                </button>
+              </div>
+
+              <!-- Mode 1: Animated Schematic Diagram (Default) -->
+              <div id="schematic-map-wrap" class="schematic-box">
+                <div class="schematic-summary-bar">
+                  <span id="schematic-exit-badge" class="exit-sign-inline">出口載入中</span>
+                  <span id="schematic-total-walk" class="total-walk-badge">步行時間載入中</span>
+                </div>
+                <div id="schematic-svg-holder"></div>
+              </div>
+
+              <!-- Mode 2: Detailed Google Maps Embed (Hidden until toggled) -->
+              <div id="google-map-wrap" class="map-frame-wrap" style="display: none;">
                 <iframe
                   id="google-map-iframe"
                   title="住宿位置 Google 地圖"
@@ -128,19 +150,19 @@
                 ></iframe>
               </div>
 
-              <!-- Station -> Konbini -> Hotel Diagram -->
+              <!-- Station -> Konbini -> Hotel Step Strip -->
               <div style="margin-top: 12px; font-size: 12.5px; font-weight: 700; color: var(--text-primary);">
-                🚶 下車回飯店順路買超商動線：
+                🚶 分段步行距離與順路超商一覽：
               </div>
               <div id="walk-strip-box" class="walk-route-strip"></div>
 
               <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
                 <a id="map-open-walk-btn" class="btn-primary" style="flex: 1;" href="#" target="_blank" rel="noopener noreferrer">
-                  🚶 開啟「車站➔超商➔飯店」步行導航
+                  🚶 開啟 Google 步行路線導航
                 </a>
-                <a id="map-open-place-btn" class="btn-outline" href="#" target="_blank" rel="noopener noreferrer">
-                  🗺️ 大地圖查看
-                </a>
+                <button id="btn-toggle-detail-bottom" type="button" class="btn-outline" onclick="toggleMapMode()">
+                  🗺️ 看 Google 仔細地圖
+                </button>
               </div>
             </div>
           </aside>

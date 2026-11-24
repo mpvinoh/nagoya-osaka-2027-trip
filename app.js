@@ -758,33 +758,512 @@ function renderHotelsList() {
   }).join("");
 }
 
+let mapMode = "schematic";
+
+const SCHEMATIC_MAP_SPECS = {
+  "comfort": {
+    shortPill: "🥇 Comfort (5分)",
+    exitBadge: "🚇 認明出口：JR名古屋站【太閤通口】",
+    totalWalk: "⏱️ 全程步行 5 分鐘（約 380m）",
+    stepSub1: "出站即見",
+    stepSub2: "斜對面 80m",
+    stepSub3: "平路共 5 分鐘",
+    svg: `
+      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="Comfort Hotel 周邊關係動畫圖">
+        <!-- Compass -->
+        <g transform="translate(426, 26)">
+          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
+        </g>
+        <!-- Roads & Rail -->
+        <line x1="368" y1="16" x2="368" y2="248" stroke="#cbd5e1" stroke-width="10" stroke-dasharray="8 5" />
+        <text x="382" y="42" font-size="10.5" fill="#64748b" font-weight="600">新幹線軌道</text>
+        <path d="M 325 196 L 238 196 L 238 82 L 105 82" fill="none" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+        <line x1="238" y1="20" x2="238" y2="245" stroke="#e2e8f0" stroke-width="14" />
+        <!-- Reference Landmark -->
+        <rect x="262" y="128" width="76" height="30" rx="6" fill="#f1f5f9" stroke="#cbd5e1" />
+        <text x="300" y="147" text-anchor="middle" font-size="10.5" fill="#64748b" font-weight="600">Bic Camera</text>
+
+        <!-- Animated Walking Path -->
+        <path id="walkPath_comfort" d="M 318 196 L 238 196 L 238 82 L 118 82" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="3.4s" repeatCount="indefinite" path="M 318 196 L 238 196 L 238 82 L 118 82" />
+        </circle>
+
+        <!-- Station & Yellow Exit Plaque -->
+        <rect x="332" y="162" width="112" height="58" rx="10" fill="#1e293b" />
+        <text x="388" y="184" text-anchor="middle" font-size="12.5" font-weight="800" fill="#ffffff">JR 名古屋站</text>
+        <rect x="342" y="191" width="92" height="22" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="388" y="206" text-anchor="middle" font-size="11" font-weight="800" fill="#713f12">太閤通口 (西口)</text>
+
+        <!-- Konbini 1: Lawson -->
+        <g transform="translate(238, 224)">
+          <rect x="-58" y="-13" width="116" height="26" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="700" fill="#065f46">🏪 Lawson (出站1分)</text>
+        </g>
+        <circle cx="238" cy="196" r="6" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+
+        <!-- Konbini 2: 7-11 & FamilyMart -->
+        <g transform="translate(268, 44)">
+          <rect x="-78" y="-15" width="156" height="30" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="11.5" font-weight="800" fill="#065f46">🏪 7-11 ＆ 全家 (斜對面1分)</text>
+        </g>
+        <circle cx="238" cy="82" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+
+        <!-- Segment Minute Pills -->
+        <g transform="translate(284, 176)">
+          <rect x="-26" y="-10" width="52" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 1分</text>
+        </g>
+        <g transform="translate(200, 140)">
+          <rect x="-32" y="-11" width="64" height="22" rx="11" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 北走3分</text>
+        </g>
+        <g transform="translate(178, 61)">
+          <rect x="-36" y="-10" width="72" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 1分(80m)</text>
+        </g>
+
+        <!-- Hotel Destination -->
+        <circle cx="110" cy="82" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="110" cy="82" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="110" y="86" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="18" y="102" width="174" height="44" rx="9" fill="#1d4ed8" />
+        <text x="105" y="121" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">🥇 Comfort 名古屋新幹線口</text>
+        <text x="105" y="138" text-anchor="middle" font-size="10.5" fill="#dbeafe">出站總計步行 5 分鐘｜免費早餐</text>
+      </svg>
+    `
+  },
+  "vessel-campana": {
+    shortPill: "🥈 Vessel名駅 (4分)",
+    exitBadge: "🚇 認明出口：地鐵名古屋站【1號出口】",
+    totalWalk: "⏱️ 1號出口步行 4 分鐘（JR櫻通口9分）",
+    stepSub1: "地下街北側出口",
+    stepSub2: "正順路 1–2 分",
+    stepSub3: "轉彎即達共 4 分",
+    svg: `
+      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="Vessel Campana 名古屋周邊關係動畫圖">
+        <g transform="translate(426, 26)">
+          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
+        </g>
+        <!-- Roads -->
+        <path d="M 255 232 L 255 78 L 135 78" fill="none" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+        <!-- Underground link from JR to Subway Exit 1 -->
+        <line x1="255" y1="220" x2="255" y2="172" stroke="#64748b" stroke-width="4" stroke-dasharray="4 4" />
+        <text x="336" y="202" text-anchor="middle" font-size="10.5" fill="#64748b">地下街連通 (約5分)</text>
+
+        <!-- JR Station Reference -->
+        <rect x="195" y="216" width="120" height="34" rx="8" fill="#475569" />
+        <text x="255" y="237" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffffff">JR 名古屋站 (櫻通口)</text>
+
+        <!-- Animated Walk from Subway Exit 1 -->
+        <path d="M 255 162 L 255 78 L 140 78" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="3.2s" repeatCount="indefinite" path="M 255 162 L 255 78 L 140 78" />
+        </circle>
+
+        <!-- Subway Exit 1 Plaque -->
+        <rect x="193" y="148" width="124" height="38" rx="8" fill="#1e293b" />
+        <text x="255" y="163" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">地鐵東山線 名古屋站</text>
+        <rect x="207" y="167" width="96" height="18" rx="4" fill="#fef08a" stroke="#eab308" stroke-width="1.2" />
+        <text x="255" y="180" text-anchor="middle" font-size="10.5" font-weight="800" fill="#713f12">1號出口 (近KITTE)</text>
+
+        <!-- Konbini on route -->
+        <circle cx="255" cy="116" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(352, 116)">
+          <rect x="-82" y="-15" width="164" height="30" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="#065f46">🏪 7-11 ＆ Lawson (順路2分)</text>
+        </g>
+
+        <!-- Segment Minute Pills -->
+        <g transform="translate(212, 122)">
+          <rect x="-30" y="-10" width="60" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 北走2分</text>
+        </g>
+        <g transform="translate(200, 56)">
+          <rect x="-34" y="-10" width="68" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 左轉2分</text>
+        </g>
+
+        <!-- Hotel Pin -->
+        <circle cx="132" cy="78" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="132" cy="78" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="132" y="82" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="20" y="98" width="184" height="44" rx="9" fill="#1d4ed8" />
+        <text x="112" y="117" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">🥈 Vessel Campana 名古屋</text>
+        <text x="112" y="134" text-anchor="middle" font-size="10.5" fill="#dbeafe">1號出口步行 4 分｜大浴場・木地板</text>
+      </svg>
+    `
+  },
+  "vessel-sakae": {
+    shortPill: "🏬 Vessel榮 (2分)",
+    exitBadge: "🚇 認明出口：地鐵榮站【1號出口】",
+    totalWalk: "⏱️ 全程步行僅 2 分鐘（約 140m）",
+    stepSub1: "唐吉訶德旁出口",
+    stepSub2: "同棟 0 分鐘直達！",
+    stepSub3: "直走 2 分鐘即達",
+    svg: `
+      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="Vessel Inn 榮站前周邊關係動畫圖">
+        <g transform="translate(426, 26)">
+          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
+        </g>
+        <!-- Subway & Main Street -->
+        <line x1="40" y1="205" x2="420" y2="205" stroke="#cbd5e1" stroke-width="8" />
+        <line x1="225" y1="40" x2="225" y2="235" stroke="#e2e8f0" stroke-width="22" stroke-linecap="round" />
+
+        <!-- Landmarks: Donki & Oasis 21 -->
+        <rect x="82" y="152" width="96" height="30" rx="6" fill="#f1f5f9" stroke="#cbd5e1" />
+        <text x="130" y="171" text-anchor="middle" font-size="10.5" fill="#475569" font-weight="700">唐吉訶德 榮本店</text>
+
+        <rect x="315" y="166" width="112" height="30" rx="6" fill="#eff6ff" stroke="#93c5fd" />
+        <text x="371" y="185" text-anchor="middle" font-size="10.5" fill="#1d4ed8" font-weight="700">✨ 綠洲21 (4A出口)</text>
+
+        <!-- Straight 2-min Animated Walk -->
+        <path d="M 225 186 L 225 84" fill="none" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="2.4s" repeatCount="indefinite" path="M 225 186 L 225 84" />
+        </circle>
+
+        <!-- Segment Pill -->
+        <g transform="translate(292, 136)">
+          <rect x="-54" y="-12" width="108" height="24" rx="12" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="#1d4ed8">🚶 直走 2 分鐘 (140m)</text>
+        </g>
+
+        <!-- Sakae Station Exit 1 -->
+        <rect x="160" y="190" width="130" height="52" rx="10" fill="#1e293b" />
+        <text x="225" y="210" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">地鐵東山線・名城線 榮站</text>
+        <rect x="177" y="216" width="96" height="20" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="225" y="230" text-anchor="middle" font-size="11" font-weight="800" fill="#713f12">1號出口</text>
+
+        <!-- Combined Hotel + 1F 7-Eleven -->
+        <circle cx="225" cy="76" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="225" cy="76" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="225" y="80" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+
+        <rect x="115" y="16" width="220" height="46" rx="10" fill="#1d4ed8" />
+        <text x="225" y="35" text-anchor="middle" font-size="12.5" font-weight="800" fill="#ffffff">🏬 Vessel Inn 榮站前 (2F櫃檯)</text>
+        <rect x="133" y="41" width="184" height="18" rx="4" fill="#ecfdf5" />
+        <text x="225" y="54" text-anchor="middle" font-size="10.5" font-weight="800" fill="#065f46">🏪 正 1 樓就是 7-11 (下樓 0 分鐘！)</text>
+      </svg>
+    `
+  },
+  "daiwa-taiko": {
+    shortPill: "🥉 大和魯內 (4分)",
+    exitBadge: "🚇 認明出口：JR名古屋站【太閤通口】",
+    totalWalk: "⏱️ 全程步行僅 4 分鐘（約 280m）",
+    stepSub1: "新幹線口出站",
+    stepSub2: "飯店 1F 室內直通！",
+    stepSub3: "平路 4 分鐘即達",
+    svg: `
+      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="Daiwa Roynet 名古屋太閤通口周邊關係動畫圖">
+        <g transform="translate(426, 26)">
+          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
+        </g>
+        <!-- Rail & Roads -->
+        <line x1="358" y1="16" x2="358" y2="248" stroke="#cbd5e1" stroke-width="10" stroke-dasharray="8 5" />
+        <path d="M 310 74 L 228 74 L 228 188 L 150 188" fill="none" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+
+        <!-- ESCA Underground hint -->
+        <rect x="246" y="108" width="88" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" />
+        <text x="290" y="125" text-anchor="middle" font-size="10" fill="#475569" font-weight="600">エスカ地下街出口</text>
+
+        <!-- Animated Walk -->
+        <path d="M 305 74 L 228 74 L 228 188 L 155 188" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="3.0s" repeatCount="indefinite" path="M 305 74 L 228 74 L 228 188 L 155 188" />
+        </circle>
+
+        <!-- JR Station Top Right -->
+        <rect x="308" y="44" width="122" height="54" rx="10" fill="#1e293b" />
+        <text x="369" y="65" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">JR 名古屋站</text>
+        <rect x="321" y="72" width="96" height="20" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="369" y="86" text-anchor="middle" font-size="10.5" font-weight="800" fill="#713f12">太閤通口 (新幹線)</text>
+
+        <!-- Opposite Lawson -->
+        <g transform="translate(310, 212)">
+          <rect x="-68" y="-13" width="136" height="26" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="700" fill="#065f46">🏪 對面還有 Lawson (1分)</text>
+        </g>
+
+        <!-- Segment Minute Pill -->
+        <g transform="translate(172, 128)">
+          <rect x="-52" y="-12" width="104" height="24" rx="12" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 南走 4 分鐘 (280m)</text>
+        </g>
+
+        <!-- Hotel + 1F 7-11 -->
+        <circle cx="148" cy="188" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="148" cy="188" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="148" y="192" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+
+        <rect x="18" y="204" width="212" height="48" rx="10" fill="#1d4ed8" />
+        <text x="124" y="223" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">🥉 大和魯內 名古屋太閤通口</text>
+        <rect x="32" y="229" width="184" height="18" rx="4" fill="#ecfdf5" />
+        <text x="124" y="242" text-anchor="middle" font-size="10.5" font-weight="800" fill="#065f46">🏪 正 1 樓直通 7-11 (免出大門！)</text>
+      </svg>
+    `
+  },
+  "grandbase": {
+    shortPill: "🏡 GRAND BASE (4–8分)",
+    exitBadge: "🚇 認明出口：太閤通站【2號出口】或 JR【太閤通口】",
+    totalWalk: "⏱️ 太閤通站步行 4 分 ／ JR名古屋站步行 8 分",
+    stepSub1: "雙車站皆可走",
+    stepSub2: "距飯店僅 180m",
+    stepSub3: "平路 4–8 分鐘",
+    svg: `
+      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="GRAND BASE 名古屋駅西周邊關係動畫圖">
+        <g transform="translate(426, 26)">
+          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
+        </g>
+        <!-- Main Taiko-dori Ave & Side Street -->
+        <line x1="40" y1="95" x2="410" y2="95" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round" />
+        <line x1="215" y1="95" x2="135" y2="195" stroke="#e2e8f0" stroke-width="16" stroke-linecap="round" />
+        <line x1="115" y1="95" x2="135" y2="195" stroke="#cbd5e1" stroke-width="4" stroke-dasharray="4 4" />
+
+        <!-- Subway Taiko-dori Station -->
+        <rect x="42" y="46" width="132" height="46" rx="8" fill="#334155" />
+        <text x="108" y="65" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">地鐵櫻通線 太閤通站</text>
+        <rect x="64" y="70" width="88" height="18" rx="4" fill="#fef08a" stroke="#eab308" stroke-width="1.2" />
+        <text x="108" y="83" text-anchor="middle" font-size="10" font-weight="800" fill="#713f12">2號出口 (走4分)</text>
+
+        <!-- JR Nagoya Station -->
+        <rect x="328" y="66" width="114" height="52" rx="9" fill="#1e293b" />
+        <text x="385" y="86" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">JR 名古屋站</text>
+        <rect x="340" y="92" width="90" height="20" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="385" y="106" text-anchor="middle" font-size="10.5" font-weight="800" fill="#713f12">太閤通口 (走8分)</text>
+
+        <!-- Animated Walk from JR via FamilyMart -->
+        <path d="M 328 95 L 215 95 L 135 195" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="3.6s" repeatCount="indefinite" path="M 328 95 L 215 95 L 135 195" />
+        </circle>
+
+        <!-- FamilyMart -->
+        <circle cx="215" cy="95" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(242, 54)">
+          <rect x="-70" y="-14" width="140" height="28" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="#065f46">🏪 全家 竹橋町店 (順路)</text>
+        </g>
+
+        <!-- Segment Minute Pills -->
+        <g transform="translate(274, 118)">
+          <rect x="-32" y="-10" width="64" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#1d4ed8">🚶 西走6分</text>
+        </g>
+        <g transform="translate(226, 156)">
+          <rect x="-46" y="-11" width="92" height="22" rx="11" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 再2分 (180m)</text>
+        </g>
+        <text x="76" y="148" font-size="10.5" font-weight="700" fill="#475569">← 太閤通站走 4 分</text>
+
+        <!-- Hotel Pin -->
+        <circle cx="135" cy="195" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="135" cy="195" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="135" y="199" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="38" y="212" width="198" height="42" rx="9" fill="#1d4ed8" />
+        <text x="137" y="230" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">🏡 GRAND BASE 名古屋駅西</text>
+        <text x="137" y="246" text-anchor="middle" font-size="10.5" fill="#dbeafe">56㎡大公寓｜附廚房＆洗衣機</text>
+      </svg>
+    `
+  },
+  "central-res": {
+    shortPill: "🏠 Central包層 (2分)",
+    exitBadge: "🚇 認明出口：地鐵中村公園站【2號 / 3號出口】",
+    totalWalk: "⏱️ 出站步行僅 2 分鐘（約 150m・有電梯）",
+    stepSub1: "名駅搭地鐵7分",
+    stepSub2: "出站口 30 秒",
+    stepSub3: "步行 2 分鐘上樓",
+    svg: `
+      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="Central Nagoya Residence 周邊關係動畫圖">
+        <g transform="translate(426, 26)">
+          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
+        </g>
+        <!-- Subway Higashiyama Line -->
+        <line x1="40" y1="205" x2="420" y2="205" stroke="#f59e0b" stroke-width="6" />
+        <text x="366" y="194" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b45309">地鐵東山線 (7分直達名古屋站) →</text>
+
+        <!-- Road -->
+        <path d="M 235 190 L 235 88 L 145 88" fill="none" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+
+        <!-- Animated Walk -->
+        <path d="M 235 186 L 235 88 L 148 88" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="2.6s" repeatCount="indefinite" path="M 235 186 L 235 88 L 148 88" />
+        </circle>
+
+        <!-- Station -->
+        <rect x="165" y="190" width="140" height="52" rx="10" fill="#1e293b" />
+        <text x="235" y="210" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">地鐵 中村公園站</text>
+        <rect x="182" y="216" width="106" height="20" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="235" y="230" text-anchor="middle" font-size="10.5" font-weight="800" fill="#713f12">2號 / 3號出口</text>
+
+        <!-- Konbini right at exit -->
+        <circle cx="235" cy="146" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(338, 146)">
+          <rect x="-86" y="-14" width="172" height="28" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="#065f46">🏪 全家 ＆ 7-11 (出站30秒)</text>
+        </g>
+
+        <!-- Segment Minute Pill -->
+        <g transform="translate(205, 62)">
+          <rect x="-50" y="-11" width="100" height="22" rx="11" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 步行 2 分 (150m)</text>
+        </g>
+
+        <!-- Residence Pin -->
+        <circle cx="140" cy="88" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="140" cy="88" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="140" y="92" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="24" y="108" width="184" height="44" rx="9" fill="#1d4ed8" />
+        <text x="116" y="127" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">🏠 Central Residence</text>
+        <text x="116" y="143" text-anchor="middle" font-size="10.5" fill="#dbeafe">120㎡頂樓包層｜大樓有電梯</text>
+      </svg>
+    `
+  },
+  "osaka-eslead": {
+    shortPill: "✅ 大阪ESLEAD (1分)",
+    exitBadge: "🚇 認明出口：地鐵千日前線 鶴橋站【4號出口】",
+    totalWalk: "⏱️ 出站步行僅 1 分鐘（約 110m・已訂妥！）",
+    stepSub1: "千日前線4號口",
+    stepSub2: "出站 30 秒順路",
+    stepSub3: "再 30 秒即達飯店",
+    svg: `
+      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="ESLEAD HOTEL 大阪鶴橋周邊關係動畫圖">
+        <g transform="translate(426, 26)">
+          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
+        </g>
+        <!-- Sennichimae Subway Line & JR Loop -->
+        <line x1="30" y1="142" x2="430" y2="142" stroke="#e2e8f0" stroke-width="22" stroke-linecap="round" />
+        <line x1="378" y1="24" x2="378" y2="242" stroke="#cbd5e1" stroke-width="9" stroke-dasharray="7 5" />
+        <text x="378" y="254" text-anchor="middle" font-size="10" fill="#64748b" font-weight="700">JR大阪環狀線・近鐵鶴橋站</text>
+        <text x="148" y="238" text-anchor="middle" font-size="11" fill="#be185d" font-weight="700">← 千日前線：2站(3分)到黑門市場 ／ 3站(5分)到難波</text>
+
+        <!-- Straight 1-min Animated Walk -->
+        <path d="M 304 142 L 105 142" fill="none" stroke="#059669" stroke-width="4.5" stroke-linecap="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#059669" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="2.2s" repeatCount="indefinite" path="M 304 142 L 105 142" />
+        </circle>
+
+        <!-- Tsuruhashi Station Exit 4 -->
+        <rect x="298" y="108" width="136" height="58" rx="10" fill="#1e293b" />
+        <text x="366" y="130" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">地鐵千日前線 鶴橋站</text>
+        <rect x="314" y="138" width="104" height="21" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="366" y="153" text-anchor="middle" font-size="11" font-weight="800" fill="#713f12">4號出口 (走1分)</text>
+
+        <!-- Konbini right on the 1-min path -->
+        <circle cx="212" cy="142" r="7.5" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(212, 82)">
+          <rect x="-86" y="-20" width="172" height="38" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="-3" text-anchor="middle" font-size="11" font-weight="800" fill="#065f46">🏪 全家 鶴橋站前店</text>
+          <text x="0" y="12" text-anchor="middle" font-size="10.5" font-weight="700" fill="#047857">＋ Lawson 100 生鮮百元超商</text>
+        </g>
+
+        <!-- Segment Minute Pills -->
+        <g transform="translate(258, 174)">
+          <rect x="-28" y="-10" width="56" height="20" rx="10" fill="#ffffff" stroke="#6ee7b7" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#059669">🚶 30秒</text>
+        </g>
+        <g transform="translate(158, 174)">
+          <rect x="-32" y="-10" width="64" height="20" rx="10" fill="#ffffff" stroke="#6ee7b7" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#059669">🚶 再30秒</text>
+        </g>
+
+        <!-- Hotel Pin -->
+        <circle cx="96" cy="142" r="14" fill="#10b981" class="anim-pulse-circle" />
+        <circle cx="96" cy="142" r="11" fill="#059669" stroke="#ffffff" stroke-width="2.5" />
+        <text x="96" y="146" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">✓</text>
+        <rect x="16" y="34" width="166" height="44" rx="9" fill="#059669" />
+        <text x="99" y="53" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">✅ ESLEAD 大阪鶴橋</text>
+        <text x="99" y="69" text-anchor="middle" font-size="10.5" fill="#d1fae5">出站總計步行 1 分鐘！(110m)</text>
+      </svg>
+    `
+  }
+};
+
+function setMapMode(mode) {
+  mapMode = mode;
+  const sWrap = document.getElementById("schematic-map-wrap");
+  const gWrap = document.getElementById("google-map-wrap");
+  const bSchem = document.getElementById("btn-mode-schematic");
+  const bGmap = document.getElementById("btn-mode-gmap");
+  const bottomBtn = document.getElementById("btn-toggle-detail-bottom");
+
+  if (mode === "schematic") {
+    sWrap.style.display = "block";
+    gWrap.style.display = "none";
+    bSchem.classList.add("active");
+    bGmap.classList.remove("active");
+    if (bottomBtn) bottomBtn.textContent = "🗺️ 看 Google 仔細地圖";
+  } else {
+    sWrap.style.display = "none";
+    gWrap.style.display = "block";
+    bSchem.classList.remove("active");
+    bGmap.classList.add("active");
+    if (bottomBtn) bottomBtn.textContent = "✨ 切回周邊關係動畫圖";
+  }
+}
+
+function toggleMapMode() {
+  setMapMode(mapMode === "schematic" ? "gmap" : "schematic");
+}
+
 function renderMapPane() {
   const h = HOTELS_DATA.find(item => item.id === selectedHotelId) || HOTELS_DATA[0];
+  const spec = SCHEMATIC_MAP_SPECS[h.id] || SCHEMATIC_MAP_SPECS["comfort"];
   const embedSrc = `https://www.google.com/maps/embed?hl=zh-TW&origin=mfe&pb=!1m3!2m1!1s${encodeURIComponent(h.embedQuery)}!6i16`;
 
+  // Render Quick Switcher Pills at top of map card
+  const pillsWrap = document.getElementById("map-quick-pills");
+  if (pillsWrap) {
+    const visibleHotels = getFilteredHotels();
+    pillsWrap.innerHTML = visibleHotels.map(item => {
+      const sp = SCHEMATIC_MAP_SPECS[item.id];
+      const label = sp ? sp.shortPill : item.name;
+      const activeCls = item.id === h.id ? "active" : "";
+      return `<button type="button" class="q-pill ${activeCls}" onclick="selectHotelOnMap('${item.id}', false)">${label}</button>`;
+    }).join("");
+  }
+
   document.getElementById("map-hotel-title").textContent = h.name;
-  document.getElementById("map-hotel-sub").textContent = `${h.stationInfo}`;
-  document.getElementById("google-map-iframe").src = embedSrc;
+  document.getElementById("map-hotel-sub").textContent = h.stationInfo;
+
+  // Update Schematic Animated View
+  document.getElementById("schematic-exit-badge").textContent = spec.exitBadge;
+  document.getElementById("schematic-total-walk").textContent = spec.totalWalk;
+  document.getElementById("schematic-svg-holder").innerHTML = spec.svg;
+
+  // Update Detailed Google Maps Iframe (only reload src when changed to prevent flicker)
+  const iframe = document.getElementById("google-map-iframe");
+  if (iframe && iframe.getAttribute("data-hotel") !== h.id) {
+    iframe.src = embedSrc;
+    iframe.setAttribute("data-hotel", h.id);
+  }
 
   document.getElementById("walk-strip-box").innerHTML = `
     <div>
       <div class="walk-node-title">${h.walkSteps.from}</div>
-      <div class="walk-node-sub">出站起點</div>
+      <div class="walk-node-sub">${spec.stepSub1}</div>
     </div>
     <div class="walk-arrow">➔</div>
     <div>
       <div class="walk-node-title">${h.walkSteps.via}</div>
-      <div class="walk-node-sub">順路採買</div>
+      <div class="walk-node-sub">${spec.stepSub2}</div>
     </div>
     <div class="walk-arrow">➔</div>
     <div>
       <div class="walk-node-title">${h.walkSteps.to}</div>
-      <div class="walk-node-sub">抵達休息</div>
+      <div class="walk-node-sub">${spec.stepSub3}</div>
     </div>
   `;
 
   document.getElementById("map-open-walk-btn").href = h.walkMapUrl;
-  document.getElementById("map-open-place-btn").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.embedQuery)}`;
 }
 
 // Price Comparison App Booking Calculator
