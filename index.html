@@ -25,7 +25,7 @@
           <div class="trip-meta-row">
             <span class="chip chip-brand">❄️ 2027/01/16 (六) – 01/23 (六)｜8天7夜</span>
             <span class="chip chip-green">✅ 大阪3晚已訂：ESLEAD 鶴橋</span>
-            <span class="chip chip-amber">🔍 名古屋4晚：實惠比價中</span>
+            <span class="chip chip-amber">🔍 名古屋4晚：嚴選 19 間實惠清單</span>
           </div>
           <h1 class="hero-title">2027 大阪・名古屋 阿翰+好姐妹乖乖聽話之旅</h1>
           <p class="hero-subtitle">
@@ -45,7 +45,7 @@
         🗓️ 每日行程＆動向
       </button>
       <button id="dnav-hotels" class="desktop-nav-btn" onclick="switchTab('hotels')">
-        🗺️ 住宿推薦＆Google地圖
+        🗺️ 住宿推薦(19間)＆地圖
       </button>
       <button id="dnav-apps" class="desktop-nav-btn" onclick="switchTab('apps')">
         💰 比價App最優惠攻略
@@ -81,26 +81,44 @@
         <div class="card" style="margin-bottom: 16px;">
           <div class="section-header" style="margin-bottom: 10px;">
             <div>
-              <h2 class="section-title">名古屋 4 晚（1/19–1/23）實惠住宿精選 ＆ 順路超商地圖</h2>
+              <h2 class="section-title">名古屋 4 晚（1/19–1/23）19 間實惠住宿精選 ＆ 雙車站方向感地圖</h2>
               <p class="section-desc">
-                針對「4 大 ＋ 5 位 6～10 歲小學生（當作 1～2 位佔床計價、其餘享兒童免費同床）」嚴選車站近、順路有超商的高 CP 值名單
+                針對「4 大 ＋ 5 位 6～10 歲小學生（當作 1～2 位佔床計價、其餘享兒童免費同床）」嚴選 19 間名古屋高 CP 值住宿，同時標示<strong>最近車站＋第二近地鐵站（如太閤通、龜島、國際中心、久屋大通等）＋順路超商與步行分鐘</strong>
               </p>
             </div>
           </div>
 
           <div class="filter-row">
-            <button id="hfilter-all" type="button" class="filter-pill active" onclick="setHotelFilter('all')">
-              全部住宿 (含大阪已訂)
+            <button id="hfilter-nagoya" type="button" class="filter-pill active" onclick="setHotelFilter('nagoya')">
+              🔥 名古屋全部 (19間)
             </button>
-            <button id="hfilter-hotel" type="button" class="filter-pill" onclick="setHotelFilter('hotel')">
-              🏆 名古屋連鎖飯店 (兒童免費最省)
+            <button id="hfilter-taiko" type="button" class="filter-pill" onclick="setHotelFilter('taiko')">
+              🚄 名駅太閤通口・太閤通站 (10間)
+            </button>
+            <button id="hfilter-sakura" type="button" class="filter-pill" onclick="setHotelFilter('sakura')">
+              🚇 名駅櫻通口・國際中心站 (5間)
+            </button>
+            <button id="hfilter-sakae" type="button" class="filter-pill" onclick="setHotelFilter('sakae')">
+              🛍️ 伏見・榮・久屋大通 (4間)
             </button>
             <button id="hfilter-apartment" type="button" class="filter-pill" onclick="setHotelFilter('apartment')">
-              🏡 名古屋公寓 / 包層 (附廚房洗衣機)
+              🏡 公寓 / 獨棟包棟 (3間)
             </button>
             <button id="hfilter-osaka" type="button" class="filter-pill" onclick="setHotelFilter('osaka')">
-              ✅ 大阪已訂：ESLEAD 鶴橋
+              ✅ 大阪已訂：ESLEAD
             </button>
+          </div>
+
+          <div class="sort-toolbar">
+            <div id="hotels-count-label" class="sort-count-text">載入住宿清單中...</div>
+            <div class="sort-control-group">
+              <label for="hotel-sort-select" class="sort-label">排序方式：</label>
+              <select id="hotel-sort-select" class="sort-select" onchange="setHotelSort(this.value)">
+                <option value="rec">✨ 綜合推薦 CP 值</option>
+                <option value="price">💰 預估房價：由低到高</option>
+                <option value="walk">🚶 最近車站步行：由近到遠</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -114,15 +132,21 @@
               <!-- Quick Hotel Switcher Pills -->
               <div id="map-quick-pills" class="quick-hotel-pills" aria-label="快速切換住宿地圖"></div>
 
-              <div style="margin-bottom: 10px;">
-                <h3 id="map-hotel-title" style="margin: 0; font-size: 17px; font-weight: 800;">載入中...</h3>
-                <p id="map-hotel-sub" style="margin: 3px 0 0; font-size: 12.5px; color: var(--text-secondary);"></p>
+              <div class="map-header-nav">
+                <div style="min-width: 0; flex: 1;">
+                  <h3 id="map-hotel-title" style="margin: 0; font-size: 16.5px; font-weight: 800; line-height: 1.3;">載入中...</h3>
+                  <p id="map-hotel-sub" style="margin: 3px 0 0; font-size: 12px; color: var(--text-secondary);"></p>
+                </div>
+                <div class="map-prev-next">
+                  <button type="button" class="btn-mini-nav" onclick="stepHotel(-1)" title="上一間住宿">◀ 上一間</button>
+                  <button type="button" class="btn-mini-nav" onclick="stepHotel(1)" title="下一間住宿">下一間 ▶</button>
+                </div>
               </div>
 
               <!-- 2-Mode Switcher: Schematic Animation vs Detailed Google Maps -->
               <div class="map-mode-tabs" role="tablist">
                 <button id="btn-mode-schematic" type="button" class="map-mode-btn active" onclick="setMapMode('schematic')">
-                  ✨ 周邊關係小動畫圖（秒懂）
+                  ✨ 周邊雙車站小動畫圖（方向感）
                 </button>
                 <button id="btn-mode-gmap" type="button" class="map-mode-btn" onclick="setMapMode('gmap')">
                   🗺️ Google 仔細街道圖
@@ -135,6 +159,7 @@
                   <span id="schematic-exit-badge" class="exit-sign-inline">出口載入中</span>
                   <span id="schematic-total-walk" class="total-walk-badge">步行時間載入中</span>
                 </div>
+                <div id="schematic-sub-stations" class="sub-station-bar">🥈 次近地鐵載入中...</div>
                 <div id="schematic-svg-holder"></div>
               </div>
 
@@ -185,17 +210,17 @@
 
           <div style="margin: 12px 0;">
             <label for="helper-hotel-select" style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">
-              選擇您想比價的名古屋住宿類型：
+              選擇您想比價的名古屋住宿系列：
             </label>
             <select
               id="helper-hotel-select"
               onchange="updateSearchHelper()"
-              style="width: 100%; max-width: 460px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-strong); font-size: 14px; font-family: inherit; background: var(--bg-surface);"
+              style="width: 100%; max-width: 520px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-strong); font-size: 14px; font-family: inherit; background: var(--bg-surface);"
             >
-              <option value="comfort">🥇 Comfort Hotel 名古屋新幹線口（小6以下同床免費＋免費早餐）</option>
+              <option value="comfort">🥇 Comfort / 東橫INN / Chisun 系列（小學生同床免費＋含早超省）</option>
               <option value="vessel">🥈 Vessel 系列：Campana 名古屋 / 榮站前（18歲以下不限人數免費）</option>
-              <option value="daiwa">🥉 Daiwa Roynet 名古屋太閤通口（小學生每床免費帶1名）</option>
-              <option value="apartment">🏡 GRAND BASE 駅西 / Central Nagoya 包層（公寓式計價）</option>
+              <option value="daiwa">🥉 大和魯內 / 相鐵 Fresa / Richmond / Cypress（每床免費帶1名小學生）</option>
+              <option value="apartment">🏡 GRAND BASE 駅西 / SAMURAI HOUSE Ⅲ 獨棟（公寓包棟計價）</option>
             </select>
           </div>
 

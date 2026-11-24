@@ -1,4 +1,4 @@
-// 2027 大阪・名古屋 雙家庭冬日旅 - 核心資料與互動邏輯
+// 2027 大阪・名古屋 阿翰+好姐妹乖乖聽話之旅 - 核心資料與互動邏輯
 
 const ITINERARY_DATA = [
   {
@@ -99,14 +99,14 @@ const ITINERARY_DATA = [
     date: "1/19 (二)",
     city: "大阪 ➔ 名古屋",
     title: "新幹線 50 分鐘抵名古屋！名古屋城・味噌豬排・綠洲21",
-    stay: "🏨 名古屋第 1 晚（候選住宿請見「住宿＆地圖」分頁）",
+    stay: "🏨 名古屋第 1 晚（19 間實惠住宿請見「住宿＆地圖」分頁）",
     highlight: "從鶴橋前往新大阪轉乘東海道新幹線 Nozomi 號，50 分鐘抵達 JR 名古屋站！寄放行李後逛名古屋城、吃矢場味噌豬排、看綠洲21夜景。",
     note: "鶴橋 ➔ 新大阪走法：搭地鐵千日前線至難波轉御堂筋線直達「新大阪」（或搭 JR 大阪環狀線至大阪轉 JR 京都線 1 站即達新大阪，約 22 分鐘）。",
     stops: [
       {
         time: "上午",
         name: "鶴橋 ➔ 新大阪 ➔ JR 名古屋站（新幹線 50 分鐘）",
-        desc: "抵達 JR 名古屋站後，先走去名古屋站周邊飯店寄放行李（住太閤通口走路僅 4–8 分鐘超輕鬆！）",
+        desc: "抵達 JR 名古屋站後，先走去名古屋站周邊飯店寄放行李（住太閤通口走路僅 3–8 分鐘超輕鬆！）",
         mapQuery: "JR名古屋駅"
       },
       {
@@ -136,7 +136,7 @@ const ITINERARY_DATA = [
     title: "牧歌之里（冰雪樂園玩雪盆・雪上泛舟・動物互動）",
     stay: "🏨 名古屋第 2 晚",
     highlight: "前往岐阜縣蛭野高原「牧歌之里」玩雪一整天！長距離雪盆滑道、雪地橡皮艇泛舟對 6～10 歲孩子來說好玩又安全。",
-    note: "一日遊巴士多在「名古屋站太閤通口（新幹線口）」集合出發，住在名古屋站太閤通口旁早上可以多睡 20 分鐘！",
+    note: "一日遊巴士多在「名古屋站太閤通口（新幹線口）」集合出發，住在名古屋站太閤通口／太閤通站旁早上可以多睡 20 分鐘！",
     stops: [
       {
         time: "08:00 前後",
@@ -199,7 +199,7 @@ const ITINERARY_DATA = [
       {
         time: "早餐",
         name: "🍞 コーヒーハウス かこ 花車本店（Coffee House KAKO）",
-        desc: "從名古屋站步行約 9 分鐘！招牌四色自家製水果果醬＋紅豆鮮奶油厚片吐司，小朋友可配牛奶或果汁",
+        desc: "從名古屋站步行約 9 分鐘（國際中心站走 4 分鐘）！招牌四色自家製水果果醬＋紅豆鮮奶油厚片吐司",
         mapQuery: "コーヒーハウス かこ 花車本店"
       },
       {
@@ -241,24 +241,31 @@ const ITINERARY_DATA = [
   }
 ];
 
-// 住宿推薦清單（針對：價格實惠為主 + 4大5小(6~10歲, 當作2小佔床計價) + 順路超商 + Google Map 定位）
+// ==================== 名古屋 19 間符合條件實惠住宿 ＋ 大阪 1 間已訂妥（共 20 間） ====================
 const HOTELS_DATA = [
+  // -------------------- ZONE A: 名古屋站・太閤通口／太閤通站／龜島站（共 10 間） --------------------
   {
     id: "comfort",
+    recOrder: 1,
     city: "nagoya",
+    zone: "taiko",
     category: "hotel",
-    rankBadge: "🥇 實惠省錢第 1 推｜含 9 人免費早餐神店",
-    name: "Comfort Hotel 名古屋新幹線口",
+    minPriceYen: 22000,
+    primaryWalkMin: 5,
+    rankBadge: "🥇 第 1 推｜含 9 人免費早餐＋新幹線口平路 5 分鐘",
+    name: "① Comfort Hotel 名古屋新幹線口",
     jpName: "コンフォートホテル名古屋新幹線口",
     priceRange: "約 ¥22,000–¥30,000 / 晚（約台幣 4,700–6,400 元包 9 人含早！）",
-    stationInfo: "JR「名古屋站」太閤通口（新幹線口）步行 5 分鐘",
-    roomPlan: "照您「4大＋2小算佔床＝6人計費」：訂 3 間雙床房（共 6 張 123cm 床，可併成 246cm 大床）＋ 3 位小學生免費同床！享 3 間獨立衛浴",
+    primaryStation: "🥇 最近優先：JR 名古屋站【太閤通口（西口）】步行 5 分鐘（380m）",
+    secondaryStation: "🥈 次近地鐵：東山線【龜島站 3號口】西北走 9 分 ・ 櫻通線【太閤通站 2號口】西南走 10 分",
+    stationInfo: "🥇JR名古屋站太閤通口走5分 ｜ 🥈龜島站走9分・太閤通站走10分",
+    roomPlan: "照「4大＋2小算佔床＝6人計費」：訂 3 間雙床房（共 6 張 123cm 床，可併成大床）＋ 3 位小學生免費同床！享 3 間獨立衛浴",
     kidRule: "小學 6 年級（12歲）以下同床免費（1床1名），且同床小學生也免費吃自助早餐！",
-    konbiniRoute: "出太閤通口順路先經過「Lawson 名駅太閤通口店」，飯店斜對面步行 1 分鐘（80m）就是 24H「7-Eleven 名古屋則武一丁目店」與「FamilyMart」！",
+    konbiniRoute: "出太閤通口順路先經「Lawson 名駅太閤通口店」，飯店斜對面步行 1 分鐘（80m）就是 24H「7-Eleven 名古屋則武1丁目店」與「FamilyMart」！",
     walkSteps: {
-      from: "JR 名古屋站太閤通口",
-      via: "🏪 7-11 / Lawson (步行1分)",
-      to: "🏨 Comfort 新幹線口 (總計5分)"
+      from: "JR名古屋站 太閤通口",
+      via: "🏪 7-11 ＆ Lawson (1分)",
+      to: "🏨 Comfort 新幹線口 (共5分)"
     },
     embedQuery: "コンフォートホテル名古屋新幹線口",
     walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=JR名古屋駅太閤通口&destination=コンフォートホテル名古屋新幹線口&waypoints=セブンイレブン名古屋則武1丁目店&travelmode=walking",
@@ -272,21 +279,233 @@ const HOTELS_DATA = [
     }
   },
   {
-    id: "vessel-campana",
+    id: "chisun",
+    recOrder: 2,
     city: "nagoya",
+    zone: "taiko",
     category: "hotel",
-    rankBadge: "🥈 舒適 CP 值第 2 推｜2 間房搞定＋大浴場＋木地板",
-    name: "Vessel Hotel Campana 名古屋",
+    minPriceYen: 16000,
+    primaryWalkMin: 4,
+    rankBadge: "💸 極致平價王｜太閤通口 4 分＋兒童上下舖房型",
+    name: "② Chisun Inn 名古屋（チサンイン名古屋）",
+    jpName: "チサンイン名古屋",
+    priceRange: "約 ¥16,000–¥25,000 / 晚（約台幣 3,400–5,300 元 / 3間超殺價！）",
+    primaryStation: "🥇 最近優先：JR 名古屋站【太閤通口】步行 4 分鐘（320m，醒目橘色圓柱建築）",
+    secondaryStation: "🥈 次近地鐵：東山線【龜島站 3號口】西北走 9 分 ・ 櫻通線【太閤通站 2號口】西南走 10 分",
+    stationInfo: "🥇JR名古屋站太閤通口走4分 ｜ 🥈龜島站走9分・太閤通站走10分",
+    roomPlan: "招牌「雙人床＋兒童上下舖（Standard Double + Bunk Bed）」孩子超愛！訂 3 間房輕鬆住滿 4大5小，總價常不到台幣 4 千多元！",
+    kidRule: "小學生（12歲以下）不佔床免費同住！名古屋站旁預算最低、CP 值爆表的老牌連鎖",
+    konbiniRoute: "出太閤通口往北走 3 分鐘，飯店斜對面步行 1 分鐘（70m）就是 24H「7-Eleven 名古屋則武1丁目店」與「Lawson」！",
+    walkSteps: {
+      from: "JR名古屋站 太閤通口",
+      via: "🏪 斜對面 7-11 則武店 (1分)",
+      to: "🏨 Chisun Inn 名古屋 (共4分)"
+    },
+    embedQuery: "チサンイン名古屋",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=JR名古屋駅太閤通口&destination=チサンイン名古屋&waypoints=セブンイレブン名古屋則武1丁目店&travelmode=walking",
+    bestAppTip: "用「Google Maps 飯店比價」點進 Agoda / Trip.com 或「樂天旅遊」常出現每間 ¥5,500 起的超狂早鳥價！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=Chisun+Inn+Nagoya&hl=zh-TW",
+      official: "https://www.solarehotels.com/hotel/aichi/chisuninn-nagoya/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/14669/14669.html",
+      agoda: "https://www.agoda.com/zh-tw/search?city=13740&textToSearch=Chisun%20Inn%20Nagoya",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Chisun%20Inn%20Nagoya"
+    }
+  },
+  {
+    id: "toyoko-shinkansen",
+    recOrder: 3,
+    city: "nagoya",
+    zone: "taiko",
+    category: "hotel",
+    minPriceYen: 19000,
+    primaryWalkMin: 4,
+    rankBadge: "🍙 國民省錢神店｜JR太閤通口 4 分・太閤通站 6 分＋免費早餐",
+    name: "③ 東橫INN 名古屋站新幹線口",
+    jpName: "東横INN名古屋駅新幹線口",
+    priceRange: "約 ¥19,000–¥26,000 / 晚（約台幣 4,000–5,500 元包 9 人含早！）",
+    primaryStation: "🥇 最近優先：JR 名古屋站【太閤通口】步行 4 分鐘（300m）",
+    secondaryStation: "🥈 次近地鐵：櫻通線【太閤通站 2號口】沿大馬路西走 6 分鐘 ・ 東山線【龜島站】北走 10 分",
+    stationInfo: "🥇JR名古屋站太閤通口走4分 ｜ 🥈地鐵太閤通站走6分",
+    roomPlan: "訂 3 間雙床房（共 6 張床＝4大+2小佔床計費，另 3 位小學生免費同床），9 人全部享免費日式飯糰味噌湯早餐！",
+    kidRule: "小學生（12歲以下）與大人同床免費（1床1名），且兒童早餐也完全免費！",
+    konbiniRoute: "從太閤通口走回飯店順路 1 分鐘即經過「7-Eleven 名古屋椿町店」與「MiniStop」冰淇淋超商！",
+    walkSteps: {
+      from: "JR名古屋站 太閤通口",
+      via: "🏪 7-11 椿町店 (順路1分)",
+      to: "🏨 東橫INN 新幹線口 (共4分)"
+    },
+    embedQuery: "東横INN名古屋駅新幹線口",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=JR名古屋駅太閤通口&destination=東横INN名古屋駅新幹線口&travelmode=walking",
+    bestAppTip: "「東橫INN 官網」加入會員再享 5% 折扣且價格固定不亂漲，熱門日期建議提早卡位 3 間雙床房！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=Toyoko+Inn+Nagoya+Station+Shinkansen+Side&hl=zh-TW",
+      official: "https://www.toyoko-inn.com/search/detail/00246/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/147551/147551.html",
+      agoda: "https://www.agoda.com/zh-tw/search?city=13740&textToSearch=Toyoko%20Inn%20Nagoya%20Station%20Shinkansen",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Toyoko%20Inn%20Nagoya%20Shinkansen"
+    }
+  },
+  {
+    id: "sotetsu-shinkansen",
+    recOrder: 4,
+    city: "nagoya",
+    zone: "taiko",
+    category: "hotel",
+    minPriceYen: 21000,
+    primaryWalkMin: 4,
+    rankBadge: "🚪 有連通房互通！｜JR太閤通口 4 分・太閤通站 6 分",
+    name: "④ 相鐵 Fresa Inn 名古屋站新幹線口",
+    jpName: "相鉄フレッサイン 名古屋駅新幹線口",
+    priceRange: "約 ¥21,000–¥31,000 / 晚（約台幣 4,500–6,600 元 / 2–3間合計）",
+    primaryStation: "🥇 最近優先：JR 名古屋站【太閤通口】步行 4 分鐘（300m）",
+    secondaryStation: "🥈 次近地鐵：櫻通線【太閤通站 2號口】西走 6 分鐘 ・ 近鐵【米野站】南走 8 分鐘",
+    stationInfo: "🥇JR名古屋站太閤通口走4分 ｜ 🥈地鐵太閤通站走6分",
+    roomPlan: "獨家亮點：設有「連通房（Connecting Room，兩間房室內開門互通＋雙衛浴）」！兩家人小朋友串門子超方便又保有各自衛浴",
+    kidRule: "小學生（12歲以下）同床免費（1床1名），全館搭載良水工房淨水系統與 Serta 名床",
+    konbiniRoute: "飯店隔壁步行 1 分鐘就是「7-Eleven（大和魯內1F）」與正對面「Lawson 椿町店」，機能滿分！",
+    walkSteps: {
+      from: "JR名古屋站 太閤通口",
+      via: "🏪 隔壁 7-11 ＆ Lawson (1分)",
+      to: "🏨 相鐵 Fresa 新幹線口 (共4分)"
+    },
+    embedQuery: "相鉄フレッサイン 名古屋駅新幹線口",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=JR名古屋駅太閤通口&destination=相鉄フレッサイン名古屋駅新幹線口&travelmode=walking",
+    bestAppTip: "想訂「連通房」建議先看「相鐵官網」或「樂天旅遊／Jalan」連通房確約方案，一般雙床用 Google 比價最甜！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=Sotetsu+Fresa+Inn+Nagoya+Shinkansenguchi&hl=zh-TW",
+      official: "https://sotetsu-hotels.com/fresa-inn/nagoya-shinkansenguchi/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/177069/177069.html",
+      agoda: "https://www.agoda.com/zh-tw/search?city=13740&textToSearch=Sotetsu%20Fresa%20Inn%20Nagoya-Shinkansenguchi",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Sotetsu%20Fresa%20Inn%20Nagoya%20Shinkansenguchi"
+    }
+  },
+  {
+    id: "daiwa-shinkansen",
+    recOrder: 5,
+    city: "nagoya",
+    zone: "taiko",
+    category: "hotel",
+    minPriceYen: 24000,
+    primaryWalkMin: 3,
+    rankBadge: "⚡ 離新幹線口最近僅 3 分鐘｜拖大行李＋5小孩最輕鬆",
+    name: "⑤ Daiwa Roynet Hotel 名古屋新幹線口",
+    jpName: "ダイワロイネットホテル名古屋新幹線口",
+    priceRange: "約 ¥24,000–¥35,000 / 晚（約台幣 5,100–7,400 元 / 2間合計）",
+    primaryStation: "🥇 最近優先：JR 名古屋站【太閤通口】步行僅 3 分鐘（220m，Bic Camera 旁！）",
+    secondaryStation: "🥈 次近地鐵：東山線【龜島站 3號口】西北走 9 分 ・ 櫻通線【太閤通站 2號口】西南走 9 分",
+    stationInfo: "🥇JR名古屋站太閤通口走3分 ｜ 🥈龜島站走9分・太閤通站走9分",
+    roomPlan: "訂 2 間（雙床房＋加床三人房，共 5 張床＝僅 1 小算佔床，4 小免費同床）或 3 間雙床房，價格比太閤通口館更親民！",
+    kidRule: "小學生（12歲未滿）每張床可免費同睡 1 名！Day 5 去牧歌之里巴士集合下樓 2 分鐘就到",
+    konbiniRoute: "走出太閤通口 1 分鐘順路即經過「Lawson 名駅太閤通口店」與「7-Eleven」，買早餐零食零繞路！",
+    walkSteps: {
+      from: "JR名古屋站 太閤通口",
+      via: "🏪 Lawson ＆ 7-11 (順路1分)",
+      to: "🏨 大和魯內新幹線口 (共3分)"
+    },
+    embedQuery: "ダイワロイネットホテル名古屋新幹線口",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=JR名古屋駅太閤通口&destination=ダイワロイネットホテル名古屋新幹線口&travelmode=walking",
+    bestAppTip: "用「Travelko トラベルコ」搜日本樂天／Jalan 常比國際網便宜 10%–15%！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=Daiwa+Roynet+Hotel+Nagoya+Shinkansenguchi&hl=zh-TW",
+      official: "https://www.daiwaroynet.jp/nagoya-shinkansenguchi/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/106198/106198.html",
+      agoda: "https://www.agoda.com/zh-tw/search?city=13740&textToSearch=Daiwa%20Roynet%20Hotel%20Nagoya-Shinkansenguchi",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Daiwa%20Roynet%20Nagoya%20Shinkansenguchi"
+    }
+  },
+  {
+    id: "daiwa-taiko",
+    recOrder: 6,
+    city: "nagoya",
+    zone: "taiko",
+    category: "hotel",
+    minPriceYen: 26000,
+    primaryWalkMin: 4,
+    rankBadge: "🛁 1樓直通 7-11＋全室日式乾濕分離浴缸｜太閤通口 4 分",
+    name: "⑥ Daiwa Roynet Hotel 名古屋太閤通口",
+    jpName: "ダイワロイネットホテル名古屋太閤通口",
+    priceRange: "約 ¥26,000–¥38,000 / 晚（約台幣 5,500–8,000 元 / 2間合計）",
+    primaryStation: "🥇 最近優先：JR 名古屋站【太閤通口】步行 4 分鐘（280m）",
+    secondaryStation: "🥈 次近地鐵：櫻通線【太閤通站 2號口】沿大馬路西走 7 分鐘 ・ 近鐵【米野站】南走 9 分",
+    stationInfo: "🥇JR名古屋站太閤通口走4分 ｜ 🥈地鐵太閤通站走7分",
+    roomPlan: "訂 2 間：1 間標準雙床房（2床＝2大+2小免費）＋ 1 間 Deluxe Twin 三人房（3床＝2大+1小計費+2小免費），僅需 1 小算佔床！",
+    kidRule: "小學生（12歲未滿）每張床可免費同睡 1 名！全室 21㎡ 以上、浴室有獨立洗身體區幫小孩洗澡超方便",
+    konbiniRoute: "飯店「正 1 樓直接併設 7-Eleven」（室內通道免吹冷風），過馬路對面還有「Lawson 椿町店」與「FamilyMart」！",
+    walkSteps: {
+      from: "JR名古屋站 太閤通口",
+      via: "🏪 飯店 1F 室內直通 7-11",
+      to: "🏨 大和魯內太閤通口 (共4分)"
+    },
+    embedQuery: "ダイワロイネットホテル名古屋太閤通口",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=JR名古屋駅太閤通口&destination=ダイワロイネットホテル名古屋太閤通口&travelmode=walking",
+    bestAppTip: "推薦用「Travelko トラベルコ」與「12/4 樂天旅遊 Super SALE」領優惠券訂連泊方案！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=Daiwa+Roynet+Hotel+Nagoya+Taiko+dori+Side&hl=zh-TW",
+      official: "https://www.daiwaroynet.jp/nagoya-taikodoriguchi/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/153417/153417.html",
+      agoda: "https://www.agoda.com/zh-tw/daiwa-roynet-hotel-nagoya-taiko-dori-side/hotel/nagoya-jp.html",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Daiwa%20Roynet%20Hotel%20Nagoya%20Taiko"
+    }
+  },
+  {
+    id: "richmond-shinkansen",
+    recOrder: 7,
+    city: "nagoya",
+    zone: "taiko",
+    category: "hotel",
+    minPriceYen: 24000,
+    primaryWalkMin: 5,
+    rankBadge: "⭐ 4.5高分親子口碑｜龜島站 5 分・JR太閤通口直走 7 分",
+    name: "⑦ Richmond Hotel 名古屋新幹線口",
+    jpName: "リッチモンドホテル名古屋新幹線口",
+    priceRange: "約 ¥24,000–¥34,000 / 晚（約台幣 5,100–7,200 元 / 2–3間合計）",
+    primaryStation: "🥇 最近優先：地鐵東山線【龜島站 3號出口】步行 5 分鐘（380m，1站直達名古屋站/榮站）",
+    secondaryStation: "🥈 次近大站：JR 名古屋站【太閤通口】沿新幹線直走 7 分鐘 ・ 櫻通線【太閤通站】走 12 分",
+    stationInfo: "🥇地鐵龜島站3號口走5分 ｜ 🥈JR名古屋站太閤通口走7分",
+    roomPlan: "訂 3 間雙床房（6床＝4大+2小佔床＋3小免費同床）或 2 間雙床＋1 間單人，全室「浴廁完全三分離」高質感新穎房型！",
+    kidRule: "小學生以下同床免費（雙床房最多免費帶 2 名小學生），贈送兒童專屬盥洗包與繪本借閱",
+    konbiniRoute: "從 JR 太閤通口沿新幹線往北走回飯店，順路經過「7-Eleven 名古屋則武1丁目店」與「Daily Yamazaki」現烤麵包超商！",
+    walkSteps: {
+      from: "龜島站(5分) / JR太閤通口(7分)",
+      via: "🏪 7-11 ＆ Daily超商 (順路)",
+      to: "🏨 Richmond 新幹線口"
+    },
+    embedQuery: "リッチモンドホテル名古屋新幹線口",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=JR名古屋駅太閤通口&destination=リッチモンドホテル名古屋新幹線口&travelmode=walking",
+    bestAppTip: "日本「Jalan / 樂天旅遊」評價高達 4.5 分，搭 12/4 樂天大促領券入手超划算！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=Richmond+Hotel+Nagoya+Shinkansenguchi&hl=zh-TW",
+      official: "https://richmondhotel.jp/nagoya-shinkansenguchi/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/167365/167365.html",
+      agoda: "https://www.agoda.com/zh-tw/search?city=13740&textToSearch=Richmond%20Hotel%20Nagoya%20Shinkansenguchi",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Richmond%20Hotel%20Nagoya%20Shinkansenguchi"
+    }
+  },
+
+  // -------------------- ZONE B: 名古屋站・櫻通口／國際中心站／名駅南（共 5 間） --------------------
+  {
+    id: "vessel-campana",
+    recOrder: 8,
+    city: "nagoya",
+    zone: "sakura",
+    category: "hotel",
+    minPriceYen: 24000,
+    primaryWalkMin: 4,
+    rankBadge: "🥈 舒適 CP 值王｜2 間房搞定＋桑拿大浴場＋脫鞋木地板",
+    name: "⑧ Vessel Hotel Campana 名古屋",
     jpName: "ベッセルホテルカンパーナ名古屋",
     priceRange: "約 ¥24,000–¥35,000 / 晚（約台幣 5,100–7,400 元 / 2間合計）",
-    stationInfo: "地鐵「名古屋站」1 號出口步行 4 分鐘 ／ JR「名古屋站」櫻通口步行 9 分鐘",
-    roomPlan: "訂 2 間即可：1 間雙床房（140cm床×2，付2人費）＋ 1 間三人房（140cm床×2＋90cm床，付3人費＝僅1小算佔床），其餘 4 位 6–10 歲小孩全部免費！",
-    kidRule: "18 歲以下與父母同床一律免費，且不限同床人數！房內脫鞋木地板＋桑拿大浴場",
-    konbiniRoute: "從地鐵 1 號出口往北走回飯店的正順路上，步行 1–2 分鐘即經過「7-Eleven 名古屋名駅2丁目店」與「Lawson 名駅二丁目店」！",
+    primaryStation: "🥇 最近優先：地鐵東山線・櫻通線【名古屋站 1號出口】步行 4 分鐘（JR櫻通口走 9 分）",
+    secondaryStation: "🥈 次近地鐵：東山線【龜島站 4號口】西走 8 分鐘 ・ 櫻通線【國際中心站】東南走 10 分鐘",
+    stationInfo: "🥇地鐵名古屋站1號口走4分 ｜ 🥈龜島站走8分・國際中心站走10分",
+    roomPlan: "訂 2 間即可：1 間雙床房（140cm床×2，付2人費）＋ 1 間三人房（付3人費＝僅1小算佔床），其餘 4 位 6–10 歲小孩全部免費！",
+    kidRule: "18 歲以下與父母同床一律免費，且不限同床人數！房內脫鞋木地板＋大浴場泡湯超解乏",
+    konbiniRoute: "從地鐵 1 號出口往北走回飯店的正順路上，步行 1–2 分鐘即經過「7-Eleven 名古屋名駅2丁目店」與「Lawson」！",
     walkSteps: {
       from: "地鐵名古屋站 1號出口",
-      via: "🏪 7-11 / Lawson 名駅2丁目",
-      to: "🏨 Vessel Campana (總計4分)"
+      via: "🏪 7-11 ＆ Lawson 名駅2丁目",
+      to: "🏨 Vessel Campana (共4分)"
     },
     embedQuery: "ベッセルホテルカンパーナ名古屋",
     walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=名古屋駅1番出口&destination=ベッセルホテルカンパーナ名古屋&waypoints=セブンイレブン名古屋名駅2丁目店&travelmode=walking",
@@ -300,25 +519,169 @@ const HOTELS_DATA = [
     }
   },
   {
-    id: "vessel-sakae",
+    id: "cypress-ekimae",
+    recOrder: 9,
     city: "nagoya",
+    zone: "sakura",
     category: "hotel",
-    rankBadge: "🏬 榮商圈實惠首選｜地鐵 2 分鐘＋1 樓就是 7-11",
-    name: "Vessel Inn 榮站前（名古屋榮）",
+    minPriceYen: 21000,
+    primaryWalkMin: 3,
+    rankBadge: "🚉 地鐵出口 3 分・JR櫻通口 5 分｜隔壁就是超商＋有多人房",
+    name: "⑨ Cypress Hotel 名古屋駅前",
+    jpName: "サイプレスホテル名古屋駅前",
+    priceRange: "約 ¥21,000–¥31,000 / 晚（約台幣 4,500–6,600 元 / 2–3間合計）",
+    primaryStation: "🥇 最近優先：地鐵【名古屋站 1號/10號口】步行 3 分鐘（JR櫻通口步行 5 分鐘）",
+    secondaryStation: "🥈 次近地鐵：東山線【龜島站 4號口】西北走 8 分 ・ 櫻通線【國際中心站】東南走 9 分",
+    stationInfo: "🥇地鐵名古屋站1號口走3分(JR櫻通口5分) ｜ 🥈龜島站走8分・國際中心站走9分",
+    roomPlan: "擁有寬敞雙床房與三人／四人房型！可訂 2 間三人房（共 6 床＝4大+2小佔床，3小免費同床）或 3 間雙床房",
+    kidRule: "小學生（12歲以下）不佔床免費同住，正處名鐵／JR／地鐵交匯核心卻有超實惠房價",
+    konbiniRoute: "飯店旁邊步行 1 分鐘內緊鄰「Lawson 名駅二丁目店」與「7-Eleven」，買宵夜牛奶下樓秒到！",
+    walkSteps: {
+      from: "地鐵名古屋站 1號口 (JR 5分)",
+      via: "🏪 緊鄰 Lawson ＆ 7-11 (1分)",
+      to: "🏨 Cypress 名古屋駅前 (共3分)"
+    },
+    embedQuery: "サイプレスホテル名古屋駅前",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=JR名古屋駅桜通口&destination=サイプレスホテル名古屋駅前&travelmode=walking",
+    bestAppTip: "日本「樂天旅遊／Jalan」早鳥連泊方案與「Google Maps 導流 Agoda」價格非常划算！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=Cypress+Hotel+Nagoya+eki+Mae&hl=zh-TW",
+      official: "https://www.cypresshotels.jp/nagoya/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/8249/8249.html",
+      agoda: "https://www.agoda.com/zh-tw/search?city=13740&textToSearch=Cypress%20Hotel%20Nagoya-eki%20Mae",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Cypress%20Hotel%20Nagoya"
+    }
+  },
+  {
+    id: "sotetsu-sakura",
+    recOrder: 10,
+    city: "nagoya",
+    zone: "sakura",
+    category: "hotel",
+    minPriceYen: 22000,
+    primaryWalkMin: 4,
+    rankBadge: "🍞 地下街出站 4 分＋近 KAKO 吐司｜有連通房雙家庭首選",
+    name: "⑩ 相鐵 Fresa Inn 名古屋站櫻通口",
+    jpName: "相鉄フレッサイン 名古屋駅桜通口",
+    priceRange: "約 ¥22,000–¥32,000 / 晚（約台幣 4,700–6,800 元 / 2–3間合計）",
+    primaryStation: "🥇 最近優先：地鐵【名古屋站 7號口 / Unimall U8出口】步行 4 分（JR櫻通口走 4 分）",
+    secondaryStation: "🥈 次近地鐵：櫻通線【國際中心站 3號口】東走 5 分鐘（走去 Day 7 KAKO 花車本店僅 4 分鐘！）",
+    stationInfo: "🥇名古屋站櫻通口/7號口走4分 ｜ 🥈地鐵國際中心站走5分",
+    roomPlan: "可訂「連通房（Connecting Room，室內門互通）」或 3 間雙床房！下雨下雪全程走 Unimall 地下街到 U8 出口幾乎不淋雨",
+    kidRule: "小學生（12歲以下）每床免費同睡 1 名，自助入住退房快速、大廳備品自由拿取超貼心",
+    konbiniRoute: "從地下街出口走出來 1 分鐘就是「FamilyMart 名駅四丁目店」與「7-Eleven」，順路買完直接上樓！",
+    walkSteps: {
+      from: "名古屋站 櫻通口/U8出口",
+      via: "🏪 全家 名駅四丁目店 (1分)",
+      to: "🏨 相鐵 Fresa 櫻通口 (共4分)"
+    },
+    embedQuery: "相鉄フレッサイン 名古屋駅桜通口",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=JR名古屋駅桜通口&destination=相鉄フレッサイン名古屋駅桜通口&travelmode=walking",
+    bestAppTip: "去名鐵搭機場 μ-SKY 特急或去吉卜力巴士總站走路只要 4–5 分鐘，Google 比價常有好價！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=Sotetsu+Fresa+Inn+Nagoya+Sakuradoriguchi&hl=zh-TW",
+      official: "https://sotetsu-hotels.com/fresa-inn/nagoya-sakuradoriguchi/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/168265/168265.html",
+      agoda: "https://www.agoda.com/zh-tw/search?city=13740&textToSearch=Sotetsu%20Fresa%20Inn%20Nagoya-Sakuradoriguchi",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Sotetsu%20Fresa%20Inn%20Nagoya%20Sakuradoriguchi"
+    }
+  },
+  {
+    id: "toyoko-sakura",
+    recOrder: 11,
+    city: "nagoya",
+    zone: "sakura",
+    category: "hotel",
+    minPriceYen: 19500,
+    primaryWalkMin: 4,
+    rankBadge: "🧭 雙站正中間（名古屋站 5 分・國際中心站 4 分）＋含9人早餐",
+    name: "⑪ 東橫INN 名古屋站櫻通口新館",
+    jpName: "東横INN名古屋駅桜通口新館",
+    priceRange: "約 ¥19,500–¥27,000 / 晚（約台幣 4,100–5,700 元包 9 人含早！）",
+    primaryStation: "🥇 最近優先：地下街 Unimall 出口步行 4 分 ／ JR 名古屋站【櫻通口】步行 5 分鐘",
+    secondaryStation: "🥈 次近地鐵：櫻通線【國際中心站 1號口】東走 4 分鐘（去名古屋城、榮商圈都超快！）",
+    stationInfo: "🥇JR名古屋站櫻通口走5分 ｜ 🥈地鐵國際中心站1號口走4分",
+    roomPlan: "2023 新穎館別！訂 3 間雙床房（共 6 床＝4大+2小佔床＋3小免費同床），含全體 9 人免費豐盛早餐！",
+    kidRule: "小學生（12歲以下）同床完全免費＋早餐免費！新館設備新、插座多、花灑水壓強",
+    konbiniRoute: "飯店巷口步行 1 分鐘即有「FamilyMart 名駅三丁目店」與「7-Eleven」，走地下街回飯店超溫暖！",
+    walkSteps: {
+      from: "JR名古屋站櫻通口 (5分)",
+      via: "🏪 全家 ＆ 7-11 名駅3丁目 (1分)",
+      to: "🏨 東橫INN 櫻通口新館"
+    },
+    embedQuery: "東横INN名古屋駅桜通口新館",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=JR名古屋駅桜通口&destination=東横INN名古屋駅桜通口新館&travelmode=walking",
+    bestAppTip: "「東橫INN 官網」會員價最穩最省，若新館滿房隔壁 1 分鐘還有『櫻通口本館』可一併查詢！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=Toyoko+Inn+Nagoya+Station+Sakura+dori+Side+New&hl=zh-TW",
+      official: "https://www.toyoko-inn.com/search/detail/00092/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/187330/187330.html",
+      agoda: "https://www.agoda.com/zh-tw/search?city=13740&textToSearch=Toyoko%20Inn%20Nagoya-eki%20Sakuradori-guchi%20Shinkan",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Toyoko%20Inn%20Nagoya%20Sakura%20New"
+    }
+  },
+  {
+    id: "comfort-era",
+    recOrder: 12,
+    city: "nagoya",
+    zone: "sakura",
+    category: "hotel",
+    minPriceYen: 20000,
+    primaryWalkMin: 6,
+    rankBadge: "✨ 2026年6月全新改裝開幕｜國際中心站 6 分・KAKO吐司 3 分",
+    name: "⑫ Comfort Hotel ERA 名古屋名駅南",
+    jpName: "コンフォートホテルERA名古屋名駅南",
+    priceRange: "約 ¥20,000–¥29,000 / 晚（約台幣 4,200–6,200 元 / 3間雙床合計）",
+    primaryStation: "🥇 最近地鐵：櫻通線【國際中心站 3號出口】步行 6 分鐘（走到 KAKO 花車本店僅 3 分鐘！）",
+    secondaryStation: "🥈 次近大站：近鐵/名鐵【名古屋站】步行 8 分（JR廣小路口走 9 分）・東山線【伏見站】走 11 分",
+    stationInfo: "🥇地鐵國際中心站3號口走6分 ｜ 🥈名鐵/近鐵名古屋站走8分(JR走9分)",
+    roomPlan: "2026 年全新升級品牌 ERA！訂 3 間雙床房（4大+2小計費，3位小學生免費同床），大廳 Library Cafe 享免費迎賓甜點與飲品吧！",
+    kidRule: "小學 6 年級（12歲）以下同床免費！去名鐵搭機場特急 μ-SKY 直走 8 分鐘就到",
+    konbiniRoute: "飯店正對面過馬路 1 分鐘就有「Lawson」與「FamilyMart」，附近還有柳橋中央市場可逛！",
+    walkSteps: {
+      from: "國際中心站(6分) / 名古屋站(8分)",
+      via: "🏪 正對面 Lawson ＆ 全家 (1分)",
+      to: "🏨 Comfort ERA 名駅南"
+    },
+    embedQuery: "コンフォートホテルERA名古屋名駅南",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=国際センター駅&destination=コンフォートホテルERA名古屋名駅南&travelmode=walking",
+    bestAppTip: "2026 新改裝開幕常有促銷價，建議先比「Choice 飯店日本官網」與「樂天旅遊」！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=Comfort+Hotel+ERA+Nagoya+Meieki+Minami&hl=zh-TW",
+      official: "https://www.choice-hotels.jp/era/nagoyameiekiminami/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/181242/181242.html",
+      agoda: "https://www.agoda.com/zh-tw/search?city=13740&textToSearch=Comfort%20Hotel%20ERA%20Nagoya%20Meieki%20Minami",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Comfort%20Hotel%20ERA%20Nagoya"
+    }
+  },
+
+  // -------------------- ZONE C: 伏見（科學館）・榮商圈・久屋大通（共 4 間） --------------------
+  {
+    id: "vessel-sakae",
+    recOrder: 13,
+    city: "nagoya",
+    zone: "sakae",
+    category: "hotel",
+    minPriceYen: 21000,
+    primaryWalkMin: 2,
+    rankBadge: "🏬 榮商圈第 1 推｜榮站 2 分・久屋大通站 3 分＋正1樓就是 7-11",
+    name: "⑬ Vessel Inn 榮站前（名古屋榮）",
     jpName: "ベッセルイン栄駅前",
     priceRange: "約 ¥21,000–¥32,000 / 晚（約台幣 4,500–6,800 元 / 2間合計）",
-    stationInfo: "地鐵東山線／名城線「榮站」1 號出口步行 2 分鐘（近綠洲21、唐吉訶德）",
+    primaryStation: "🥇 最近優先：地鐵東山線・名城線【榮站 1號出口】步行 2 分鐘（140m）",
+    secondaryStation: "🥈 次近地鐵：櫻通線・名城線【久屋大通站 4號口】北走 3 分鐘（搭櫻通線 5 分直達名古屋站/太閤通站！）",
+    stationInfo: "🥇地鐵榮站1號口走2分 ｜ 🥈櫻通線久屋大通站4號口走3分",
     roomPlan: "訂 2 間房（雙床房＋三人房，共付 5 人費或 2 間三人房付 6 人費），6–10 歲小孩同床全部免費！",
-    kidRule: "18 歲以下同床不限人數免費！價格比名古屋站分館更甜，下樓就能逛街",
-    konbiniRoute: "飯店建築「正 1 樓就是 7-Eleven 名古屋錦3丁目店」！榮站 1 號出口走 2 分鐘經過唐吉訶德就到飯店樓下 7-11，半夜買東西免過馬路！",
+    kidRule: "18 歲以下同床不限人數免費！下樓就能逛唐吉訶德、綠洲21與松坂屋寶可夢中心",
+    konbiniRoute: "飯店建築「正 1 樓就是 7-Eleven 名古屋錦3丁目店（0分鐘直達）」！半夜買零食牛奶完全不用過馬路吹風！",
     walkSteps: {
       from: "地鐵榮站 1號出口",
-      via: "🏪 飯店正 1F 就是 7-11",
-      to: "🏨 Vessel Inn 榮站前 (總計2分)"
+      via: "🏪 飯店正 1F 就是 7-11 (0分)",
+      to: "🏨 Vessel Inn 榮站前 (共2分)"
     },
     embedQuery: "ベッセルイン栄駅前",
     walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=栄駅1番出口&destination=ベッセルイン栄駅前&travelmode=walking",
-    bestAppTip: "「Vessel 官網會員」或「Google Maps 導流 Agoda / Trip.com」最便宜（記得只輸入佔床人數 2人+3人 比價）！",
+    bestAppTip: "「Vessel 官網會員」或「Google Maps 導流 Agoda / Trip.com」最便宜（記得只輸入佔床人數比價）！",
     links: {
       google: "https://www.google.com/travel/hotels?q=Vessel+Inn+Sakae+Ekimae&hl=zh-TW",
       official: "https://www.vessel-hotel.jp/inn/sakae/",
@@ -328,53 +691,135 @@ const HOTELS_DATA = [
     }
   },
   {
-    id: "daiwa-taiko",
+    id: "comfort-sakae",
+    recOrder: 14,
     city: "nagoya",
+    zone: "sakae",
     category: "hotel",
-    rankBadge: "🥉 新幹線口 4 分鐘｜1 樓直通 7-11＋日式乾濕分離衛浴",
-    name: "Daiwa Roynet Hotel 名古屋太閤通口",
-    jpName: "ダイワロイネットホテル名古屋太閤通口",
-    priceRange: "約 ¥26,000–¥38,000 / 晚（約台幣 5,500–8,000 元 / 2間合計）",
-    stationInfo: "JR「名古屋站」太閤通口（新幹線口）步行僅 4 分鐘（牧歌之里巴士集合超近！）",
-    roomPlan: "訂 2 間：1 間標準雙床房（2床＝2大+2小免費）＋ 1 間 Deluxe Twin 加床三人房（3床＝2大+1小計費+2小免費），僅需 1 小算佔床！",
-    kidRule: "小學生（12歲未滿）每張床可免費同睡 1 名！全室 21㎡ 以上、浴室有獨立洗身體區＋浴缸",
-    konbiniRoute: "飯店「正 1 樓直接併設 7-Eleven」（室內通道可達免吹冷風），過馬路對面還有「Lawson 椿町店」與「FamilyMart」！",
+    minPriceYen: 19000,
+    primaryWalkMin: 1,
+    rankBadge: "⚡ 出站 60 秒秒到！｜榮站 1 分・久屋大通站 4 分＋1樓就是全家",
+    name: "⑭ Comfort Inn 名古屋榮站前",
+    jpName: "コンフォートイン名古屋栄駅前",
+    priceRange: "約 ¥19,000–¥28,000 / 晚（約台幣 4,000–5,900 元 / 3間雙床合計）",
+    primaryStation: "🥇 最近優先：地鐵東山線・名城線【榮站 2號出口】步行僅 1 分鐘（80m，出站即達！）",
+    secondaryStation: "🥈 次近地鐵：櫻通線・名城線【久屋大通站 3號口】北走 4 分鐘（直通名古屋城站＆名古屋站）",
+    stationInfo: "🥇地鐵榮站2號口走1分 ｜ 🥈櫻通線久屋大通站3號口走4分",
+    roomPlan: "訂 3 間雙床房（4大+2小佔床計費，另 3 位小學生免費同床），1 月底寒流帶 5 個小孩出地鐵 1 分鐘進飯店超幸福！",
+    kidRule: "小學 6 年級（12歲）以下同床免費！全館免費迎賓咖啡茶飲與衣物蒸氣機",
+    konbiniRoute: "飯店「正 1 樓直接併設 FamilyMart 全家便利商店（0分鐘）」，部分訂房方案還送樓下全家購物券！",
     walkSteps: {
-      from: "JR 名古屋站太閤通口",
-      via: "🏪 飯店 1F 併設 7-11",
-      to: "🏨 大和魯內太閤通口 (總計4分)"
+      from: "地鐵榮站 2號出口",
+      via: "🏪 飯店正 1F 就是全家 (0分)",
+      to: "🏨 Comfort Inn 榮站前 (1分)"
     },
-    embedQuery: "ダイワロイネットホテル名古屋太閤通口",
-    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=JR名古屋駅太閤通口&destination=ダイワロイネットホテル名古屋太閤通口&travelmode=walking",
-    bestAppTip: "推薦用「Travelko トラベルコ」與「樂天旅遊／Jalan」比價，日本訂房網常有『2連泊以上連住割』優惠！",
+    embedQuery: "コンフォートイン名古屋栄駅前",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=栄駅2番出口&destination=コンフォートイン名古屋栄駅前&travelmode=walking",
+    bestAppTip: "在「Choice 官網」或「Yahoo! / 一休 / 樂天」素泊方案超便宜，樓下就是全家買早餐超彈性！",
     links: {
-      google: "https://www.google.com/travel/hotels?q=Daiwa+Roynet+Hotel+Nagoya+Taiko+dori+Side&hl=zh-TW",
-      official: "https://www.daiwaroynet.jp/nagoya-taikodoriguchi/",
-      rakuten: "https://travel.rakuten.co.jp/HOTEL/153417/153417.html",
-      agoda: "https://www.agoda.com/zh-tw/daiwa-roynet-hotel-nagoya-taiko-dori-side/hotel/nagoya-jp.html",
-      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Daiwa%20Roynet%20Hotel%20Nagoya%20Taiko"
+      google: "https://www.google.com/travel/hotels?q=Comfort+Inn+Nagoya+Sakae+Ekimae&hl=zh-TW",
+      official: "https://www.choice-hotels.jp/inn/nagoyasakae/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/188251/188251.html",
+      agoda: "https://www.agoda.com/zh-tw/search?city=13740&textToSearch=Comfort%20Inn%20Nagoya%20Sakae%20Ekimae",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Comfort%20Inn%20Nagoya%20Sakae"
     }
   },
   {
-    id: "grandbase",
+    id: "comfort-fushimi",
+    recOrder: 15,
     city: "nagoya",
-    category: "apartment",
-    rankBadge: "🏡 平價大公寓首選｜附廚房洗衣機＋56㎡ 大房可 9 人聚會",
-    name: "GRAND BASE 名古屋駅西",
-    jpName: "グランドベース名古屋駅西",
-    priceRange: "約 ¥27,000–¥40,000 / 晚（約台幣 5,700–8,500 元 / 2間合計）",
-    stationInfo: "地鐵櫻通線「太閤通站」步行 4 分鐘 ／ JR「名古屋站」太閤通口步行 8 分鐘",
-    roomPlan: "同棟訂 2 間：1 間「Deluxe B（56㎡・4張雙人床・上限8人）」＋ 1 間「Superior A（40㎡・上限4人）」，想跟大阪 ESLEAD 一樣有廚房洗衣機選這間！",
-    kidRule: "公寓式按人數分攤極便宜，晚上 9 個人可全部聚在 56㎡ 大房吃宵夜聊天，睡覺再回各自房間",
-    konbiniRoute: "從名古屋站太閤通口走回飯店的順路上，距離飯店步行 2 分鐘（180m）就有 24H「FamilyMart 中村竹橋町店」！",
+    zone: "sakae",
+    category: "hotel",
+    minPriceYen: 20000,
+    primaryWalkMin: 4,
+    rankBadge: "🔬 科學館散步 6 分鐘｜伏見站 4 分・榮站 7 分＋含9人免費早餐",
+    name: "⑮ Comfort Hotel 名古屋伏見",
+    jpName: "コンフォートホテル名古屋伏見",
+    priceRange: "約 ¥20,000–¥29,000 / 晚（約台幣 4,200–6,200 元包 9 人含早！）",
+    primaryStation: "🥇 最近優先：地鐵東山線・鶴舞線【伏見站 3號出口】步行 4 分鐘（名古屋站搭東山線僅 1 站！）",
+    secondaryStation: "🥈 次近地鐵：東山線【榮站 8號口】東走 7 分鐘 ・ 櫻通線【丸之內站】北走 6 分鐘",
+    stationInfo: "🥇地鐵伏見站3號口走4分 ｜ 🥈榮站走7分・丸之內站走6分",
+    roomPlan: "訂 3 間雙床房（共 6 床＝4大+2小佔床＋3小免費同床），全體 9 人免費吃彩り自助早餐，Day 8 走路 6 分鐘就到名古屋市科學館！",
+    kidRule: "小學 6 年級（12歲）以下同床免費＋免費早餐！位置剛好夾在名古屋站與榮商圈正中間",
+    konbiniRoute: "出伏見站 3 號出口走回飯店順路 1 分鐘即經過「7-Eleven 名古屋錦2丁目店」與「FamilyMart」！",
     walkSteps: {
-      from: "名古屋站 / 太閤通站",
+      from: "地鐵伏見站 3號出口",
+      via: "🏪 7-11 ＆ 全家 錦2丁目 (1分)",
+      to: "🏨 Comfort 名古屋伏見 (共4分)"
+    },
+    embedQuery: "コンフォートホテル名古屋伏見",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=伏見駅3番出口&destination=コンフォートホテル名古屋伏見&travelmode=walking",
+    bestAppTip: "比名古屋站分館房價再省約 10%，用「Choice 官網」或「12/4 樂天 Super SALE」最划算！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=Comfort+Hotel+Nagoya+Fushimi&hl=zh-TW",
+      official: "https://www.choice-hotels.jp/hotel/nagoyafushimi/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/164855/164855.html",
+      agoda: "https://www.agoda.com/zh-tw/search?city=13740&textToSearch=Comfort%20Hotel%20Nagoya%20Fushimi",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=Comfort%20Hotel%20Nagoya%20Fushimi"
+    }
+  },
+  {
+    id: "delstyle-nayabashi",
+    recOrder: 16,
+    city: "nagoya",
+    zone: "sakae",
+    category: "hotel",
+    minPriceYen: 23000,
+    primaryWalkMin: 7,
+    rankBadge: "♨️ 大浴場＋連通房＋全室Airweave床墊｜伏見站 7 分・國際中心站 8 分",
+    name: "⑯ DEL style 名古屋納屋橋 by Daiwa Roynet",
+    jpName: "DEL style 名古屋納屋橋 by Daiwa Roynet Hotel",
+    priceRange: "約 ¥23,000–¥35,000 / 晚（約台幣 4,900–7,400 元 / 2–3間合計）",
+    primaryStation: "🥇 最近優先：地鐵東山線・鶴舞線【伏見站 6號/8號口】步行 7 分鐘（近科學館＆堀川運河）",
+    secondaryStation: "🥈 次近地鐵：櫻通線【國際中心站 3號口】西北走 8 分鐘（走去 KAKO 花車本店約 6 分鐘！）",
+    stationInfo: "🥇地鐵伏見站6號口走7分 ｜ 🥈地鐵國際中心站3號口走8分",
+    roomPlan: "大和魯內旗下時尚親子飯店！有「確約連通房」與家庭三人房，全室乾濕分離衛浴＋女性/男性大浴場，質感超高房價卻很甜！",
+    kidRule: "小學生（12歲未滿）每張床可免費同睡 1 名！對面還有 MEGA 唐吉訶德 UNY 納屋橋店（超市＋藥妝）",
+    konbiniRoute: "飯店隔壁步行 1 分鐘就是「Lawson 納屋橋店」與「7-Eleven」，過馬路還有大型生鮮超市買大草莓超方便！",
+    walkSteps: {
+      from: "伏見站 6號/8號出口",
+      via: "🏪 隔壁 Lawson ＆ 唐吉訶德超市",
+      to: "🏨 DEL style 納屋橋 (共7分)"
+    },
+    embedQuery: "DEL style 名古屋納屋橋 by Daiwa Roynet Hotel",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=伏見駅&destination=DEL+style+名古屋納屋橋&travelmode=walking",
+    bestAppTip: "想逛超市買草莓＋泡大浴場大推這間！用「樂天旅遊／Jalan」或「Google 比價」常挖到驚喜特價！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=DEL+style+Nagoya+Nayabashi+by+Daiwa+Roynet+Hotel&hl=zh-TW",
+      official: "https://www.daiwaroynet.jp/nayabashi/",
+      rakuten: "https://travel.rakuten.co.jp/HOTEL/166257/166257.html",
+      agoda: "https://www.agoda.com/zh-tw/search?city=13740&textToSearch=DEL%20style%20Nagoya-Nayabashi",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=DEL%20style%20Nagoya%20Nayabashi"
+    }
+  },
+
+  // -------------------- ZONE D (also in Taiko): 公寓式飯店／獨棟包棟（附廚房洗衣機，共 3 間） --------------------
+  {
+    id: "grandbase",
+    recOrder: 17,
+    city: "nagoya",
+    zone: "taiko",
+    category: "apartment",
+    minPriceYen: 27000,
+    primaryWalkMin: 4,
+    rankBadge: "🏡 平價大公寓首選｜太閤通站 4 分・JR名古屋站 8 分＋56㎡ 聚會大房",
+    name: "⑰ GRAND BASE 名古屋駅西",
+    jpName: "グランドベース名古屋駅西",
+    priceRange: "約 ¥27,000–¥40,000 / 晚（約台幣 5,700–8,500 元 / 同棟2間合計）",
+    primaryStation: "🥇 最近優先：地鐵櫻通線【太閤通站 2號出口】步行 4 分鐘（290m）",
+    secondaryStation: "🥈 次近大站：JR 名古屋站【太閤通口】步行 8 分鐘 ・ 東山線【龜島站】北走 11 分鐘",
+    stationInfo: "🥇地鐵太閤通站2號口走4分 ｜ 🥈JR名古屋站太閤通口走8分",
+    roomPlan: "同棟訂 2 間：1 間「Deluxe B（56㎡・4張雙人床・上限8人）」＋ 1 間「Superior A（40㎡・上限4人）」，想跟大阪 ESLEAD 一樣有廚房洗衣機選這間！",
+    kidRule: "公寓式按人數分攤極划算，晚上 9 個人可全部聚在 56㎡ 大客廳吃宵夜聊天，睡覺再回各自房間",
+    konbiniRoute: "從名古屋站太閤通口走回飯店順路上，距離飯店步行 2 分鐘（180m）就有 24H「FamilyMart 中村竹橋町店」！",
+    walkSteps: {
+      from: "太閤通站(4分) / JR名古屋站(8分)",
       via: "🏪 全家 中村竹橋町店 (2分)",
-      to: "🏡 GRAND BASE 駅西 (8分)"
+      to: "🏡 GRAND BASE 駅西"
     },
     embedQuery: "グランドベース名古屋駅西",
-    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=JR名古屋駅太閤通口&destination=グランドベース名古屋駅西&waypoints=ファミリーマート中村竹橋町店&travelmode=walking",
-    bestAppTip: "這類無人公寓在「Booking.com 手機 App（Genius 會員＋手機限定價）」與「Google Maps 點進 Agoda」通常最便宜！",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=太閤通駅2番出口&destination=グランドベース名古屋駅西&waypoints=ファミリーマート中村竹橋町店&travelmode=walking",
+    bestAppTip: "無人公寓在「Booking.com 手機 App（Genius 會員＋手機限定價）」與「Google Maps 點進 Agoda」最便宜！",
     links: {
       google: "https://www.google.com/travel/hotels?q=GRAND+BASE+Nagoya+Ekinishi&hl=zh-TW",
       official: "https://booking.com/hotel/jp/grand-base-nagoyaeki-nishi.zh-tw.html",
@@ -384,25 +829,65 @@ const HOTELS_DATA = [
     }
   },
   {
-    id: "central-res",
+    id: "samurai-house3",
+    recOrder: 18,
     city: "nagoya",
-    category: "oneunit",
-    rankBadge: "🏠 1 間全包代表｜120㎡ 整層包層＋地鐵步行 2 分鐘",
-    name: "Central Nagoya Residence（整層 9 人貸切）",
+    zone: "taiko",
+    category: "apartment",
+    minPriceYen: 42000,
+    primaryWalkMin: 3,
+    rankBadge: "🏯 1間獨棟包棟首選｜太閤通站 3 分・JR名古屋站 7 分（上限13人）",
+    name: "⑱ SAMURAI HOUSE Ⅲ（獨棟包棟・一棟貸切）",
+    jpName: "SAMURAI HOUSE Ⅲ",
+    priceRange: "約 ¥42,000–¥58,000 / 晚（約台幣 8,900–12,300 元 / 9人獨棟全包）",
+    primaryStation: "🥇 最近優先：地鐵櫻通線【太閤通站 3號出口】步行僅 3 分鐘（240m）",
+    secondaryStation: "🥈 次近大站：JR 名古屋站【太閤通口】步行 7 分鐘 ・ 近鐵【米野站】步行 5 分鐘",
+    stationInfo: "🥇地鐵太閤通站3號口走3分 ｜ 🥈JR名古屋站太閤通口走7分・米野站走5分",
+    roomPlan: "真正「1 間全包」離名古屋站最近的獨棟別墅！多間獨立臥室＋多套衛浴廁所＋大廚房餐桌＋洗烘衣機，5 個小朋友跑跳也不怕吵到隔壁房客！",
+    kidRule: "整棟包棟最多可住 12–13 人，若兩家人最重視同住一棟的歡樂感且離太閤通站＆JR超近，這間是首選（另有同系列 Ⅰ、Ⅱ 號館也在太閤通站旁）",
+    konbiniRoute: "地鐵太閤通站出口與走回民宿順路上步行 2 分鐘即有「FamilyMart」與「7-Eleven」，附近還有大型超市 MaxValu 太閤店！",
+    walkSteps: {
+      from: "地鐵太閤通站 3號口 (3分)",
+      via: "🏪 全家 ＆ 7-11 太閤通店 (2分)",
+      to: "🏯 SAMURAI HOUSE Ⅲ"
+    },
+    embedQuery: "SAMURAI HOUSE 3 名古屋市中村区上米野町1-9",
+    walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=太閤通駅3番出口&destination=名古屋市中村区上米野町1-9&travelmode=walking",
+    bestAppTip: "獨棟房源全球僅此 1 棟，建議用「樂天旅遊 / Jalan / Travelko」與「Booking.com」同步比價並盡早卡位！",
+    links: {
+      google: "https://www.google.com/travel/hotels?q=SAMURAI+HOUSE+3+Nagoya&hl=zh-TW",
+      official: "https://www.jalan.net/yad358810/",
+      rakuten: "https://www.tour.ne.jp/j_hotel/48616/",
+      agoda: "https://www.booking.com/hotel/jp/samurai-house-ii.zh-tw.html",
+      trip: "https://tw.trip.com/hotels/list?city=360&keyword=SAMURAI%20HOUSE%20Nagoya"
+    }
+  },
+  {
+    id: "central-res",
+    recOrder: 19,
+    city: "nagoya",
+    zone: "taiko",
+    category: "apartment",
+    minPriceYen: 38000,
+    primaryWalkMin: 2,
+    rankBadge: "🏠 120㎡ 整層包層備案｜地鐵中村公園站 2 分（有電梯）",
+    name: "⑲ Central Nagoya Residence（整層 9 人貸切）",
     jpName: "Central Nagoya Residence",
     priceRange: "約 ¥38,000–¥52,000 / 晚（約台幣 8,000–11,000 元 / 9人整層）",
-    stationInfo: "地鐵東山線「中村公園站」步行 2 分鐘（搭東山線 7 分鐘直達名古屋站，有電梯）",
-    roomPlan: "單一整層 120㎡ 住滿 9 人（3 間臥室共 5 張雙人床＋大餐桌＋廚房洗烘衣機），但注意僅 1 間浴室，以價格與衛浴來說上面訂 2 間飯店更划算",
-    kidRule: "整層包層上限 9 人，若堅持 9 人住同一門牌可選這間（或名古屋站旁竹橋町『三木屋 Mikiya』獨棟）",
-    konbiniRoute: "地鐵中村公園站出口就有「FamilyMart 東山線中村公園駅店」與「7-Eleven 名古屋中村公園駅前店」，買完走 2 分鐘就到家！",
+    primaryStation: "🥇 最近優先：地鐵東山線【中村公園站 2號出口】步行 2 分鐘（150m，搭東山線 7 分直達名古屋站）",
+    secondaryStation: "🥈 次近地鐵：東山線【中村日赤站】東走 9 分鐘 ・ 【岩塚站】西走 11 分鐘",
+    stationInfo: "🥇地鐵中村公園站2號口走2分 ｜ 🥈東山線中村日赤站走9分",
+    roomPlan: "單一整層 120㎡ 住滿 9 人（3 間臥室共 5 張雙人床＋大餐桌＋廚房洗烘衣機），大樓有電梯免扛行李（惟僅 1 間浴室，CP 值以訂 2–3 間飯店更高）",
+    kidRule: "整層包層上限 9 人，適合作為包層備用名單",
+    konbiniRoute: "地鐵中村公園站出口旁步行 30 秒就有「FamilyMart 東山線中村公園駅店」與「7-Eleven 名古屋中村公園駅前店」！",
     walkSteps: {
-      from: "地鐵中村公園站",
-      via: "🏪 全家 / 7-11 站前店 (出口旁)",
-      to: "🏠 Central Residence (步行2分)"
+      from: "地鐵中村公園站 2號口",
+      via: "🏪 全家 ＆ 7-11 站前店 (30秒)",
+      to: "🏠 Central Residence (共2分)"
     },
     embedQuery: "中村公園駅 名古屋",
     walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=中村公園駅&destination=ファミリーマート東山線中村公園駅店&travelmode=walking",
-    bestAppTip: "包棟／包層務必先看「Central Nagoya 官網直訂」，直接免除 Airbnb / Booking 約 12%–15% 平台服務費！",
+    bestAppTip: "包層務必先看「Central Nagoya 官網直訂」，直接免除 Airbnb / Booking 約 14% 平台服務費！",
     links: {
       google: "https://centralnagoya.site/ja/groups/",
       official: "https://centralnagoya.site/ja/groups/",
@@ -411,26 +896,34 @@ const HOTELS_DATA = [
       trip: "https://centralnagoya.site/ja/groups/"
     }
   },
+
+  // -------------------- OSAKA CONFIRMED --------------------
   {
     id: "osaka-eslead",
+    recOrder: 20,
     city: "osaka",
+    zone: "osaka",
     category: "confirmed",
+    minPriceYen: 0,
+    primaryWalkMin: 1,
     rankBadge: "✅ 大阪前 3 晚已訂妥（1/16–1/19）｜地鐵 1 分鐘大公寓",
-    name: "ESLEAD HOTEL Osaka Tsuruhashi（大阪鶴橋）",
+    name: "✅ ESLEAD HOTEL Osaka Tsuruhashi（大阪鶴橋）",
     jpName: "エスリードホテル大阪鶴橋",
     priceRange: "✅ 已完成預訂（共 3 晚：1/16、1/17、1/18）",
-    stationInfo: "Osaka Metro 千日前線「鶴橋站」4 號出口步行約 1 分鐘 ／ JR・近鐵「鶴橋站」步行 3 分鐘",
+    primaryStation: "🥇 最近優先：地鐵千日前線【鶴橋站 4號出口】步行 1 分鐘（110m）",
+    secondaryStation: "🥈 次近車站：JR大阪環狀線・近鐵【鶴橋站】東走 3 分鐘 ・ 谷町線【谷町九丁目站】西走 10 分",
+    stationInfo: "🥇地鐵鶴橋站4號口走1分 ｜ 🥈JR/近鐵鶴橋站走3分・谷町九丁目站走10分",
     roomPlan: "全室 40㎡ 以上新穎公寓式飯店，附設廚房、大冰箱、洗衣機與浴室烘乾設備，去黑門市場僅 2 站（3分鐘）！",
     kidRule: "已訂妥！提醒入住時備妥全體大人與小朋友護照正本辦理登記",
-    konbiniRoute: "出鶴橋站 4 號出口走到飯店 1 分鐘內，旁邊就是 24H「FamilyMart 鶴橋駅前店（味原町13-8）」與生鮮超齊全的「Lawson Store 100 鶴橋駅前店（味原町14-4）」！",
+    konbiniRoute: "出鶴橋站 4 號出口走到飯店 1 分鐘內，旁邊就是 24H「FamilyMart 鶴橋駅前店」與生鮮超齊全的「Lawson Store 100 鶴橋駅前店」！",
     walkSteps: {
       from: "地鐵鶴橋站 4號出口",
-      via: "🏪 全家 / Lawson 100 (1分)",
-      to: "✅ ESLEAD 大阪鶴橋 (1分)"
+      via: "🏪 全家 ＆ Lawson 100 (30秒)",
+      to: "✅ ESLEAD 大阪鶴橋 (共1分)"
     },
     embedQuery: "ESLEAD HOTEL Osaka Tsuruhashi",
     walkMapUrl: "https://www.google.com/maps/dir/?api=1&origin=鶴橋駅&destination=ESLEAD+HOTEL+Osaka+Tsuruhashi&waypoints=ファミリーマート鶴橋駅前店&travelmode=walking",
-    bestAppTip: "大阪住宿已訂妥！同行友人可點右方地圖熟悉鶴橋站出口與周邊超商位置。",
+    bestAppTip: "大阪住宿已訂妥！同行友人可點地圖熟悉鶴橋站 4 號出口、JR 環狀線與順路超商位置。",
     links: {
       google: "https://www.google.com/maps/search/?api=1&query=ESLEAD+HOTEL+Osaka+Tsuruhashi",
       official: "https://www.google.com/maps/search/?api=1&query=ESLEAD+HOTEL+Osaka+Tsuruhashi",
@@ -527,7 +1020,7 @@ const SPOTS_DATA = [
 const CHECKLIST_ITEMS = [
   { id: "chk_osaka", text: "大阪前 3 晚住宿：ESLEAD HOTEL Osaka Tsuruhashi（已訂妥！）", defaultDone: true },
   { id: "chk_ghibli", text: "搶購 1/21 吉卜力公園門票（4張大人＋5張小學生半價票，11/10 已開賣）", defaultDone: false },
-  { id: "chk_nagoya_hotel", text: "比價並預訂名古屋 4 晚住宿（1/19–1/23，鎖定免費取消早鳥方案）", defaultDone: false },
+  { id: "chk_nagoya_hotel", text: "從 19 間名古屋精選名單比價並預訂 4 晚住宿（1/19–1/23，鎖定免費取消方案）", defaultDone: false },
   { id: "chk_poke", text: "12/18 台灣時間 17:00 搶 1/18 大丸心齋橋「寶可夢咖啡廳」預約", defaultDone: false },
   { id: "chk_kyoto", text: "預訂 1/17 京都（勝尾寺・嵐山・清水寺）一日遊巴士", defaultDone: false },
   { id: "chk_bokka", text: "預訂 1/20 牧歌之里玩雪一日遊巴士（名古屋站太閤通口出發）", defaultDone: false },
@@ -535,12 +1028,1008 @@ const CHECKLIST_ITEMS = [
   { id: "chk_winter", text: "準備 5 位小朋友防水玩雪手套、毛帽、發熱衣與護照效期確認", defaultDone: false }
 ];
 
-// State
+// ==================== 多車站方向感小動畫 SVG 產生器（最近站＋次近地鐵站＋超商＋步行分鐘） ====================
+const SCHEMATIC_MAP_SPECS = {
+  "comfort": {
+    layout: "taiko-north",
+    shortPill: "① Comfort新幹線(5分)",
+    exitBadge: "🥇 最近優先：JR名古屋站【太閤通口】",
+    totalWalk: "⏱️ 最近步行 5 分鐘（約 380m）",
+    subStationsBar: "🧭 周邊方向參考：↖ 西北【龜島站 3號口】走 9 分 ｜ ↙ 西南【太閤通站 2號口】走 10 分",
+    stepSub1: "出站即見超商",
+    stepSub2: "斜對面 80m",
+    stepSub3: "平路共 5 分鐘",
+    pTitle: "JR 名古屋站",
+    pExit: "太閤通口 (西口)",
+    subNW: "🥈 東山線 龜島站",
+    subNWSub: "3號口｜西北走 9 分",
+    subSW: "🥈 櫻通線 太閤通站",
+    subSWSub: "2號口｜西南走 10 分",
+    konbini1: "🏪 7-11 ＆ 全家 (斜對面1分)",
+    konbini2: "🏪 Lawson (出站1分)",
+    seg1: "🚶 北走3分",
+    seg2: "🚶 1分(80m)",
+    hTitle: "① Comfort 名古屋新幹線口",
+    hSub: "太閤通口走 5 分｜含 9 人免費早餐"
+  },
+  "chisun": {
+    layout: "taiko-north",
+    shortPill: "② Chisun平價王(4分)",
+    exitBadge: "🥇 最近優先：JR名古屋站【太閤通口】",
+    totalWalk: "⏱️ 最近步行 4 分鐘（約 320m）",
+    subStationsBar: "🧭 周邊方向參考：↖ 西北【龜島站 3號口】走 9 分 ｜ ↙ 西南【太閤通站 2號口】走 10 分",
+    stepSub1: "往北平路直走",
+    stepSub2: "斜對面 70m",
+    stepSub3: "橘色圓柱大樓 4分",
+    pTitle: "JR 名古屋站",
+    pExit: "太閤通口 (西口)",
+    subNW: "🥈 東山線 龜島站",
+    subNWSub: "3號口｜西北走 9 分",
+    subSW: "🥈 櫻通線 太閤通站",
+    subSWSub: "2號口｜西南走 10 分",
+    konbini1: "🏪 7-11 則武1丁目店 (1分)",
+    konbini2: "🏪 Lawson (出站1分)",
+    seg1: "🚶 北走3分",
+    seg2: "🚶 1分(70m)",
+    hTitle: "② Chisun Inn 名古屋",
+    hSub: "太閤通口走 4 分｜平價王・上下舖"
+  },
+  "daiwa-shinkansen": {
+    layout: "taiko-north",
+    shortPill: "⑤ 大和新幹線口(3分)",
+    exitBadge: "🥇 最近優先：JR名古屋站【太閤通口】",
+    totalWalk: "⏱️ 最近步行僅 3 分鐘（約 220m）",
+    subStationsBar: "🧭 周邊方向參考：↖ 西北【龜島站 3號口】走 9 分 ｜ ↙ 西南【太閤通站 2號口】走 9 分",
+    stepSub1: "Bic Camera 旁",
+    stepSub2: "正順路 1 分鐘",
+    stepSub3: "超近僅 3 分鐘！",
+    pTitle: "JR 名古屋站",
+    pExit: "太閤通口 (新幹線)",
+    subNW: "🥈 東山線 龜島站",
+    subNWSub: "3號口｜西北走 9 分",
+    subSW: "🥈 櫻通線 太閤通站",
+    subSWSub: "2號口｜西南走 9 分",
+    konbini1: "🏪 Lawson ＆ 7-11 (順路1分)",
+    konbini2: "🏪 Bic Camera 就在隔壁",
+    seg1: "🚶 北走2分",
+    seg2: "🚶 轉彎1分",
+    hTitle: "⑤ 大和魯內 名古屋新幹線口",
+    hSub: "太閤通口走 3 分｜離新幹線口最近"
+  },
+  "richmond-shinkansen": {
+    layout: "kamejima-richmond",
+    shortPill: "⑦ Richmond(5–7分)",
+    exitBadge: "🥇 最近優先：地鐵東山線【龜島站 3號口】",
+    totalWalk: "⏱️ 龜島站走 5 分 ／ JR太閤通口走 7 分",
+    subStationsBar: "🧭 周邊方向參考：↘ 東南【JR名古屋站太閤通口】直走 7 分 ｜ ↙ 西南【太閤通站】走 12 分",
+    stepSub1: "雙車站直線可達",
+    stepSub2: "沿線順路 1–2 分",
+    stepSub3: "浴廁三分離高評分",
+    pTitle: "地鐵東山線 龜島站",
+    pExit: "3號出口 (走5分)",
+    subSE: "🥈 JR名古屋站 太閤通口",
+    subSESub: "沿新幹線直走 7 分",
+    subSW: "🥈 櫻通線 太閤通站",
+    subSWSub: "2號口｜南走 12 分",
+    konbini1: "🏪 7-11 ＆ Daily超商 (順路)",
+    seg1: "🚶 東南走5分",
+    hTitle: "⑦ Richmond 名古屋新幹線口",
+    hSub: "龜島站 5 分・JR太閤通口 7 分"
+  },
+  "toyoko-shinkansen": {
+    layout: "taiko-south",
+    shortPill: "③ 東橫新幹線(4分)",
+    exitBadge: "🥇 最近優先：JR名古屋站【太閤通口】",
+    totalWalk: "⏱️ JR走 4 分鐘 ／ 太閤通站走 6 分鐘",
+    subStationsBar: "🧭 周邊方向參考：← 西側【地鐵太閤通站 2號口】直走 6 分 ｜ ↑ 北側【龜島站】走 10 分",
+    stepSub1: "太閤通大馬路旁",
+    stepSub2: "順路 1 分鐘",
+    stepSub3: "夾在JR與太閤通間",
+    pTitle: "JR 名古屋站",
+    pExit: "太閤通口 (走4分)",
+    subW: "🥈 櫻通線 太閤通站",
+    subWSub: "2號口｜西走 6 分",
+    subN: "🥈 東山線 龜島站 (北走10分)",
+    konbini1: "🏪 7-11 椿町店 ＆ MiniStop (1分)",
+    seg1: "🚶 西南走 4 分",
+    subWalkW: "← 往太閤通站 6分",
+    hTitle: "③ 東橫INN 名古屋站新幹線口",
+    hSub: "JR走 4 分・太閤通站 6 分｜含免費早餐"
+  },
+  "sotetsu-shinkansen": {
+    layout: "taiko-south",
+    shortPill: "④ 相鐵新幹線(4分)",
+    exitBadge: "🥇 最近優先：JR名古屋站【太閤通口】",
+    totalWalk: "⏱️ JR走 4 分鐘 ／ 太閤通站走 6 分鐘",
+    subStationsBar: "🧭 周邊方向參考：← 西側【地鐵太閤通站 2號口】走 6 分 ｜ ↓ 南側【近鐵米野站】走 8 分",
+    stepSub1: "新幹線西口出站",
+    stepSub2: "隔壁與對面皆超商",
+    stepSub3: "有連通房雙衛浴",
+    pTitle: "JR 名古屋站",
+    pExit: "太閤通口 (走4分)",
+    subW: "🥈 櫻通線 太閤通站",
+    subWSub: "2號口｜西走 6 分",
+    subN: "🥈 東山線 龜島站 (北走11分)",
+    konbini1: "🏪 隔壁 7-11 ＆ 對面 Lawson (1分)",
+    seg1: "🚶 南走 4 分 (300m)",
+    subWalkW: "← 往太閤通站 6分",
+    hTitle: "④ 相鐵 Fresa 名古屋新幹線口",
+    hSub: "JR走 4 分・太閤通站 6 分｜有連通房"
+  },
+  "daiwa-taiko": {
+    layout: "taiko-south",
+    shortPill: "⑥ 大和太閤通(4分)",
+    exitBadge: "🥇 最近優先：JR名古屋站【太閤通口】",
+    totalWalk: "⏱️ JR走 4 分鐘 ／ 太閤通站走 7 分鐘",
+    subStationsBar: "🧭 周邊方向參考：← 西側【地鐵太閤通站 2號口】走 7 分 ｜ ↓ 南側【近鐵米野站】走 9 分",
+    stepSub1: "新幹線西口出站",
+    stepSub2: "1F 室內直通 7-11",
+    stepSub3: "平路 4 分鐘即達",
+    pTitle: "JR 名古屋站",
+    pExit: "太閤通口 (走4分)",
+    subW: "🥈 櫻通線 太閤通站",
+    subWSub: "2號口｜西走 7 分",
+    subN: "🥈 東山線 龜島站 (北走11分)",
+    konbini1: "🏪 正1F直通 7-11 ＋對面Lawson",
+    seg1: "🚶 南走 4 分 (280m)",
+    subWalkW: "← 往太閤通站 7分",
+    hTitle: "⑥ 大和魯內 名古屋太閤通口",
+    hSub: "1F直通 7-11｜全室日式乾濕分離"
+  },
+  "grandbase": {
+    layout: "taiko-west-apt",
+    shortPill: "⑰ GRAND BASE(4分)",
+    exitBadge: "🥇 最近優先：地鐵櫻通線【太閤通站 2號口】",
+    totalWalk: "⏱️ 太閤通站走 4 分 ／ JR名古屋站走 8 分",
+    subStationsBar: "🧭 周邊方向參考：→ 東側【JR名古屋站太閤通口】直走 8 分 ｜ ↑ 北側【龜島站】走 11 分",
+    stepSub1: "太閤通站2號口",
+    stepSub2: "距公寓 180m",
+    stepSub3: "56㎡大房附廚洗",
+    pTitle: "地鐵櫻通線 太閤通站",
+    pExit: "2號出口 (走4分)",
+    subE: "🥈 JR名古屋站 太閤通口",
+    subESub: "東走 8 分鐘 (順路)",
+    subN: "🥈 東山線 龜島站 (北走11分)",
+    konbini1: "🏪 全家 中村竹橋町店 (順路2分)",
+    seg1: "🚶 步行 4 分",
+    subWalkE: "JR走來 8 分 →",
+    hTitle: "⑰ GRAND BASE 名古屋駅西",
+    hSub: "太閤通站 4 分・JR 8 分｜附廚房洗衣機"
+  },
+  "samurai-house3": {
+    layout: "taiko-west-apt",
+    shortPill: "⑱ SAMURAI獨棟(3分)",
+    exitBadge: "🥇 最近優先：地鐵櫻通線【太閤通站 3號口】",
+    totalWalk: "⏱️ 太閤通站走 3 分 ／ JR名古屋站走 7 分",
+    subStationsBar: "🧭 周邊方向參考：→ 東北【JR名古屋站太閤通口】走 7 分 ｜ ↓ 南側【近鐵米野站】走 5 分",
+    stepSub1: "太閤通站3號口",
+    stepSub2: "順路 2 分有超商",
+    stepSub3: "9人一棟全包別墅",
+    pTitle: "地鐵櫻通線 太閤通站",
+    pExit: "3號出口 (走3分)",
+    subE: "🥈 JR名古屋站 太閤通口",
+    subESub: "東北走 7 分鐘",
+    subN: "🥈 近鐵 米野站 (南側走5分)",
+    konbini1: "🏪 全家 ＆ 7-11 太閤通店 (2分)",
+    seg1: "🚶 步行 3 分",
+    subWalkE: "JR走來 7 分 →",
+    hTitle: "⑱ SAMURAI HOUSE Ⅲ (獨棟包棟)",
+    hSub: "太閤通站 3 分・JR 7 分｜1間全包13人"
+  },
+  "vessel-campana": {
+    layout: "sakura-north",
+    shortPill: "⑧ Vessel名駅(4分)",
+    exitBadge: "🥇 最近優先：地鐵名古屋站【1號出口】",
+    totalWalk: "⏱️ 1號口步行 4 分（JR櫻通口走 9 分）",
+    subStationsBar: "🧭 周邊方向參考：↖ 西北【東山線 龜島站】走 8 分 ｜ ↘ 東南【櫻通線 國際中心站】走 10 分",
+    stepSub1: "地下街北側出口",
+    stepSub2: "正順路 1–2 分",
+    stepSub3: "大浴場＋脫鞋木地板",
+    pTitle: "地鐵東山線 名古屋站",
+    pExit: "1號出口 (JR走9分)",
+    subNW: "🥈 東山線 龜島站",
+    subNWSub: "4號口｜西走 8 分",
+    subSE: "🥈 櫻通線 國際中心站",
+    subSESub: "東南走 10 分鐘",
+    konbini1: "🏪 7-11 ＆ Lawson 名駅2丁目 (順路)",
+    seg1: "🚶 北走4分",
+    hTitle: "⑧ Vessel Campana 名古屋",
+    hSub: "1號口走 4 分｜18歲以下免費・大浴場"
+  },
+  "cypress-ekimae": {
+    layout: "sakura-north",
+    shortPill: "⑨ Cypress駅前(3分)",
+    exitBadge: "🥇 最近優先：地鐵名古屋站【1號/10號口】",
+    totalWalk: "⏱️ 地鐵口走 3 分（JR櫻通口走 5 分）",
+    subStationsBar: "🧭 周邊方向參考：↖ 西北【東山線 龜島站】走 8 分 ｜ ↘ 東南【櫻通線 國際中心站】走 9 分",
+    stepSub1: "JR櫻通口走5分",
+    stepSub2: "飯店隔壁即超商",
+    stepSub3: "有寬敞3–4人房",
+    pTitle: "地鐵/JR 名古屋站",
+    pExit: "1號口3分 / 櫻通口5分",
+    subNW: "🥈 東山線 龜島站",
+    subNWSub: "4號口｜西北走 8 分",
+    subSE: "🥈 櫻通線 國際中心站",
+    subSESub: "東南走 9 分鐘",
+    konbini1: "🏪 隔壁 Lawson ＆ 7-11 (1分內)",
+    seg1: "🚶 步行 3–5 分",
+    hTitle: "⑨ Cypress Hotel 名古屋駅前",
+    hSub: "地鐵 3 分・JR櫻通口 5 分｜緊鄰超商"
+  },
+  "sotetsu-sakura": {
+    layout: "sakura-east",
+    shortPill: "⑩ 相鐵櫻通口(4分)",
+    exitBadge: "🥇 最近優先：名古屋站【櫻通口 / U8出口】",
+    totalWalk: "⏱️ 名古屋站走 4 分 ／ 國際中心站走 5 分",
+    subStationsBar: "🧭 周邊方向參考：→ 東側【地鐵國際中心站 3號口】走 5 分 ｜ 🍞 KAKO花車本店走路 4 分鐘！",
+    stepSub1: "Unimall 地下街直通",
+    stepSub2: "出口旁 1 分全家",
+    stepSub3: "雙車站正中間",
+    pTitle: "JR/地鐵 名古屋站",
+    pExit: "櫻通口 / U8出口 (4分)",
+    subE: "🥈 櫻通線 國際中心站",
+    subESub: "3號口｜東走 5 分",
+    landmarkTop: "🍞 KAKO花車本店 (東走4分)",
+    konbini1: "🏪 全家 名駅四丁目店 ＆ 7-11 (1分)",
+    seg1: "🚶 步行 4 分",
+    subWalkE: "→ 國際中心站 5分",
+    hTitle: "⑩ 相鐵 Fresa 名古屋櫻通口",
+    hSub: "櫻通口 4 分・國際中心站 5 分｜有連通房"
+  },
+  "toyoko-sakura": {
+    layout: "sakura-east",
+    shortPill: "⑪ 東橫櫻通新館(4分)",
+    exitBadge: "🥇 最近優先：JR名古屋站【櫻通口 / U1出口】",
+    totalWalk: "⏱️ JR櫻通口走 5 分 ／ 國際中心站走 4 分",
+    subStationsBar: "🧭 周邊方向參考：→ 東側【地鐵國際中心站 1號口】走 4 分 ｜ ← 西側【JR名古屋站】走 5 分",
+    stepSub1: "地下街出站超近",
+    stepSub2: "巷口 1 分全家",
+    stepSub3: "2023新館含9人早",
+    pTitle: "JR/地鐵 名古屋站",
+    pExit: "櫻通口走5分 / U1走4分",
+    subE: "🥈 櫻通線 國際中心站",
+    subESub: "1號口｜東走 4 分",
+    landmarkTop: "🏯 櫻通線直達名古屋城・久屋大通",
+    konbini1: "🏪 全家 名駅三丁目店 ＆ 7-11 (1分)",
+    seg1: "🚶 步行 4–5 分",
+    subWalkE: "→ 國際中心站 4分",
+    hTitle: "⑪ 東橫INN 名古屋站櫻通口新館",
+    hSub: "雙站皆 4–5 分｜含 9 人免費早餐"
+  },
+  "comfort-era": {
+    layout: "sakura-east",
+    shortPill: "⑫ Comfort ERA(6分)",
+    exitBadge: "🥇 最近優先：地鐵櫻通線【國際中心站 3號口】",
+    totalWalk: "⏱️ 國際中心站走 6 分 ／ 名古屋站走 8 分",
+    subStationsBar: "🧭 周邊方向參考：← 西北【名鐵/近鐵/JR名古屋站】走 8–9 分 ｜ → 東側【伏見站】走 11 分",
+    stepSub1: "國際中心站3號口",
+    stepSub2: "正對面 1 分超商",
+    stepSub3: "2026改裝新開幕",
+    pTitle: "名鐵/近鐵/JR 名古屋站",
+    pExit: "廣小路口 (走8–9分)",
+    subE: "🥇 櫻通線 國際中心站",
+    subESub: "3號口｜最近走 6 分！",
+    landmarkTop: "🍞 KAKO花車本店走路僅 3 分鐘！",
+    konbini1: "🏪 正對面 Lawson ＆ 全家 (1分)",
+    seg1: "🚶 步行 6–8 分",
+    subWalkE: "↗ 國際中心站 6分",
+    hTitle: "⑫ Comfort ERA 名古屋名駅南",
+    hSub: "國際中心站 6 分・名駅 8 分｜2026新改裝"
+  },
+  "vessel-sakae": {
+    layout: "sakae-hisaya",
+    shortPill: "⑬ Vessel榮(2分)",
+    exitBadge: "🥇 最近優先：地鐵東山線・名城線【榮站 1號口】",
+    totalWalk: "⏱️ 榮站走 2 分鐘 ／ 久屋大通站走 3 分鐘",
+    subStationsBar: "🧭 周邊方向參考：↑ 北側【櫻通線 久屋大通站 4號口】走 3 分（5分直達名古屋站/太閤通站！）",
+    stepSub1: "榮站1號口 140m",
+    stepSub2: "正1F就是 7-11 (0分)",
+    stepSub3: "南北雙地鐵包夾",
+    pTitle: "地鐵東山線・名城線 榮站",
+    pExit: "1號出口 (北走2分)",
+    subN: "🥈 櫻通線・名城線 久屋大通站",
+    subNSub: "4號口｜北走 3 分 (直達名駅/太閤通)",
+    seg1: "🚶 直走 2 分 (140m)",
+    subWalkN: "↑ 往久屋大通站 3分",
+    hTitle: "⑬ Vessel Inn 榮站前 (2F櫃檯)",
+    konbini1F: "🏪 正 1 樓就是 7-11 (下樓 0 分鐘！)"
+  },
+  "comfort-sakae": {
+    layout: "sakae-hisaya",
+    shortPill: "⑭ Comfort榮(1分)",
+    exitBadge: "🥇 最近優先：地鐵東山線・名城線【榮站 2號口】",
+    totalWalk: "⏱️ 榮站走 1 分鐘(80m) ／ 久屋大通站走 4 分",
+    subStationsBar: "🧭 周邊方向參考：↑ 北側【櫻通線 久屋大通站 3號口】走 4 分 ｜ → 東側就是綠洲21夜景！",
+    stepSub1: "榮站2號口 80m",
+    stepSub2: "正1F就是全家 (0分)",
+    stepSub3: "出地鐵 60 秒進門",
+    pTitle: "地鐵東山線・名城線 榮站",
+    pExit: "2號出口 (出站1分！)",
+    subN: "🥈 櫻通線・名城線 久屋大通站",
+    subNSub: "3號口｜北走 4 分 (直達名古屋城/名駅)",
+    seg1: "🚶 秒到 1 分 (80m)",
+    subWalkN: "↑ 往久屋大通站 4分",
+    hTitle: "⑭ Comfort Inn 名古屋榮站前",
+    konbini1F: "🏪 正 1 樓併設 全家便利商店 (0分！)"
+  },
+  "comfort-fushimi": {
+    layout: "fushimi-hub",
+    shortPill: "⑮ Comfort伏見(4分)",
+    exitBadge: "🥇 最近優先：地鐵東山線・鶴舞線【伏見站 3號口】",
+    totalWalk: "⏱️ 伏見站走 4 分 ／ 榮站走 7 分・丸之內站 6 分",
+    subStationsBar: "🧭 周邊方向參考：→ 東側【榮站 8號口】走 7 分 ｜ ↑ 北側【櫻通線 丸之內站】走 6 分 ｜ ↓ 科學館走 6 分",
+    stepSub1: "名駅搭地鐵1站",
+    stepSub2: "順路 1 分雙超商",
+    stepSub3: "走路6分到科學館",
+    pTitle: "地鐵東山線 伏見站",
+    pExit: "3號出口 (走4分)",
+    subRight: "🥈 東山線 榮站",
+    subRightSub: "8號口｜東走 7 分",
+    subTop: "🥈 櫻通線 丸之內站 (北走6分)",
+    landmarkBot: "🔬 名古屋市科學館 (南走6分)",
+    konbini1: "🏪 7-11 ＆ 全家 錦2丁目 (順路1分)",
+    seg1: "🚶 步行 4 分",
+    hTitle: "⑮ Comfort Hotel 名古屋伏見",
+    hSub: "伏見站 4 分・榮站 7 分｜含 9 人早餐"
+  },
+  "delstyle-nayabashi": {
+    layout: "fushimi-hub",
+    shortPill: "⑯ DEL納屋橋(7分)",
+    exitBadge: "🥇 最近優先：地鐵東山線【伏見站 6號/8號口】",
+    totalWalk: "⏱️ 伏見站走 7 分 ／ 國際中心站走 8 分",
+    subStationsBar: "🧭 周邊方向參考：↖ 西北【櫻通線 國際中心站 3號口】走 8 分 ｜ 🍞 KAKO吐司走 6 分 ｜ 🔬 科學館走 9 分",
+    stepSub1: "伏見站6號/8號口",
+    stepSub2: "隔壁Lawson+唐吉超市",
+    stepSub3: "大浴場＋連通房",
+    pTitle: "地鐵東山線 伏見站",
+    pExit: "6號/8號口 (走7分)",
+    subRight: "🥈 櫻通線 國際中心站",
+    subRightSub: "3號口｜西北走 8 分",
+    subTop: "🍞 KAKO花車本店 (北走6分)",
+    landmarkBot: "🛒 對面 MEGA唐吉訶德生鮮超市",
+    konbini1: "🏪 隔壁 Lawson ＆ 7-11 (步行1分)",
+    seg1: "🚶 步行 7 分",
+    hTitle: "⑯ DEL style 名古屋納屋橋",
+    hSub: "伏見站 7 分・國際中心 8 分｜大浴場"
+  },
+  "central-res": {
+    layout: "nakamura-koen",
+    shortPill: "⑲ Central包層(2分)",
+    exitBadge: "🥇 最近優先：地鐵東山線【中村公園站 2號口】",
+    totalWalk: "⏱️ 出站步行僅 2 分鐘（約 150m・有電梯）",
+    subStationsBar: "🧭 周邊方向參考：→ 東側【東山線 中村日赤站】走 9 分（搭地鐵 7 分直達名古屋站）",
+    stepSub1: "名駅搭地鐵7分",
+    stepSub2: "出站口 30 秒雙超商",
+    stepSub3: "120㎡整層包層"
+  },
+  "osaka-eslead": {
+    layout: "osaka-tsuruhashi",
+    shortPill: "✅ 大阪ESLEAD(1分)",
+    exitBadge: "🥇 最近優先：地鐵千日前線 鶴橋站【4號出口】",
+    totalWalk: "⏱️ 出站步行僅 1 分鐘（110m・已訂妥！）",
+    subStationsBar: "🧭 周邊方向參考：→ 東側【JR大阪環狀線・近鐵 鶴橋站】走 3 分 ｜ ← 西側【谷町九丁目站】走 10 分",
+    stepSub1: "千日前線4號口",
+    stepSub2: "出站 30 秒雙超商",
+    stepSub3: "再 30 秒即達飯店"
+  }
+};
+
+function buildSchematicSvg(hotelId) {
+  const s = SCHEMATIC_MAP_SPECS[hotelId] || SCHEMATIC_MAP_SPECS["comfort"];
+  const compass = `
+    <g transform="translate(446, 26)">
+      <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
+      <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
+    </g>
+  `;
+
+  if (s.layout === "taiko-north") {
+    return `
+      <svg viewBox="0 0 480 288" width="100%" height="auto" role="img" aria-label="${s.hTitle} 周邊雙車站關係動畫圖">
+        ${compass}
+        <!-- Subway & Rail Reference Lines -->
+        <line x1="406" y1="14" x2="406" y2="274" stroke="#cbd5e1" stroke-width="9" stroke-dasharray="8 5" />
+        <text x="406" y="136" text-anchor="middle" font-size="9.5" fill="#64748b" font-weight="700">🚄 JR・新幹線軌道</text>
+        <!-- Sakuradori Red Line West to Taiko-dori -->
+        <line x1="92" y1="252" x2="392" y2="252" stroke="#fda4af" stroke-width="5" />
+        <text x="246" y="274" text-anchor="middle" font-size="9.8" fill="#be123c" font-weight="700">← 地鐵櫻通線（直通太閤通站）</text>
+        <!-- Higashiyama Yellow Line NW to Kamejima -->
+        <path d="M 392 182 Q 290 36 156 36" fill="none" stroke="#fcd34d" stroke-width="4.5" />
+        <text x="286" y="32" text-anchor="middle" font-size="9.8" fill="#b45309" font-weight="700">↖ 地鐵東山線</text>
+
+        <!-- Walking Street -->
+        <path d="M 332 204 L 258 204 L 258 106 L 166 106" fill="none" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+
+        <!-- Secondary Dashed Connectors from Hotel -->
+        <line x1="146" y1="96" x2="106" y2="56" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" />
+        <line x1="126" y1="168" x2="102" y2="226" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" />
+
+        <!-- Secondary Station NW: Kamejima -->
+        <rect x="20" y="16" width="144" height="40" rx="8" fill="#334155" />
+        <text x="92" y="32" text-anchor="middle" font-size="10.8" font-weight="800" fill="#ffffff">${s.subNW}</text>
+        <rect x="30" y="36" width="124" height="16" rx="4" fill="#f1f5f9" />
+        <text x="92" y="47.5" text-anchor="middle" font-size="9.6" font-weight="800" fill="#0f172a">${s.subNWSub}</text>
+
+        <!-- Secondary Station SW: Taiko-dori -->
+        <rect x="20" y="226" width="144" height="42" rx="8" fill="#334155" />
+        <text x="92" y="243" text-anchor="middle" font-size="10.8" font-weight="800" fill="#ffffff">${s.subSW}</text>
+        <rect x="30" y="247" width="124" height="17" rx="4" fill="#f1f5f9" />
+        <text x="92" y="259" text-anchor="middle" font-size="9.6" font-weight="800" fill="#0f172a">${s.subSWSub}</text>
+
+        <!-- Animated Primary Walk Path -->
+        <path d="M 332 204 L 258 204 L 258 106 L 172 106" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="3.2s" repeatCount="indefinite" path="M 332 204 L 258 204 L 258 106 L 172 106" />
+        </circle>
+
+        <!-- Primary Station: JR Nagoya Taiko-dori -->
+        <rect x="330" y="176" width="132" height="56" rx="10" fill="#0f172a" />
+        <text x="396" y="196" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">🥇 ${s.pTitle}</text>
+        <rect x="342" y="203" width="108" height="22" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="396" y="218" text-anchor="middle" font-size="10.8" font-weight="800" fill="#713f12">${s.pExit}</text>
+
+        <!-- Konbini Nodes -->
+        <circle cx="258" cy="106" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(332, 68)">
+          <rect x="-82" y="-14" width="164" height="28" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.8" font-weight="800" fill="#065f46">${s.konbini1}</text>
+        </g>
+        <circle cx="258" cy="204" r="5.5" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(254, 232)">
+          <rect x="-64" y="-11" width="128" height="22" rx="6" fill="#ecfdf5" stroke="#10b981" stroke-width="1.2" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="700" fill="#065f46">${s.konbini2}</text>
+        </g>
+
+        <!-- Segment Walk Pills -->
+        <g transform="translate(292, 156)">
+          <rect x="-32" y="-10" width="64" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#1d4ed8">${s.seg1}</text>
+        </g>
+        <g transform="translate(212, 84)">
+          <rect x="-35" y="-10" width="70" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#1d4ed8">${s.seg2}</text>
+        </g>
+
+        <!-- Hotel Pin & Card -->
+        <circle cx="162" cy="106" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="162" cy="106" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="162" y="110" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="20" y="124" width="194" height="44" rx="9" fill="#1d4ed8" />
+        <text x="117" y="143" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">${s.hTitle}</text>
+        <text x="117" y="159" text-anchor="middle" font-size="10" fill="#dbeafe">${s.hSub}</text>
+      </svg>
+    `;
+  }
+
+  if (s.layout === "kamejima-richmond") {
+    return `
+      <svg viewBox="0 0 480 288" width="100%" height="auto" role="img" aria-label="${s.hTitle} 周邊雙車站關係動畫圖">
+        ${compass}
+        <!-- Rail & Subway Lines -->
+        <line x1="362" y1="16" x2="362" y2="272" stroke="#cbd5e1" stroke-width="9" stroke-dasharray="8 5" />
+        <line x1="80" y1="46" x2="380" y2="210" stroke="#fcd34d" stroke-width="4.5" opacity="0.6" />
+        <line x1="92" y1="252" x2="392" y2="252" stroke="#fda4af" stroke-width="5" />
+
+        <!-- Walking Street -->
+        <path d="M 168 46 L 266 46 L 266 116 L 362 204" fill="none" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+
+        <!-- Secondary Connectors -->
+        <line x1="274" y1="126" x2="354" y2="192" stroke="#64748b" stroke-width="2.5" stroke-dasharray="5 4" />
+        <line x1="210" y1="168" x2="118" y2="228" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" />
+
+        <!-- Primary Station NW: Kamejima -->
+        <rect x="20" y="18" width="148" height="54" rx="10" fill="#0f172a" />
+        <text x="94" y="38" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">🥇 ${s.pTitle}</text>
+        <rect x="36" y="45" width="116" height="21" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="94" y="59.5" text-anchor="middle" font-size="10.5" font-weight="800" fill="#713f12">${s.pExit}</text>
+
+        <!-- Secondary Station SE: JR Nagoya -->
+        <rect x="318" y="190" width="146" height="46" rx="9" fill="#334155" />
+        <text x="391" y="208" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">${s.subSE}</text>
+        <rect x="330" y="213" width="122" height="17" rx="4" fill="#f1f5f9" />
+        <text x="391" y="225" text-anchor="middle" font-size="9.8" font-weight="800" fill="#0f172a">${s.subSESub}</text>
+
+        <!-- Secondary Station SW: Taiko-dori -->
+        <rect x="20" y="228" width="144" height="42" rx="8" fill="#334155" />
+        <text x="92" y="245" text-anchor="middle" font-size="10.8" font-weight="800" fill="#ffffff">${s.subSW}</text>
+        <rect x="30" y="249" width="124" height="16" rx="4" fill="#f1f5f9" />
+        <text x="92" y="260.5" text-anchor="middle" font-size="9.6" font-weight="800" fill="#0f172a">${s.subSWSub}</text>
+
+        <!-- Animated Walk from Kamejima -->
+        <path d="M 168 46 L 266 46 L 266 108" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="2.8s" repeatCount="indefinite" path="M 168 46 L 266 46 L 266 108" />
+        </circle>
+
+        <!-- Konbini -->
+        <circle cx="266" cy="76" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(372, 76)">
+          <rect x="-86" y="-14" width="172" height="28" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#065f46">${s.konbini1}</text>
+        </g>
+
+        <!-- Walk Pill -->
+        <g transform="translate(216, 26)">
+          <rect x="-36" y="-10" width="72" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#1d4ed8">${s.seg1}</text>
+        </g>
+        <text x="356" y="162" text-anchor="middle" font-size="10.2" font-weight="800" fill="#334155">↘ 往 JR 名古屋站 7分</text>
+
+        <!-- Hotel Pin & Card -->
+        <circle cx="266" cy="116" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="266" cy="116" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="266" y="120" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="148" y="134" width="204" height="44" rx="9" fill="#1d4ed8" />
+        <text x="250" y="153" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">${s.hTitle}</text>
+        <text x="250" y="169" text-anchor="middle" font-size="10" fill="#dbeafe">${s.hSub}</text>
+      </svg>
+    `;
+  }
+
+  if (s.layout === "taiko-south") {
+    return `
+      <svg viewBox="0 0 480 288" width="100%" height="auto" role="img" aria-label="${s.hTitle} 周邊雙車站關係動畫圖">
+        ${compass}
+        <!-- Rail & Taiko-dori Sakuradori Red Line -->
+        <line x1="418" y1="16" x2="418" y2="272" stroke="#cbd5e1" stroke-width="9" stroke-dasharray="8 5" />
+        <line x1="40" y1="116" x2="430" y2="116" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round" />
+        <line x1="40" y1="116" x2="400" y2="116" stroke="#fda4af" stroke-width="4.5" />
+        <line x1="252" y1="116" x2="252" y2="202" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round" />
+
+        <!-- Secondary Dashed Connectors -->
+        <line x1="238" y1="196" x2="128" y2="132" stroke="#64748b" stroke-width="2.2" stroke-dasharray="4 4" />
+        <line x1="252" y1="110" x2="236" y2="52" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" />
+
+        <!-- Top Secondary: Kamejima -->
+        <rect x="150" y="16" width="176" height="32" rx="7" fill="#334155" />
+        <text x="238" y="36" text-anchor="middle" font-size="10.5" font-weight="800" fill="#ffffff">${s.subN}</text>
+
+        <!-- West Secondary: Taiko-dori Station -->
+        <rect x="16" y="88" width="144" height="46" rx="9" fill="#334155" />
+        <text x="88" y="106" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">${s.subW}</text>
+        <rect x="28" y="111" width="120" height="17" rx="4" fill="#f1f5f9" />
+        <text x="88" y="123" text-anchor="middle" font-size="9.8" font-weight="800" fill="#0f172a">${s.subWSub}</text>
+        <text x="166" y="176" text-anchor="middle" font-size="10.2" font-weight="800" fill="#334155">${s.subWalkW}</text>
+
+        <!-- East Primary: JR Nagoya Taiko-dori -->
+        <rect x="334" y="86" width="132" height="56" rx="10" fill="#0f172a" />
+        <text x="400" y="106" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">🥇 ${s.pTitle}</text>
+        <rect x="346" y="113" width="108" height="22" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="400" y="128" text-anchor="middle" font-size="10.6" font-weight="800" fill="#713f12">${s.pExit}</text>
+
+        <!-- Animated Primary Walk Path -->
+        <path d="M 334 116 L 252 116 L 252 194" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="2.8s" repeatCount="indefinite" path="M 334 116 L 252 116 L 252 194" />
+        </circle>
+
+        <!-- Konbini -->
+        <circle cx="252" cy="156" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(376, 174)">
+          <rect x="-88" y="-14" width="176" height="28" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.4" font-weight="800" fill="#065f46">${s.konbini1}</text>
+        </g>
+
+        <!-- Walk Pill -->
+        <g transform="translate(292, 86)">
+          <rect x="-48" y="-10" width="96" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#1d4ed8">${s.seg1}</text>
+        </g>
+
+        <!-- Hotel Pin & Card -->
+        <circle cx="252" cy="198" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="252" cy="198" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="252" y="202" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="138" y="218" width="228" height="46" rx="9" fill="#1d4ed8" />
+        <text x="252" y="237" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">${s.hTitle}</text>
+        <text x="252" y="254" text-anchor="middle" font-size="10.2" fill="#dbeafe">${s.hSub}</text>
+      </svg>
+    `;
+  }
+
+  if (s.layout === "taiko-west-apt") {
+    return `
+      <svg viewBox="0 0 480 288" width="100%" height="auto" role="img" aria-label="${s.hTitle} 周邊雙車站關係動畫圖">
+        ${compass}
+        <line x1="422" y1="16" x2="422" y2="272" stroke="#cbd5e1" stroke-width="9" stroke-dasharray="8 5" />
+        <line x1="40" y1="116" x2="430" y2="116" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round" />
+        <line x1="40" y1="116" x2="400" y2="116" stroke="#fda4af" stroke-width="4.5" />
+        <line x1="226" y1="116" x2="226" y2="202" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round" />
+
+        <!-- Secondary Connector from JR Nagoya -->
+        <line x1="330" y1="116" x2="226" y2="116" stroke="#64748b" stroke-width="2.5" stroke-dasharray="5 4" />
+        <line x1="226" y1="110" x2="236" y2="50" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" />
+
+        <!-- Top Secondary -->
+        <rect x="148" y="16" width="180" height="32" rx="7" fill="#334155" />
+        <text x="238" y="36" text-anchor="middle" font-size="10.5" font-weight="800" fill="#ffffff">${s.subN}</text>
+
+        <!-- West Primary: Taiko-dori Station -->
+        <rect x="16" y="86" width="146" height="56" rx="10" fill="#0f172a" />
+        <text x="89" y="106" text-anchor="middle" font-size="11.2" font-weight="800" fill="#ffffff">🥇 ${s.pTitle}</text>
+        <rect x="30" y="113" width="118" height="22" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="89" y="128" text-anchor="middle" font-size="10.6" font-weight="800" fill="#713f12">${s.pExit}</text>
+
+        <!-- East Secondary: JR Nagoya -->
+        <rect x="328" y="88" width="138" height="46" rx="9" fill="#334155" />
+        <text x="397" y="106" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">${s.subE}</text>
+        <rect x="340" y="111" width="114" height="17" rx="4" fill="#f1f5f9" />
+        <text x="397" y="123" text-anchor="middle" font-size="9.8" font-weight="800" fill="#0f172a">${s.subESub}</text>
+        <text x="282" y="96" text-anchor="middle" font-size="10" font-weight="800" fill="#334155">${s.subWalkE}</text>
+
+        <!-- Animated Walk from Taiko-dori -->
+        <path d="M 162 116 L 226 116 L 226 194" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="2.6s" repeatCount="indefinite" path="M 162 116 L 226 116 L 226 194" />
+        </circle>
+
+        <!-- Konbini -->
+        <circle cx="226" cy="154" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(358, 168)">
+          <rect x="-88" y="-14" width="176" height="28" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.4" font-weight="800" fill="#065f46">${s.konbini1}</text>
+        </g>
+
+        <g transform="translate(154, 166)">
+          <rect x="-36" y="-10" width="72" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#1d4ed8">${s.seg1}</text>
+        </g>
+
+        <!-- Hotel Pin & Card -->
+        <circle cx="226" cy="198" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="226" cy="198" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="226" y="202" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="112" y="218" width="228" height="46" rx="9" fill="#1d4ed8" />
+        <text x="226" y="237" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">${s.hTitle}</text>
+        <text x="226" y="254" text-anchor="middle" font-size="10.2" fill="#dbeafe">${s.hSub}</text>
+      </svg>
+    `;
+  }
+
+  if (s.layout === "sakura-north") {
+    return `
+      <svg viewBox="0 0 480 288" width="100%" height="auto" role="img" aria-label="${s.hTitle} 周邊雙車站關係動畫圖">
+        ${compass}
+        <!-- Subway Lines -->
+        <line x1="60" y1="226" x2="430" y2="226" stroke="#fda4af" stroke-width="4.5" />
+        <path d="M 92 200 L 92 52" fill="none" stroke="#fcd34d" stroke-width="4.5" />
+        <path d="M 164 206 L 228 206 L 228 96 L 280 96" fill="none" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+
+        <!-- Secondary Connectors -->
+        <line x1="268" y1="88" x2="158" y2="42" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" />
+        <line x1="296" y1="108" x2="380" y2="210" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" />
+
+        <!-- Secondary NW: Kamejima -->
+        <rect x="20" y="16" width="142" height="42" rx="8" fill="#334155" />
+        <text x="91" y="33" text-anchor="middle" font-size="10.8" font-weight="800" fill="#ffffff">${s.subNW}</text>
+        <rect x="32" y="37" width="118" height="16" rx="4" fill="#f1f5f9" />
+        <text x="91" y="48.5" text-anchor="middle" font-size="9.6" font-weight="800" fill="#0f172a">${s.subNWSub}</text>
+
+        <!-- Secondary SE: Kokusai Center -->
+        <rect x="318" y="210" width="146" height="44" rx="8" fill="#334155" />
+        <text x="391" y="227" text-anchor="middle" font-size="10.8" font-weight="800" fill="#ffffff">${s.subSE}</text>
+        <rect x="330" y="232" width="122" height="16" rx="4" fill="#f1f5f9" />
+        <text x="391" y="243.5" text-anchor="middle" font-size="9.6" font-weight="800" fill="#0f172a">${s.subSESub}</text>
+
+        <!-- Primary SW: Subway/JR Nagoya -->
+        <rect x="18" y="182" width="148" height="56" rx="10" fill="#0f172a" />
+        <text x="92" y="202" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">🥇 ${s.pTitle}</text>
+        <rect x="28" y="209" width="128" height="22" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="92" y="224" text-anchor="middle" font-size="10.2" font-weight="800" fill="#713f12">${s.pExit}</text>
+
+        <!-- Animated Walk -->
+        <path d="M 166 206 L 228 206 L 228 96 L 278 96" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="3.0s" repeatCount="indefinite" path="M 166 206 L 228 206 L 228 96 L 278 96" />
+        </circle>
+
+        <!-- Konbini -->
+        <circle cx="228" cy="154" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(348, 154)">
+          <rect x="-92" y="-14" width="184" height="28" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.4" font-weight="800" fill="#065f46">${s.konbini1}</text>
+        </g>
+
+        <g transform="translate(182, 136)">
+          <rect x="-36" y="-10" width="72" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#1d4ed8">${s.seg1}</text>
+        </g>
+
+        <!-- Hotel Pin & Card -->
+        <circle cx="286" cy="96" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="286" cy="96" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="286" y="100" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="192" y="28" width="218" height="46" rx="9" fill="#1d4ed8" />
+        <text x="301" y="47" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">${s.hTitle}</text>
+        <text x="301" y="64" text-anchor="middle" font-size="10" fill="#dbeafe">${s.hSub}</text>
+      </svg>
+    `;
+  }
+
+  if (s.layout === "sakura-east") {
+    return `
+      <svg viewBox="0 0 480 288" width="100%" height="auto" role="img" aria-label="${s.hTitle} 周邊雙車站關係動畫圖">
+        ${compass}
+        <!-- Sakura-dori Ave + Unimall Underground + Sakuradori Line -->
+        <line x1="40" y1="118" x2="430" y2="118" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round" />
+        <line x1="40" y1="118" x2="420" y2="118" stroke="#fda4af" stroke-width="4.5" />
+        <line x1="240" y1="118" x2="240" y2="202" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round" />
+        <text x="236" y="76" text-anchor="middle" font-size="10" font-weight="700" fill="#be123c">← 櫻通大道・Unimall地下街連通 →</text>
+
+        <!-- Landmark Top -->
+        <rect x="140" y="18" width="204" height="30" rx="7" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5" />
+        <text x="242" y="37" text-anchor="middle" font-size="10.5" font-weight="800" fill="#92400e">${s.landmarkTop}</text>
+
+        <!-- Secondary Connector to Kokusai Center -->
+        <line x1="240" y1="118" x2="328" y2="118" stroke="#64748b" stroke-width="2.5" stroke-dasharray="5 4" />
+        <text x="286" y="142" text-anchor="middle" font-size="9.8" font-weight="800" fill="#334155">${s.subWalkE}</text>
+
+        <!-- West Station: Nagoya Sakura-dori -->
+        <rect x="16" y="88" width="150" height="56" rx="10" fill="#0f172a" />
+        <text x="91" y="108" text-anchor="middle" font-size="11.2" font-weight="800" fill="#ffffff">${s.pTitle}</text>
+        <rect x="26" y="115" width="130" height="22" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="91" y="130" text-anchor="middle" font-size="10" font-weight="800" fill="#713f12">${s.pExit}</text>
+
+        <!-- East Station: Kokusai Center -->
+        <rect x="326" y="90" width="142" height="48" rx="9" fill="#334155" />
+        <text x="397" y="108" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">${s.subE}</text>
+        <rect x="338" y="114" width="118" height="17" rx="4" fill="#f1f5f9" />
+        <text x="397" y="126" text-anchor="middle" font-size="9.8" font-weight="800" fill="#0f172a">${s.subESub}</text>
+
+        <!-- Animated Walk -->
+        <path d="M 166 118 L 240 118 L 240 194" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="2.8s" repeatCount="indefinite" path="M 166 118 L 240 118 L 240 194" />
+        </circle>
+
+        <!-- Konbini -->
+        <circle cx="240" cy="156" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(110, 180)">
+          <rect x="-88" y="-14" width="176" height="28" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.2" font-weight="800" fill="#065f46">${s.konbini1}</text>
+        </g>
+
+        <g transform="translate(202, 98)">
+          <rect x="-36" y="-10" width="72" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#1d4ed8">${s.seg1}</text>
+        </g>
+
+        <!-- Hotel Pin & Card -->
+        <circle cx="240" cy="198" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="240" cy="198" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="240" y="202" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="128" y="218" width="224" height="46" rx="9" fill="#1d4ed8" />
+        <text x="240" y="237" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">${s.hTitle}</text>
+        <text x="240" y="254" text-anchor="middle" font-size="10.2" fill="#dbeafe">${s.hSub}</text>
+      </svg>
+    `;
+  }
+
+  if (s.layout === "sakae-hisaya") {
+    return `
+      <svg viewBox="0 0 480 288" width="100%" height="auto" role="img" aria-label="${s.hTitle} 周邊雙車站關係動畫圖">
+        ${compass}
+        <!-- North Sakuradori Line & South Higashiyama Line -->
+        <line x1="40" y1="38" x2="420" y2="38" stroke="#fda4af" stroke-width="4.5" />
+        <line x1="40" y1="242" x2="440" y2="242" stroke="#fcd34d" stroke-width="5" />
+        <line x1="240" y1="38" x2="240" y2="242" stroke="#e2e8f0" stroke-width="22" stroke-linecap="round" />
+
+        <!-- Top Secondary: Hisaya-odori Station -->
+        <rect x="132" y="14" width="216" height="46" rx="9" fill="#334155" />
+        <text x="240" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">${s.subN}</text>
+        <rect x="144" y="37" width="192" height="17" rx="4" fill="#f1f5f9" />
+        <text x="240" y="49" text-anchor="middle" font-size="9.6" font-weight="800" fill="#0f172a">${s.subNSub}</text>
+
+        <!-- Connector North -->
+        <line x1="240" y1="92" x2="240" y2="62" stroke="#64748b" stroke-width="2.5" stroke-dasharray="4 4" />
+        <text x="314" y="80" text-anchor="middle" font-size="10" font-weight="800" fill="#334155">${s.subWalkN}</text>
+
+        <!-- Landmarks -->
+        <rect x="18" y="190" width="118" height="30" rx="6" fill="#f1f5f9" stroke="#cbd5e1" />
+        <text x="77" y="209" text-anchor="middle" font-size="10.2" font-weight="700" fill="#475569">🛍️ 唐吉訶德榮本店</text>
+        <rect x="342" y="190" width="120" height="30" rx="6" fill="#eff6ff" stroke="#93c5fd" />
+        <text x="402" y="209" text-anchor="middle" font-size="10.2" font-weight="700" fill="#1d4ed8">✨ 綠洲21 (4A出口)</text>
+
+        <!-- Animated Walk from Sakae Station -->
+        <path d="M 240 218 L 240 154" fill="none" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="2.1s" repeatCount="indefinite" path="M 240 218 L 240 154" />
+        </circle>
+
+        <g transform="translate(318, 174)">
+          <rect x="-52" y="-11" width="104" height="22" rx="11" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">${s.seg1}</text>
+        </g>
+
+        <!-- Primary Bottom: Sakae Station -->
+        <rect x="158" y="218" width="164" height="56" rx="10" fill="#0f172a" />
+        <text x="240" y="238" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">🥇 ${s.pTitle}</text>
+        <rect x="176" y="245" width="128" height="22" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="240" y="260" text-anchor="middle" font-size="10.6" font-weight="800" fill="#713f12">${s.pExit}</text>
+
+        <!-- Combined Hotel + 1F Konbini in Center -->
+        <circle cx="240" cy="152" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="240" cy="152" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="240" y="156" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="122" y="92" width="236" height="48" rx="10" fill="#1d4ed8" />
+        <text x="240" y="111" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">${s.hTitle}</text>
+        <rect x="138" y="117" width="204" height="18" rx="4" fill="#ecfdf5" />
+        <text x="240" y="130" text-anchor="middle" font-size="10.4" font-weight="800" fill="#065f46">${s.konbini1F}</text>
+      </svg>
+    `;
+  }
+
+  if (s.layout === "fushimi-hub") {
+    return `
+      <svg viewBox="0 0 480 288" width="100%" height="auto" role="img" aria-label="${s.hTitle} 周邊雙車站關係動畫圖">
+        ${compass}
+        <!-- Higashiyama Line Horizontal -->
+        <line x1="36" y1="120" x2="444" y2="120" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round" />
+        <line x1="36" y1="120" x2="444" y2="120" stroke="#fcd34d" stroke-width="4.5" />
+        <line x1="234" y1="120" x2="234" y2="196" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round" />
+
+        <!-- Top Reference -->
+        <rect x="148" y="16" width="184" height="32" rx="7" fill="#334155" />
+        <text x="240" y="36" text-anchor="middle" font-size="10.5" font-weight="800" fill="#ffffff">${s.subTop}</text>
+        <line x1="238" y1="48" x2="234" y2="114" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4" />
+
+        <!-- Primary Station Left: Fushimi -->
+        <rect x="16" y="88" width="146" height="56" rx="10" fill="#0f172a" />
+        <text x="89" y="108" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">🥇 ${s.pTitle}</text>
+        <rect x="30" y="115" width="118" height="22" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="89" y="130" text-anchor="middle" font-size="10.5" font-weight="800" fill="#713f12">${s.pExit}</text>
+
+        <!-- Secondary Station Right -->
+        <rect x="326" y="90" width="140" height="48" rx="9" fill="#334155" />
+        <text x="396" y="108" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">${s.subRight}</text>
+        <rect x="338" y="114" width="116" height="17" rx="4" fill="#f1f5f9" />
+        <text x="396" y="126" text-anchor="middle" font-size="9.8" font-weight="800" fill="#0f172a">${s.subRightSub}</text>
+        <line x1="234" y1="120" x2="326" y2="120" stroke="#64748b" stroke-width="2.2" stroke-dasharray="4 4" />
+
+        <!-- Animated Walk -->
+        <path d="M 162 120 L 234 120 L 234 192" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="2.7s" repeatCount="indefinite" path="M 162 120 L 234 120 L 234 192" />
+        </circle>
+
+        <!-- Konbini -->
+        <circle cx="234" cy="156" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(366, 168)">
+          <rect x="-90" y="-14" width="180" height="28" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.2" font-weight="800" fill="#065f46">${s.konbini1}</text>
+        </g>
+
+        <g transform="translate(198, 96)">
+          <rect x="-34" y="-10" width="68" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#1d4ed8">${s.seg1}</text>
+        </g>
+
+        <!-- Landmark Note -->
+        <rect x="16" y="168" width="166" height="26" rx="6" fill="#fffbeb" stroke="#fcd34d" />
+        <text x="99" y="185" text-anchor="middle" font-size="9.8" font-weight="800" fill="#92400e">${s.landmarkBot}</text>
+
+        <!-- Hotel Pin & Card -->
+        <circle cx="234" cy="196" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="234" cy="196" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="234" y="200" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="122" y="216" width="224" height="46" rx="9" fill="#1d4ed8" />
+        <text x="234" y="235" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">${s.hTitle}</text>
+        <text x="234" y="252" text-anchor="middle" font-size="10.2" fill="#dbeafe">${s.hSub}</text>
+      </svg>
+    `;
+  }
+
+  if (s.layout === "nakamura-koen") {
+    return `
+      <svg viewBox="0 0 480 288" width="100%" height="auto" role="img" aria-label="Central Nagoya Residence 周邊雙車站動畫圖">
+        ${compass}
+        <line x1="36" y1="222" x2="444" y2="222" stroke="#fcd34d" stroke-width="6" />
+        <text x="366" y="266" text-anchor="middle" font-size="10" font-weight="800" fill="#b45309">東山線 7 分直達名古屋站 →</text>
+        <path d="M 190 206 L 190 96 L 116 96" fill="none" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+
+        <!-- Secondary East: Nakamura Nisseki -->
+        <rect x="318" y="196" width="144" height="44" rx="8" fill="#334155" />
+        <text x="390" y="213" text-anchor="middle" font-size="10.8" font-weight="800" fill="#ffffff">🥈 東山線 中村日赤站</text>
+        <rect x="332" y="218" width="116" height="16" rx="4" fill="#f1f5f9" />
+        <text x="390" y="229.5" text-anchor="middle" font-size="9.6" font-weight="800" fill="#0f172a">東側步行 9 分鐘</text>
+
+        <!-- Primary Station -->
+        <rect x="116" y="200" width="148" height="54" rx="10" fill="#0f172a" />
+        <text x="190" y="220" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">🥇 地鐵 中村公園站</text>
+        <rect x="134" y="227" width="112" height="21" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+        <text x="190" y="241" text-anchor="middle" font-size="10.5" font-weight="800" fill="#713f12">2號出口 (走2分)</text>
+
+        <!-- Animated Walk -->
+        <path d="M 190 200 L 190 96 L 120 96" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
+        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
+          <animateMotion dur="2.5s" repeatCount="indefinite" path="M 190 200 L 190 96 L 120 96" />
+        </circle>
+
+        <circle cx="190" cy="152" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+        <g transform="translate(308, 152)">
+          <rect x="-86" y="-14" width="172" height="28" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#065f46">🏪 全家 ＆ 7-11 (出站30秒)</text>
+        </g>
+
+        <g transform="translate(174, 68)">
+          <rect x="-46" y="-10" width="92" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#1d4ed8">🚶 步行 2 分 (150m)</text>
+        </g>
+
+        <circle cx="112" cy="96" r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle cx="112" cy="96" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="112" y="100" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
+        <rect x="18" y="114" width="160" height="44" rx="9" fill="#1d4ed8" />
+        <text x="98" y="133" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">⑲ Central Residence</text>
+        <text x="98" y="149" text-anchor="middle" font-size="9.8" fill="#dbeafe">120㎡包層｜大樓有電梯</text>
+      </svg>
+    `;
+  }
+
+  // Osaka ESLEAD Tsuruhashi
+  return `
+    <svg viewBox="0 0 480 288" width="100%" height="auto" role="img" aria-label="ESLEAD HOTEL 大阪鶴橋周邊雙車站動畫圖">
+      ${compass}
+      <line x1="24" y1="152" x2="452" y2="152" stroke="#e2e8f0" stroke-width="22" stroke-linecap="round" />
+      <line x1="24" y1="152" x2="452" y2="152" stroke="#f472b6" stroke-width="4" />
+      <line x1="418" y1="24" x2="418" y2="262" stroke="#cbd5e1" stroke-width="9" stroke-dasharray="7 5" />
+
+      <!-- Secondary West: Tanimachi 9-chome -->
+      <rect x="18" y="218" width="164" height="42" rx="8" fill="#334155" />
+      <text x="100" y="235" text-anchor="middle" font-size="10.5" font-weight="800" fill="#ffffff">🥈 谷町九丁目站 (千日前線)</text>
+      <rect x="32" y="239" width="136" height="16" rx="4" fill="#f1f5f9" />
+      <text x="100" y="250.5" text-anchor="middle" font-size="9.5" font-weight="800" fill="#0f172a">西走 10 分｜搭車2站到黑門</text>
+
+      <!-- Secondary East: JR & Kintetsu Tsuruhashi -->
+      <rect x="322" y="218" width="144" height="42" rx="8" fill="#334155" />
+      <text x="394" y="235" text-anchor="middle" font-size="10.5" font-weight="800" fill="#ffffff">🥈 JR環狀線・近鐵 鶴橋站</text>
+      <rect x="336" y="239" width="116" height="16" rx="4" fill="#f1f5f9" />
+      <text x="394" y="250.5" text-anchor="middle" font-size="9.5" font-weight="800" fill="#0f172a">東走 3 分｜關空快速直達</text>
+
+      <!-- Straight 1-min Animated Walk -->
+      <path d="M 304 152 L 106 152" fill="none" stroke="#059669" stroke-width="4.5" stroke-linecap="round" class="anim-walk-line" />
+      <circle r="6.5" fill="#059669" stroke="#ffffff" stroke-width="2.5">
+        <animateMotion dur="2.1s" repeatCount="indefinite" path="M 304 152 L 106 152" />
+      </circle>
+
+      <!-- Primary Station: Subway Tsuruhashi Exit 4 -->
+      <rect x="300" y="118" width="146" height="56" rx="10" fill="#0f172a" />
+      <text x="373" y="138" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">🥇 地鐵千日前線 鶴橋站</text>
+      <rect x="318" y="145" width="110" height="22" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
+      <text x="373" y="160" text-anchor="middle" font-size="10.8" font-weight="800" fill="#713f12">4號出口 (走1分)</text>
+
+      <!-- Konbini -->
+      <circle cx="208" cy="152" r="7.5" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+      <g transform="translate(212, 88)">
+        <rect x="-88" y="-19" width="176" height="36" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+        <text x="0" y="-3" text-anchor="middle" font-size="10.8" font-weight="800" fill="#065f46">🏪 全家 鶴橋站前店 (30秒)</text>
+        <text x="0" y="11" text-anchor="middle" font-size="10" font-weight="700" fill="#047857">＋ Lawson 100 生鮮百元超商</text>
+      </g>
+
+      <g transform="translate(206, 182)">
+        <rect x="-52" y="-10" width="104" height="20" rx="10" fill="#ffffff" stroke="#6ee7b7" stroke-width="1.5" />
+        <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#059669">🚶 直走 1 分 (110m)</text>
+      </g>
+
+      <!-- Hotel Pin -->
+      <circle cx="96" cy="152" r="14" fill="#10b981" class="anim-pulse-circle" />
+      <circle cx="96" cy="152" r="11" fill="#059669" stroke="#ffffff" stroke-width="2.5" />
+      <text x="96" y="156" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">✓</text>
+      <rect x="16" y="34" width="170" height="44" rx="9" fill="#059669" />
+      <text x="101" y="53" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">✅ ESLEAD 大阪鶴橋</text>
+      <text x="101" y="69" text-anchor="middle" font-size="10" fill="#d1fae5">前 3 晚已訂妥｜出站 1 分鐘</text>
+    </svg>
+  `;
+}
+
+// ==================== 狀態管理 ====================
 let currentTab = "itinerary";
 let selectedDay = 1;
 let showAllDays = false;
-let hotelFilter = "all";
+let hotelFilter = "nagoya";
+let hotelSort = "rec";
 let selectedHotelId = "comfort";
+let mapMode = "schematic";
 let spotFilter = "all";
 let checklistState = loadChecklist();
 
@@ -659,10 +2148,10 @@ function renderDayCards() {
   `).join("");
 }
 
-// Render Hotels + Live Google Map
+// ==================== 住宿篩選、排序與雙模式地圖渲染 ====================
 function setHotelFilter(filter) {
   hotelFilter = filter;
-  ["all", "hotel", "apartment", "osaka"].forEach(f => {
+  ["nagoya", "taiko", "sakura", "sakae", "apartment", "osaka"].forEach(f => {
     const btn = document.getElementById(`hfilter-${f}`);
     if (btn) {
       if (f === filter) btn.classList.add("active");
@@ -678,12 +2167,49 @@ function setHotelFilter(filter) {
   renderMapPane();
 }
 
+function setHotelSort(sortVal) {
+  hotelSort = sortVal;
+  const filtered = getFilteredHotels();
+  if (filtered.length > 0) {
+    selectedHotelId = filtered[0].id;
+  }
+  renderHotelsList();
+  renderMapPane();
+}
+
 function getFilteredHotels() {
-  if (hotelFilter === "all") return HOTELS_DATA;
-  if (hotelFilter === "hotel") return HOTELS_DATA.filter(h => h.category === "hotel");
-  if (hotelFilter === "apartment") return HOTELS_DATA.filter(h => h.category === "apartment" || h.category === "oneunit");
-  if (hotelFilter === "osaka") return HOTELS_DATA.filter(h => h.city === "osaka");
-  return HOTELS_DATA;
+  let base = HOTELS_DATA;
+  if (hotelFilter === "nagoya") {
+    base = HOTELS_DATA.filter(h => h.city === "nagoya");
+  } else if (hotelFilter === "taiko") {
+    base = HOTELS_DATA.filter(h => h.zone === "taiko");
+  } else if (hotelFilter === "sakura") {
+    base = HOTELS_DATA.filter(h => h.zone === "sakura");
+  } else if (hotelFilter === "sakae") {
+    base = HOTELS_DATA.filter(h => h.zone === "sakae");
+  } else if (hotelFilter === "apartment") {
+    base = HOTELS_DATA.filter(h => h.category === "apartment");
+  } else if (hotelFilter === "osaka") {
+    base = HOTELS_DATA.filter(h => h.city === "osaka");
+  }
+
+  const sorted = [...base];
+  if (hotelSort === "price") {
+    sorted.sort((a, b) => a.minPriceYen - b.minPriceYen || a.recOrder - b.recOrder);
+  } else if (hotelSort === "walk") {
+    sorted.sort((a, b) => a.primaryWalkMin - b.primaryWalkMin || a.minPriceYen - b.minPriceYen);
+  } else {
+    sorted.sort((a, b) => a.recOrder - b.recOrder);
+  }
+  return sorted;
+}
+
+function stepHotel(delta) {
+  const list = getFilteredHotels();
+  if (list.length === 0) return;
+  const idx = list.findIndex(h => h.id === selectedHotelId);
+  const nextIdx = idx === -1 ? 0 : (idx + delta + list.length) % list.length;
+  selectHotelOnMap(list[nextIdx].id, false);
 }
 
 function selectHotelOnMap(hotelId, scrollMapOnMobile) {
@@ -699,6 +2225,10 @@ function selectHotelOnMap(hotelId, scrollMapOnMobile) {
 function renderHotelsList() {
   const container = document.getElementById("hotels-cards-container");
   const list = getFilteredHotels();
+  const countLabel = document.getElementById("hotels-count-label");
+  if (countLabel) {
+    countLabel.textContent = `📋 目前顯示 ${list.length} 間符合條件住宿（點選卡片即可在右側／上方動畫圖查看周邊雙車站＆超商）`;
+  }
 
   container.innerHTML = list.map(h => {
     const isSelected = h.id === selectedHotelId ? "selected" : "";
@@ -710,8 +2240,13 @@ function renderHotelsList() {
           <span class="hotel-price-tag">${h.priceRange}</span>
         </div>
         <h3 class="hotel-name">${h.name}</h3>
+
+        <div class="station-dual-box">
+          <div class="st-line-primary">${h.primaryStation}</div>
+          <div class="st-line-secondary">${h.secondaryStation}</div>
+        </div>
+
         <div class="hotel-meta-list">
-          <div>🚇 <strong>車站距離：</strong>${h.stationInfo}</div>
           <div>🛏️ <strong>4大5小（6–10歲）配法：</strong>${h.roomPlan}</div>
           <div>👧 <strong>兒童優惠規定：</strong>${h.kidRule}</div>
         </div>
@@ -726,10 +2261,10 @@ function renderHotelsList() {
 
         <div class="ota-btn-row" onclick="event.stopPropagation()">
           <button type="button" class="ota-chip-link best-ota" onclick="selectHotelOnMap('${h.id}', true)">
-            🗺️ 在地圖顯示此間
+            🗺️ 在動畫圖顯示此間
           </button>
           <a class="ota-chip-link" href="${h.walkMapUrl}" target="_blank" rel="noopener noreferrer">
-            🚶 車站➔超商➔飯店路線
+            🚶 車站➔超商➔飯店導航
           </a>
           ${!isOsaka ? `
             <a class="ota-chip-link best-ota" href="${h.links.google}" target="_blank" rel="noopener noreferrer">
@@ -758,435 +2293,6 @@ function renderHotelsList() {
   }).join("");
 }
 
-let mapMode = "schematic";
-
-const SCHEMATIC_MAP_SPECS = {
-  "comfort": {
-    shortPill: "🥇 Comfort (5分)",
-    exitBadge: "🚇 認明出口：JR名古屋站【太閤通口】",
-    totalWalk: "⏱️ 全程步行 5 分鐘（約 380m）",
-    stepSub1: "出站即見",
-    stepSub2: "斜對面 80m",
-    stepSub3: "平路共 5 分鐘",
-    svg: `
-      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="Comfort Hotel 周邊關係動畫圖">
-        <!-- Compass -->
-        <g transform="translate(426, 26)">
-          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
-        </g>
-        <!-- Roads & Rail -->
-        <line x1="368" y1="16" x2="368" y2="248" stroke="#cbd5e1" stroke-width="10" stroke-dasharray="8 5" />
-        <text x="382" y="42" font-size="10.5" fill="#64748b" font-weight="600">新幹線軌道</text>
-        <path d="M 325 196 L 238 196 L 238 82 L 105 82" fill="none" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
-        <line x1="238" y1="20" x2="238" y2="245" stroke="#e2e8f0" stroke-width="14" />
-        <!-- Reference Landmark -->
-        <rect x="262" y="128" width="76" height="30" rx="6" fill="#f1f5f9" stroke="#cbd5e1" />
-        <text x="300" y="147" text-anchor="middle" font-size="10.5" fill="#64748b" font-weight="600">Bic Camera</text>
-
-        <!-- Animated Walking Path -->
-        <path id="walkPath_comfort" d="M 318 196 L 238 196 L 238 82 L 118 82" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
-        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
-          <animateMotion dur="3.4s" repeatCount="indefinite" path="M 318 196 L 238 196 L 238 82 L 118 82" />
-        </circle>
-
-        <!-- Station & Yellow Exit Plaque -->
-        <rect x="332" y="162" width="112" height="58" rx="10" fill="#1e293b" />
-        <text x="388" y="184" text-anchor="middle" font-size="12.5" font-weight="800" fill="#ffffff">JR 名古屋站</text>
-        <rect x="342" y="191" width="92" height="22" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
-        <text x="388" y="206" text-anchor="middle" font-size="11" font-weight="800" fill="#713f12">太閤通口 (西口)</text>
-
-        <!-- Konbini 1: Lawson -->
-        <g transform="translate(238, 224)">
-          <rect x="-58" y="-13" width="116" height="26" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="700" fill="#065f46">🏪 Lawson (出站1分)</text>
-        </g>
-        <circle cx="238" cy="196" r="6" fill="#10b981" stroke="#ffffff" stroke-width="2" />
-
-        <!-- Konbini 2: 7-11 & FamilyMart -->
-        <g transform="translate(268, 44)">
-          <rect x="-78" y="-15" width="156" height="30" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="11.5" font-weight="800" fill="#065f46">🏪 7-11 ＆ 全家 (斜對面1分)</text>
-        </g>
-        <circle cx="238" cy="82" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
-
-        <!-- Segment Minute Pills -->
-        <g transform="translate(284, 176)">
-          <rect x="-26" y="-10" width="52" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 1分</text>
-        </g>
-        <g transform="translate(200, 140)">
-          <rect x="-32" y="-11" width="64" height="22" rx="11" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 北走3分</text>
-        </g>
-        <g transform="translate(178, 61)">
-          <rect x="-36" y="-10" width="72" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 1分(80m)</text>
-        </g>
-
-        <!-- Hotel Destination -->
-        <circle cx="110" cy="82" r="14" fill="#2563eb" class="anim-pulse-circle" />
-        <circle cx="110" cy="82" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
-        <text x="110" y="86" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
-        <rect x="18" y="102" width="174" height="44" rx="9" fill="#1d4ed8" />
-        <text x="105" y="121" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">🥇 Comfort 名古屋新幹線口</text>
-        <text x="105" y="138" text-anchor="middle" font-size="10.5" fill="#dbeafe">出站總計步行 5 分鐘｜免費早餐</text>
-      </svg>
-    `
-  },
-  "vessel-campana": {
-    shortPill: "🥈 Vessel名駅 (4分)",
-    exitBadge: "🚇 認明出口：地鐵名古屋站【1號出口】",
-    totalWalk: "⏱️ 1號出口步行 4 分鐘（JR櫻通口9分）",
-    stepSub1: "地下街北側出口",
-    stepSub2: "正順路 1–2 分",
-    stepSub3: "轉彎即達共 4 分",
-    svg: `
-      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="Vessel Campana 名古屋周邊關係動畫圖">
-        <g transform="translate(426, 26)">
-          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
-        </g>
-        <!-- Roads -->
-        <path d="M 255 232 L 255 78 L 135 78" fill="none" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
-        <!-- Underground link from JR to Subway Exit 1 -->
-        <line x1="255" y1="220" x2="255" y2="172" stroke="#64748b" stroke-width="4" stroke-dasharray="4 4" />
-        <text x="336" y="202" text-anchor="middle" font-size="10.5" fill="#64748b">地下街連通 (約5分)</text>
-
-        <!-- JR Station Reference -->
-        <rect x="195" y="216" width="120" height="34" rx="8" fill="#475569" />
-        <text x="255" y="237" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffffff">JR 名古屋站 (櫻通口)</text>
-
-        <!-- Animated Walk from Subway Exit 1 -->
-        <path d="M 255 162 L 255 78 L 140 78" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
-        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
-          <animateMotion dur="3.2s" repeatCount="indefinite" path="M 255 162 L 255 78 L 140 78" />
-        </circle>
-
-        <!-- Subway Exit 1 Plaque -->
-        <rect x="193" y="148" width="124" height="38" rx="8" fill="#1e293b" />
-        <text x="255" y="163" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">地鐵東山線 名古屋站</text>
-        <rect x="207" y="167" width="96" height="18" rx="4" fill="#fef08a" stroke="#eab308" stroke-width="1.2" />
-        <text x="255" y="180" text-anchor="middle" font-size="10.5" font-weight="800" fill="#713f12">1號出口 (近KITTE)</text>
-
-        <!-- Konbini on route -->
-        <circle cx="255" cy="116" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
-        <g transform="translate(352, 116)">
-          <rect x="-82" y="-15" width="164" height="30" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="#065f46">🏪 7-11 ＆ Lawson (順路2分)</text>
-        </g>
-
-        <!-- Segment Minute Pills -->
-        <g transform="translate(212, 122)">
-          <rect x="-30" y="-10" width="60" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 北走2分</text>
-        </g>
-        <g transform="translate(200, 56)">
-          <rect x="-34" y="-10" width="68" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 左轉2分</text>
-        </g>
-
-        <!-- Hotel Pin -->
-        <circle cx="132" cy="78" r="14" fill="#2563eb" class="anim-pulse-circle" />
-        <circle cx="132" cy="78" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
-        <text x="132" y="82" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
-        <rect x="20" y="98" width="184" height="44" rx="9" fill="#1d4ed8" />
-        <text x="112" y="117" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">🥈 Vessel Campana 名古屋</text>
-        <text x="112" y="134" text-anchor="middle" font-size="10.5" fill="#dbeafe">1號出口步行 4 分｜大浴場・木地板</text>
-      </svg>
-    `
-  },
-  "vessel-sakae": {
-    shortPill: "🏬 Vessel榮 (2分)",
-    exitBadge: "🚇 認明出口：地鐵榮站【1號出口】",
-    totalWalk: "⏱️ 全程步行僅 2 分鐘（約 140m）",
-    stepSub1: "唐吉訶德旁出口",
-    stepSub2: "同棟 0 分鐘直達！",
-    stepSub3: "直走 2 分鐘即達",
-    svg: `
-      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="Vessel Inn 榮站前周邊關係動畫圖">
-        <g transform="translate(426, 26)">
-          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
-        </g>
-        <!-- Subway & Main Street -->
-        <line x1="40" y1="205" x2="420" y2="205" stroke="#cbd5e1" stroke-width="8" />
-        <line x1="225" y1="40" x2="225" y2="235" stroke="#e2e8f0" stroke-width="22" stroke-linecap="round" />
-
-        <!-- Landmarks: Donki & Oasis 21 -->
-        <rect x="82" y="152" width="96" height="30" rx="6" fill="#f1f5f9" stroke="#cbd5e1" />
-        <text x="130" y="171" text-anchor="middle" font-size="10.5" fill="#475569" font-weight="700">唐吉訶德 榮本店</text>
-
-        <rect x="315" y="166" width="112" height="30" rx="6" fill="#eff6ff" stroke="#93c5fd" />
-        <text x="371" y="185" text-anchor="middle" font-size="10.5" fill="#1d4ed8" font-weight="700">✨ 綠洲21 (4A出口)</text>
-
-        <!-- Straight 2-min Animated Walk -->
-        <path d="M 225 186 L 225 84" fill="none" stroke="#2563eb" stroke-width="4.5" stroke-linecap="round" class="anim-walk-line" />
-        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
-          <animateMotion dur="2.4s" repeatCount="indefinite" path="M 225 186 L 225 84" />
-        </circle>
-
-        <!-- Segment Pill -->
-        <g transform="translate(292, 136)">
-          <rect x="-54" y="-12" width="108" height="24" rx="12" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="#1d4ed8">🚶 直走 2 分鐘 (140m)</text>
-        </g>
-
-        <!-- Sakae Station Exit 1 -->
-        <rect x="160" y="190" width="130" height="52" rx="10" fill="#1e293b" />
-        <text x="225" y="210" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">地鐵東山線・名城線 榮站</text>
-        <rect x="177" y="216" width="96" height="20" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
-        <text x="225" y="230" text-anchor="middle" font-size="11" font-weight="800" fill="#713f12">1號出口</text>
-
-        <!-- Combined Hotel + 1F 7-Eleven -->
-        <circle cx="225" cy="76" r="14" fill="#2563eb" class="anim-pulse-circle" />
-        <circle cx="225" cy="76" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
-        <text x="225" y="80" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
-
-        <rect x="115" y="16" width="220" height="46" rx="10" fill="#1d4ed8" />
-        <text x="225" y="35" text-anchor="middle" font-size="12.5" font-weight="800" fill="#ffffff">🏬 Vessel Inn 榮站前 (2F櫃檯)</text>
-        <rect x="133" y="41" width="184" height="18" rx="4" fill="#ecfdf5" />
-        <text x="225" y="54" text-anchor="middle" font-size="10.5" font-weight="800" fill="#065f46">🏪 正 1 樓就是 7-11 (下樓 0 分鐘！)</text>
-      </svg>
-    `
-  },
-  "daiwa-taiko": {
-    shortPill: "🥉 大和魯內 (4分)",
-    exitBadge: "🚇 認明出口：JR名古屋站【太閤通口】",
-    totalWalk: "⏱️ 全程步行僅 4 分鐘（約 280m）",
-    stepSub1: "新幹線口出站",
-    stepSub2: "飯店 1F 室內直通！",
-    stepSub3: "平路 4 分鐘即達",
-    svg: `
-      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="Daiwa Roynet 名古屋太閤通口周邊關係動畫圖">
-        <g transform="translate(426, 26)">
-          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
-        </g>
-        <!-- Rail & Roads -->
-        <line x1="358" y1="16" x2="358" y2="248" stroke="#cbd5e1" stroke-width="10" stroke-dasharray="8 5" />
-        <path d="M 310 74 L 228 74 L 228 188 L 150 188" fill="none" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
-
-        <!-- ESCA Underground hint -->
-        <rect x="246" y="108" width="88" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" />
-        <text x="290" y="125" text-anchor="middle" font-size="10" fill="#475569" font-weight="600">エスカ地下街出口</text>
-
-        <!-- Animated Walk -->
-        <path d="M 305 74 L 228 74 L 228 188 L 155 188" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
-        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
-          <animateMotion dur="3.0s" repeatCount="indefinite" path="M 305 74 L 228 74 L 228 188 L 155 188" />
-        </circle>
-
-        <!-- JR Station Top Right -->
-        <rect x="308" y="44" width="122" height="54" rx="10" fill="#1e293b" />
-        <text x="369" y="65" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">JR 名古屋站</text>
-        <rect x="321" y="72" width="96" height="20" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
-        <text x="369" y="86" text-anchor="middle" font-size="10.5" font-weight="800" fill="#713f12">太閤通口 (新幹線)</text>
-
-        <!-- Opposite Lawson -->
-        <g transform="translate(310, 212)">
-          <rect x="-68" y="-13" width="136" height="26" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="700" fill="#065f46">🏪 對面還有 Lawson (1分)</text>
-        </g>
-
-        <!-- Segment Minute Pill -->
-        <g transform="translate(172, 128)">
-          <rect x="-52" y="-12" width="104" height="24" rx="12" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 南走 4 分鐘 (280m)</text>
-        </g>
-
-        <!-- Hotel + 1F 7-11 -->
-        <circle cx="148" cy="188" r="14" fill="#2563eb" class="anim-pulse-circle" />
-        <circle cx="148" cy="188" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
-        <text x="148" y="192" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
-
-        <rect x="18" y="204" width="212" height="48" rx="10" fill="#1d4ed8" />
-        <text x="124" y="223" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">🥉 大和魯內 名古屋太閤通口</text>
-        <rect x="32" y="229" width="184" height="18" rx="4" fill="#ecfdf5" />
-        <text x="124" y="242" text-anchor="middle" font-size="10.5" font-weight="800" fill="#065f46">🏪 正 1 樓直通 7-11 (免出大門！)</text>
-      </svg>
-    `
-  },
-  "grandbase": {
-    shortPill: "🏡 GRAND BASE (4–8分)",
-    exitBadge: "🚇 認明出口：太閤通站【2號出口】或 JR【太閤通口】",
-    totalWalk: "⏱️ 太閤通站步行 4 分 ／ JR名古屋站步行 8 分",
-    stepSub1: "雙車站皆可走",
-    stepSub2: "距飯店僅 180m",
-    stepSub3: "平路 4–8 分鐘",
-    svg: `
-      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="GRAND BASE 名古屋駅西周邊關係動畫圖">
-        <g transform="translate(426, 26)">
-          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
-        </g>
-        <!-- Main Taiko-dori Ave & Side Street -->
-        <line x1="40" y1="95" x2="410" y2="95" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round" />
-        <line x1="215" y1="95" x2="135" y2="195" stroke="#e2e8f0" stroke-width="16" stroke-linecap="round" />
-        <line x1="115" y1="95" x2="135" y2="195" stroke="#cbd5e1" stroke-width="4" stroke-dasharray="4 4" />
-
-        <!-- Subway Taiko-dori Station -->
-        <rect x="42" y="46" width="132" height="46" rx="8" fill="#334155" />
-        <text x="108" y="65" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">地鐵櫻通線 太閤通站</text>
-        <rect x="64" y="70" width="88" height="18" rx="4" fill="#fef08a" stroke="#eab308" stroke-width="1.2" />
-        <text x="108" y="83" text-anchor="middle" font-size="10" font-weight="800" fill="#713f12">2號出口 (走4分)</text>
-
-        <!-- JR Nagoya Station -->
-        <rect x="328" y="66" width="114" height="52" rx="9" fill="#1e293b" />
-        <text x="385" y="86" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">JR 名古屋站</text>
-        <rect x="340" y="92" width="90" height="20" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
-        <text x="385" y="106" text-anchor="middle" font-size="10.5" font-weight="800" fill="#713f12">太閤通口 (走8分)</text>
-
-        <!-- Animated Walk from JR via FamilyMart -->
-        <path d="M 328 95 L 215 95 L 135 195" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
-        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
-          <animateMotion dur="3.6s" repeatCount="indefinite" path="M 328 95 L 215 95 L 135 195" />
-        </circle>
-
-        <!-- FamilyMart -->
-        <circle cx="215" cy="95" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
-        <g transform="translate(242, 54)">
-          <rect x="-70" y="-14" width="140" height="28" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="#065f46">🏪 全家 竹橋町店 (順路)</text>
-        </g>
-
-        <!-- Segment Minute Pills -->
-        <g transform="translate(274, 118)">
-          <rect x="-32" y="-10" width="64" height="20" rx="10" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#1d4ed8">🚶 西走6分</text>
-        </g>
-        <g transform="translate(226, 156)">
-          <rect x="-46" y="-11" width="92" height="22" rx="11" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 再2分 (180m)</text>
-        </g>
-        <text x="76" y="148" font-size="10.5" font-weight="700" fill="#475569">← 太閤通站走 4 分</text>
-
-        <!-- Hotel Pin -->
-        <circle cx="135" cy="195" r="14" fill="#2563eb" class="anim-pulse-circle" />
-        <circle cx="135" cy="195" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
-        <text x="135" y="199" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
-        <rect x="38" y="212" width="198" height="42" rx="9" fill="#1d4ed8" />
-        <text x="137" y="230" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">🏡 GRAND BASE 名古屋駅西</text>
-        <text x="137" y="246" text-anchor="middle" font-size="10.5" fill="#dbeafe">56㎡大公寓｜附廚房＆洗衣機</text>
-      </svg>
-    `
-  },
-  "central-res": {
-    shortPill: "🏠 Central包層 (2分)",
-    exitBadge: "🚇 認明出口：地鐵中村公園站【2號 / 3號出口】",
-    totalWalk: "⏱️ 出站步行僅 2 分鐘（約 150m・有電梯）",
-    stepSub1: "名駅搭地鐵7分",
-    stepSub2: "出站口 30 秒",
-    stepSub3: "步行 2 分鐘上樓",
-    svg: `
-      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="Central Nagoya Residence 周邊關係動畫圖">
-        <g transform="translate(426, 26)">
-          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
-        </g>
-        <!-- Subway Higashiyama Line -->
-        <line x1="40" y1="205" x2="420" y2="205" stroke="#f59e0b" stroke-width="6" />
-        <text x="366" y="194" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b45309">地鐵東山線 (7分直達名古屋站) →</text>
-
-        <!-- Road -->
-        <path d="M 235 190 L 235 88 L 145 88" fill="none" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
-
-        <!-- Animated Walk -->
-        <path d="M 235 186 L 235 88 L 148 88" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="anim-walk-line" />
-        <circle r="6.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5">
-          <animateMotion dur="2.6s" repeatCount="indefinite" path="M 235 186 L 235 88 L 148 88" />
-        </circle>
-
-        <!-- Station -->
-        <rect x="165" y="190" width="140" height="52" rx="10" fill="#1e293b" />
-        <text x="235" y="210" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">地鐵 中村公園站</text>
-        <rect x="182" y="216" width="106" height="20" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
-        <text x="235" y="230" text-anchor="middle" font-size="10.5" font-weight="800" fill="#713f12">2號 / 3號出口</text>
-
-        <!-- Konbini right at exit -->
-        <circle cx="235" cy="146" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
-        <g transform="translate(338, 146)">
-          <rect x="-86" y="-14" width="172" height="28" rx="7" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="#065f46">🏪 全家 ＆ 7-11 (出站30秒)</text>
-        </g>
-
-        <!-- Segment Minute Pill -->
-        <g transform="translate(205, 62)">
-          <rect x="-50" y="-11" width="100" height="22" rx="11" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1d4ed8">🚶 步行 2 分 (150m)</text>
-        </g>
-
-        <!-- Residence Pin -->
-        <circle cx="140" cy="88" r="14" fill="#2563eb" class="anim-pulse-circle" />
-        <circle cx="140" cy="88" r="11" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
-        <text x="140" y="92" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">★</text>
-        <rect x="24" y="108" width="184" height="44" rx="9" fill="#1d4ed8" />
-        <text x="116" y="127" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">🏠 Central Residence</text>
-        <text x="116" y="143" text-anchor="middle" font-size="10.5" fill="#dbeafe">120㎡頂樓包層｜大樓有電梯</text>
-      </svg>
-    `
-  },
-  "osaka-eslead": {
-    shortPill: "✅ 大阪ESLEAD (1分)",
-    exitBadge: "🚇 認明出口：地鐵千日前線 鶴橋站【4號出口】",
-    totalWalk: "⏱️ 出站步行僅 1 分鐘（約 110m・已訂妥！）",
-    stepSub1: "千日前線4號口",
-    stepSub2: "出站 30 秒順路",
-    stepSub3: "再 30 秒即達飯店",
-    svg: `
-      <svg viewBox="0 0 460 264" width="100%" height="auto" role="img" aria-label="ESLEAD HOTEL 大阪鶴橋周邊關係動畫圖">
-        <g transform="translate(426, 26)">
-          <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" />
-          <text x="0" y="4" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">↑北</text>
-        </g>
-        <!-- Sennichimae Subway Line & JR Loop -->
-        <line x1="30" y1="142" x2="430" y2="142" stroke="#e2e8f0" stroke-width="22" stroke-linecap="round" />
-        <line x1="378" y1="24" x2="378" y2="242" stroke="#cbd5e1" stroke-width="9" stroke-dasharray="7 5" />
-        <text x="378" y="254" text-anchor="middle" font-size="10" fill="#64748b" font-weight="700">JR大阪環狀線・近鐵鶴橋站</text>
-        <text x="148" y="238" text-anchor="middle" font-size="11" fill="#be185d" font-weight="700">← 千日前線：2站(3分)到黑門市場 ／ 3站(5分)到難波</text>
-
-        <!-- Straight 1-min Animated Walk -->
-        <path d="M 304 142 L 105 142" fill="none" stroke="#059669" stroke-width="4.5" stroke-linecap="round" class="anim-walk-line" />
-        <circle r="6.5" fill="#059669" stroke="#ffffff" stroke-width="2.5">
-          <animateMotion dur="2.2s" repeatCount="indefinite" path="M 304 142 L 105 142" />
-        </circle>
-
-        <!-- Tsuruhashi Station Exit 4 -->
-        <rect x="298" y="108" width="136" height="58" rx="10" fill="#1e293b" />
-        <text x="366" y="130" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">地鐵千日前線 鶴橋站</text>
-        <rect x="314" y="138" width="104" height="21" rx="5" fill="#fef08a" stroke="#eab308" stroke-width="1.5" />
-        <text x="366" y="153" text-anchor="middle" font-size="11" font-weight="800" fill="#713f12">4號出口 (走1分)</text>
-
-        <!-- Konbini right on the 1-min path -->
-        <circle cx="212" cy="142" r="7.5" fill="#10b981" stroke="#ffffff" stroke-width="2" />
-        <g transform="translate(212, 82)">
-          <rect x="-86" y="-20" width="172" height="38" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
-          <text x="0" y="-3" text-anchor="middle" font-size="11" font-weight="800" fill="#065f46">🏪 全家 鶴橋站前店</text>
-          <text x="0" y="12" text-anchor="middle" font-size="10.5" font-weight="700" fill="#047857">＋ Lawson 100 生鮮百元超商</text>
-        </g>
-
-        <!-- Segment Minute Pills -->
-        <g transform="translate(258, 174)">
-          <rect x="-28" y="-10" width="56" height="20" rx="10" fill="#ffffff" stroke="#6ee7b7" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#059669">🚶 30秒</text>
-        </g>
-        <g transform="translate(158, 174)">
-          <rect x="-32" y="-10" width="64" height="20" rx="10" fill="#ffffff" stroke="#6ee7b7" stroke-width="1.5" />
-          <text x="0" y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#059669">🚶 再30秒</text>
-        </g>
-
-        <!-- Hotel Pin -->
-        <circle cx="96" cy="142" r="14" fill="#10b981" class="anim-pulse-circle" />
-        <circle cx="96" cy="142" r="11" fill="#059669" stroke="#ffffff" stroke-width="2.5" />
-        <text x="96" y="146" text-anchor="middle" font-size="11" fill="#ffffff" font-weight="800">✓</text>
-        <rect x="16" y="34" width="166" height="44" rx="9" fill="#059669" />
-        <text x="99" y="53" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">✅ ESLEAD 大阪鶴橋</text>
-        <text x="99" y="69" text-anchor="middle" font-size="10.5" fill="#d1fae5">出站總計步行 1 分鐘！(110m)</text>
-      </svg>
-    `
-  }
-};
-
 function setMapMode(mode) {
   mapMode = mode;
   const sWrap = document.getElementById("schematic-map-wrap");
@@ -1206,7 +2312,7 @@ function setMapMode(mode) {
     gWrap.style.display = "block";
     bSchem.classList.remove("active");
     bGmap.classList.add("active");
-    if (bottomBtn) bottomBtn.textContent = "✨ 切回周邊關係動畫圖";
+    if (bottomBtn) bottomBtn.textContent = "✨ 切回周邊雙車站動畫圖";
   }
 }
 
@@ -1227,17 +2333,23 @@ function renderMapPane() {
       const sp = SCHEMATIC_MAP_SPECS[item.id];
       const label = sp ? sp.shortPill : item.name;
       const activeCls = item.id === h.id ? "active" : "";
-      return `<button type="button" class="q-pill ${activeCls}" onclick="selectHotelOnMap('${item.id}', false)">${label}</button>`;
+      return `<button type="button" id="qpill-${item.id}" class="q-pill ${activeCls}" onclick="selectHotelOnMap('${item.id}', false)">${label}</button>`;
     }).join("");
+    const activePill = document.getElementById(`qpill-${h.id}`);
+    if (activePill && typeof activePill.scrollIntoView === "function") {
+      activePill.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }
   }
 
   document.getElementById("map-hotel-title").textContent = h.name;
   document.getElementById("map-hotel-sub").textContent = h.stationInfo;
 
-  // Update Schematic Animated View
+  // Update Schematic Animated View + Secondary Surrounding Stations Bar
   document.getElementById("schematic-exit-badge").textContent = spec.exitBadge;
   document.getElementById("schematic-total-walk").textContent = spec.totalWalk;
-  document.getElementById("schematic-svg-holder").innerHTML = spec.svg;
+  const subBar = document.getElementById("schematic-sub-stations");
+  if (subBar) subBar.textContent = spec.subStationsBar;
+  document.getElementById("schematic-svg-holder").innerHTML = buildSchematicSvg(h.id);
 
   // Update Detailed Google Maps Iframe (only reload src when changed to prevent flicker)
   const iframe = document.getElementById("google-map-iframe");
@@ -1275,32 +2387,32 @@ function updateSearchHelper() {
     out.innerHTML = `
       <strong>🎯 Vessel 系列（Campana 名古屋 / 榮站前）最省搜尋輸入法：</strong>
       <ul style="margin: 6px 0 0; padding-left: 18px;">
-        <li><strong>在 Google Maps / Agoda / Trip.com 比價時：</strong>千萬別輸入 5 個小孩！請分開搜「第1間：2位大人（雙床房）」＋「第2間：3位大人（三人房）」（這樣就對應您設定『1～2位小孩算佔床、其餘免費同床』），結帳備註寫明有幾位 6–10 歲添い寝兒童即可。</li>
+        <li><strong>在 Google Maps / Agoda / Trip.com 比價時：</strong>千萬別輸入 5 個小孩！請分開搜「第1間：2位大人（雙床房）」＋「第2間：3位大人（三人房）」（對應『1～2位小孩算佔床、其餘免費同床』），結帳備註寫明有幾位 6–10 歲添い寝兒童即可。</li>
         <li><strong>最推薦在「Vessel 日本官網」訂：</strong>官網可直接選「大人人數」＋「小學生（添い寝）人數」，系統自動顯示小學生 ¥0 免費，註冊免費會員再拿 <strong>¥1,000 折價點數</strong>！</li>
       </ul>
     `;
   } else if (mode === "comfort") {
     out.innerHTML = `
-      <strong>🎯 Comfort Hotel 名古屋新幹線口 最省搜尋輸入法：</strong>
+      <strong>🎯 Comfort 系列 / 東橫INN / Chisun Inn 最省搜尋輸入法：</strong>
       <ul style="margin: 6px 0 0; padding-left: 18px;">
-        <li>因規定「1張床免費帶 1 位小學生」，你們共 9 人（4大＋5位小學生），照您「把 2 位小孩當大人佔床」剛好總共需要 <strong>6 張床</strong>！</li>
-        <li><strong>最省訂法：</strong>訂 <strong>3 間雙床房（每間輸入 2 位大人，各帶 1 位免費同床小學生）</strong>，9 個人睡 6 張 123cm 大床＋3 間衛浴＋<strong>9 份免費自助早餐</strong>，1 月底每晚總計才約台幣 5,000 多元！</li>
+        <li>規定「1張床免費帶 1 位小學生（12歲以下）」，你們共 9 人（4大＋5位小學生），把 2 位小孩當大人佔床剛好總共需要 <strong>6 張床</strong>！</li>
+        <li><strong>最省訂法：</strong>訂 <strong>3 間雙床房（每間輸入 2 位大人，各帶 1 位免費同床小學生）</strong>，9 人睡 6 張床＋3 間衛浴＋<strong>Comfort / 東橫INN 全體 9 份免費早餐</strong>，每晚總計才約台幣 4,000–5,500 元！</li>
       </ul>
     `;
   } else if (mode === "daiwa") {
     out.innerHTML = `
-      <strong>🎯 Daiwa Roynet 名古屋太閤通口 最省搜尋輸入法：</strong>
+      <strong>🎯 大和魯內 / 相鐵 Fresa / Richmond / Cypress 最省搜尋輸入法：</strong>
       <ul style="margin: 6px 0 0; padding-left: 18px;">
-        <li>1 張床可免費帶 1 位小學生（未滿 12 歲）！訂 <strong>1 間標準雙床房（輸入 2 大人 → 免費帶 2 小）＋ 1 間加床三人房（輸入 3 大人 → 等於 2大+1小佔床，再免費帶 2 小）</strong>，共 5 張床剛好合法住滿 9 人！</li>
-        <li><strong>比價必看：</strong>先開「Travelko トラベルコ」與「12/4 樂天旅遊 Super SALE」領優惠券，常比 Agoda 再省 15%！</li>
+        <li>1 張床可免費帶 1 位小學生！可訂 <strong>1 間雙床房（輸入 2 大人 → 免費帶 2 小）＋ 1 間三人房（輸入 3 大人 → 免費帶 2 小）</strong>，或訂 <strong>相鐵／DEL style 的「連通房（Connecting Room）」</strong>讓兩家人室內互通！</li>
+        <li><strong>比價必看：</strong>先開「Travelko トラベルコ」與「12/4 樂天旅遊 Super SALE」領優惠券，常比國際訂房網再省 15%！</li>
       </ul>
     `;
   } else {
     out.innerHTML = `
-      <strong>🎯 公寓式飯店 / 包棟（GRAND BASE / Central Nagoya）搜尋輸入法：</strong>
+      <strong>🎯 公寓式飯店 / 獨棟包棟（GRAND BASE / SAMURAI HOUSE Ⅲ）搜尋輸入法：</strong>
       <ul style="margin: 6px 0 0; padding-left: 18px;">
-        <li>無人公寓與包棟沒有小學生免費同床，需<strong>老實輸入實際總人數（例如 6 人＋3 人，或包棟 9 人）</strong>搜尋。</li>
-        <li><strong>最省 App：</strong>GRAND BASE 開手機版「Booking.com（享 Genius 折扣＋手機專屬價）」或從「Google Maps 點進 Agoda」；Central Nagoya 包層務必走「官方網站直訂」省下 14% 平台手續費！</li>
+        <li>無人公寓與獨棟民宿沒有小學生免費同床，需<strong>老實輸入實際總人數（例如 6人＋3人，或獨棟包棟 9 人）</strong>搜尋。</li>
+        <li><strong>最省 App：</strong>GRAND BASE 開手機版「Booking.com（享 Genius 折扣＋手機專屬價）」；SAMURAI HOUSE Ⅲ 獨棟用「Jalan / 樂天旅遊 / Travelko」比價並盡早卡位！</li>
       </ul>
     `;
   }
