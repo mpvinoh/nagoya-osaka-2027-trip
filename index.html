@@ -106,10 +106,10 @@
               </div>
             </div>
 
-            <!-- Step 2: Select Target Attraction -->
+            <!-- Step 2: Select Daily Direction or Target Attraction -->
             <div style="margin-top: 10px;">
               <div style="font-size: 12.5px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">
-                ② 點選想去的景點（或直接點下方大地圖上的景點方塊）：
+                ② 點選「每日行程方向」或「單一景點」（大地圖已同時標出全部 ①～⑲ 住宿圓圈，可直接點擊！）：
               </div>
               <div id="metro-spot-pills" class="metro-spot-pills"></div>
             </div>
@@ -174,14 +174,86 @@
         </div>
       </section>
 
-      <!-- ==================== PANEL 2: HOTELS & GOOGLE MAP ==================== -->
+      <!-- ==================== PANEL 2: HOTELS & GLOBAL + STREET MAPS ==================== -->
       <section id="panel-hotels" class="tab-panel">
+        <!-- NEW: Full-Width Global Subway System + All 19 Hotels + Daily Itinerary Directions Overview -->
+        <div class="card" style="margin-bottom: 16px;">
+          <div class="section-header" style="margin-bottom: 8px;">
+            <div>
+              <div class="trip-meta-row" style="margin-bottom: 4px;">
+                <span class="chip chip-brand">🌐 名古屋全局地鐵相對位置總覽（①～⑲ 全部標示）</span>
+                <span class="chip chip-green">🧭 結合 Day 4～Day 8 每日行程出發方向</span>
+              </div>
+              <h2 class="section-title">19 間推薦住宿在名古屋地鐵系統的哪裡？選哪站最方便？</h2>
+              <p class="section-desc">
+                點擊圖中任一<strong>圓圈編號 ①～⑲</strong> 即可切換下方住宿卡與右側超商街區圖；點擊<strong>「Day 4～Day 8 動線」</strong>可看每天往哪個方向跑！
+              </p>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button id="btn-hglobal-zoom" type="button" class="btn-mini-nav" onclick="toggleHotelsGlobalZoom()">
+                🔍 手機放大滑動
+              </button>
+              <button id="btn-hglobal-collapse" type="button" class="btn-outline" onclick="toggleHotelsGlobalCollapse()">
+                🔼 收合全局大地圖
+              </button>
+            </div>
+          </div>
+
+          <div id="hotels-global-body">
+            <!-- Daily Direction Pills -->
+            <div style="margin-bottom: 10px;">
+              <div id="hotels-day-dir-pills" class="metro-spot-pills"></div>
+            </div>
+
+            <!-- Legend -->
+            <div class="metro-legend-bar" style="margin-bottom: 8px;">
+              <div class="metro-legend-items">
+                <span class="leg-dot"><i style="background:#f59e0b;"></i>東山線(黃)</span>
+                <span class="leg-dot"><i style="background:#e11d48;"></i>櫻通線(紅)</span>
+                <span class="leg-dot"><i style="background:#7c3aed;"></i>名城・名港線(紫)</span>
+                <span class="leg-dot"><i style="background:#2563eb;"></i>鶴舞・Linimo線(藍)</span>
+                <span class="leg-dot"><i style="background:#0f766e;"></i>JR・名鐵・巴士</span>
+              </div>
+              <span style="font-size: 11.8px; font-weight: 800; color: #dc2626;">🔴 紅框發光圓圈 ＝ 目前選中查看的住宿</span>
+            </div>
+
+            <!-- Full-Width Global Subway SVG with all 19 Hotel Pins -->
+            <div id="hotels-global-svg-scroll" class="metro-canvas-scroll">
+              <div id="hotels-global-svg-holder" class="metro-canvas-inner"></div>
+            </div>
+
+            <!-- Live Selected Hotel + Day Direction Takeaway -->
+            <div id="hotels-global-status" class="metro-route-summary-box" style="margin-top: 10px; padding: 11px 14px;"></div>
+
+            <!-- 4 Station Zones Quick Decision Guide -->
+            <div class="zone-decision-grid">
+              <div class="zone-decision-card" onclick="setHotelFilter('taiko')">
+                <div class="zone-dec-title">🏆 首推最省力：JR名古屋站【太閤通口】<span class="zone-nums">①②③④⑤⑥ (及⑦龜島)</span></div>
+                <p class="zone-dec-desc"><strong>優勢：</strong>D4 新幹線下車 3–5 分放行李、<strong>D5 往北牧歌之里巴士就在樓下</strong>、D8 往南搭機場特急免換車！去各景點搭東山線／櫻通線皆 3–9 分鐘。</p>
+              </div>
+              <div class="zone-decision-card" onclick="setHotelFilter('apartment')">
+                <div class="zone-dec-title">🏡 大空間附廚洗：櫻通線【太閤通站】<span class="zone-nums">⑰GRAND BASE・⑱獨棟</span></div>
+                <p class="zone-dec-desc"><strong>優勢：</strong>離 JR 太閤通口走路也僅 7–8 分！門口搭櫻通線<strong>免換車直達 KAKO 吐司(國際中心)＆久屋大通(轉1站名古屋城)</strong>。</p>
+              </div>
+              <div class="zone-decision-card" onclick="setHotelFilter('sakura')">
+                <div class="zone-dec-title">🚇 地下街避風＋近吐司：【櫻通口・國際中心】<span class="zone-nums">⑧⑨⑩⑪⑫</span></div>
+                <p class="zone-dec-desc"><strong>優勢：</strong>全程走 Unimall 地下街不怕冷風，<strong>D7 早餐散步 3–5 分吃 KAKO 花車本店</strong>，離 D6 吉卜力巴士總站＆名鐵機場線最近！</p>
+              </div>
+              <div class="zone-decision-card" onclick="setHotelFilter('sakae')">
+                <div class="zone-dec-title">🛍️ 樓下超商＋逛街王：【榮・久屋大通・伏見】<span class="zone-nums">⑬⑭⑮⑯</span></div>
+                <p class="zone-dec-desc"><strong>優勢：</strong>⑬⑭ 1F就是超商，去<strong>北邊名古屋城、南邊名古屋港、東邊吉卜力轉乘全免換線</strong>；⑮⑯走路就到 D8 科學館！（惟 D4/D8 扛行李需多坐1–2站地鐵）</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Area Filter & Sort Card -->
         <div class="card" style="margin-bottom: 16px;">
           <div class="section-header" style="margin-bottom: 10px;">
             <div>
-              <h2 class="section-title">名古屋 4 晚（1/19–1/23）19 間實惠住宿精選 ＆ 雙車站方向感地圖</h2>
+              <h2 class="section-title">名古屋 4 晚（1/19–1/23）19 間實惠住宿清單 ＆ 周邊街區地圖</h2>
               <p class="section-desc">
-                針對「4 大 ＋ 5 位 6～10 歲小學生（當作 1～2 位佔床計價、其餘享兒童免費同床）」嚴選 19 間名古屋高 CP 值住宿，同時標示<strong>最近車站＋第二近地鐵站（如太閤通、龜島、國際中心、久屋大通等）＋順路超商與步行分鐘</strong>
+                點選任一住宿卡片，上方「全局地鐵圖」與右側「周邊雙車站＆超商小圖」會同步定位高亮！
               </p>
             </div>
           </div>
@@ -224,7 +296,7 @@
           <!-- Left: Hotel Cards -->
           <div id="hotels-cards-container"></div>
 
-          <!-- Right (Top on Mobile): Sticky Schematic Animated Map + Google Map Toggle -->
+          <!-- Right (Top on Mobile): Sticky Schematic Animated Map + Global Mini + Google Map Toggle -->
           <aside id="hotel-map-card" class="sticky-pane map-card-mobile-first">
             <div class="card">
               <!-- Quick Hotel Switcher Pills -->
@@ -241,13 +313,16 @@
                 </div>
               </div>
 
-              <!-- 2-Mode Switcher: Schematic Animation vs Detailed Google Maps -->
-              <div class="map-mode-tabs" role="tablist">
+              <!-- 3-Mode Switcher: Street Schematic vs Global Metro Position vs Detailed Google Maps -->
+              <div class="map-mode-tabs map-mode-tabs-3" role="tablist">
                 <button id="btn-mode-schematic" type="button" class="map-mode-btn active" onclick="setMapMode('schematic')">
-                  ✨ 周邊雙車站小動畫圖（方向感）
+                  ✨ 周邊出口＆超商
+                </button>
+                <button id="btn-mode-global" type="button" class="map-mode-btn" onclick="setMapMode('global')">
+                  🌐 全局地鐵位置
                 </button>
                 <button id="btn-mode-gmap" type="button" class="map-mode-btn" onclick="setMapMode('gmap')">
-                  🗺️ Google 仔細街道圖
+                  🗺️ Google街道圖
                 </button>
               </div>
 
@@ -259,6 +334,14 @@
                 </div>
                 <div id="schematic-sub-stations" class="sub-station-bar">🥈 次近地鐵載入中...</div>
                 <div id="schematic-svg-holder"></div>
+              </div>
+
+              <!-- Mode 1.5: Global Metro 19-Hotel Position Inside Sticky Card -->
+              <div id="global-mini-map-wrap" class="schematic-box" style="display: none;">
+                <div class="sub-station-bar" style="background: #eff6ff; color: #1e3a8a;">
+                  🌐 此住宿在整個名古屋地鐵網的位置（紅圈發光處，點其他數字可切換）：
+                </div>
+                <div id="global-mini-svg-holder"></div>
               </div>
 
               <!-- Mode 2: Detailed Google Maps Embed (Hidden until toggled) -->
@@ -281,7 +364,7 @@
 
               <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
                 <button id="btn-jump-metro-from-map" type="button" class="btn-primary" style="flex: 1;" onclick="openHotelInMetroMap(selectedHotelId)">
-                  🚇 看這間去各景點的地鐵動畫
+                  🚇 看去單一景點詳細搭車時間
                 </button>
                 <a id="map-open-walk-btn" class="btn-outline" href="#" target="_blank" rel="noopener noreferrer">
                   🚶 步行導航
