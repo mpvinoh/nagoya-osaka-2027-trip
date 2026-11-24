@@ -1,7 +1,7 @@
 {
-  "name": "2027 大阪・名古屋 雙家庭冬日旅",
-  "short_name": "2027阪名旅",
-  "description": "2027/1/16–1/23 大阪與名古屋雙家庭行程、住宿地圖與比價手冊",
+  "name": "2027 大阪・名古屋 阿翰+好姐妹乖乖聽話之旅",
+  "short_name": "乖乖聽話之旅",
+  "description": "2027/1/16–1/23 大阪・名古屋 阿翰+好姐妹乖乖聽話之旅｜行程、住宿地圖與比價手冊",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f7f7f5",
