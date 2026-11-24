@@ -2029,7 +2029,8 @@ let showAllDays = false;
 let hotelFilter = "nagoya";
 let hotelSort = "rec";
 let selectedHotelId = "comfort";
-let mapMode = "schematic";
+let hotelsViewMode = "cockpit"; // "cockpit" (Zero-Scroll Default) | "list" (Full List)
+let cockpitMapMode = "global";  // "global" (Default) | "schematic" | "gmap"
 let spotFilter = "all";
 let checklistState = loadChecklist();
 
@@ -2054,11 +2055,7 @@ function saveChecklist() {
 // ==================== 名古屋全局地鐵 × 19間住宿全標示 × 每日行程方向大地圖引擎 ====================
 let metroHotelId = "comfort";
 let metroSpotId = "castle";
-let metroZoomed = false;
-
 let hotelsGlobalMode = "all"; // "all", "day4", "day5", "day6", "day7", "day8", or any spotId
-let hotelsGlobalZoomed = false;
-let hotelsGlobalCollapsed = false;
 
 const DAY_TO_METRO_SPOT = {
   4: "day4",
@@ -2068,81 +2065,105 @@ const DAY_TO_METRO_SPOT = {
   8: "day8"
 };
 
-// Spacious 800 x 520 Global Subway Schematic Grid
+// Wide-Aspect 820 x 440 Global Subway Schematic Grid (Fits 100% in 1 Viewport on Phone & Desktop!)
 const METRO_COORDS = {
-  shinosaka: [36, 220],
-  bokka: [250, 48],
-  nakamura: [62, 148],
-  kamejima: [152, 148],
-  taikodori: [128, 220],
-  meieki: [250, 220],
-  kokusai: [344, 220],
-  marunouchi: [412, 220],
-  hisaya: [510, 220],
-  castle: [510, 88],
-  fushimi: [412, 304],
-  sakae: [510, 304],
-  fujigaoka: [636, 304],
-  ghibli: [742, 304],
-  osu: [412, 380],
-  kamimaezu: [510, 380],
-  kanayama: [510, 434],
-  atsuta: [604, 434],
-  legoland: [250, 484],
-  port: [510, 484],
-  airport: [706, 484]
+  shinosaka: [36, 186],
+  bokka: [252, 42],
+  nakamura: [64, 116],
+  kamejima: [156, 116],
+  taikodori: [128, 186],
+  meieki: [252, 186],
+  kokusai: [354, 186],
+  marunouchi: [424, 186],
+  hisaya: [520, 186],
+  castle: [520, 68],
+  fushimi: [424, 264],
+  sakae: [520, 264],
+  fujigaoka: [646, 264],
+  ghibli: [754, 264],
+  osu: [424, 330],
+  kamimaezu: [520, 330],
+  kanayama: [520, 372],
+  atsuta: [616, 372],
+  legoland: [252, 414],
+  port: [520, 414],
+  airport: [716, 414]
 };
 
-// All 19 Nagoya Hotels' Exact Geographical Relative Positions on the 800x520 Subway Map (Zero-Overlap Verified)
+// All 19 Nagoya Hotels' Geographical Relative Positions on 820x440 Canvas (Pairwise >= 29px Verified!)
 const HOTEL_PIN_COORDS = {
-  "comfort": { num: "1", x: 194, y: 168, short: "① Comfort新幹線口" },
-  "chisun": { num: "2", x: 220, y: 168, short: "② Chisun平價王" },
-  "toyoko-shinkansen": { num: "3", x: 180, y: 250, short: "③ 東橫INN新幹線口" },
-  "sotetsu-shinkansen": { num: "4", x: 206, y: 250, short: "④ 相鐵新幹線口" },
-  "daiwa-shinkansen": { num: "5", x: 220, y: 194, short: "⑤ 大和魯內新幹線口" },
-  "daiwa-taiko": { num: "6", x: 232, y: 250, short: "⑥ 大和魯內太閤通口" },
-  "richmond-shinkansen": { num: "7", x: 172, y: 128, short: "⑦ Richmond新幹線口" },
-  "vessel-campana": { num: "8", x: 280, y: 166, short: "⑧ Vessel Campana名駅" },
-  "cypress-ekimae": { num: "9", x: 280, y: 192, short: "⑨ Cypress名古屋駅前" },
-  "sotetsu-sakura": { num: "10", x: 322, y: 248, short: "⑩ 相鐵櫻通口" },
-  "toyoko-sakura": { num: "11", x: 296, y: 248, short: "⑪ 東橫INN櫻通新館" },
-  "comfort-era": { num: "12", x: 322, y: 274, short: "⑫ Comfort ERA名駅南" },
-  "vessel-sakae": { num: "13", x: 478, y: 252, short: "⑬ Vessel Inn榮站前" },
-  "comfort-sakae": { num: "14", x: 478, y: 278, short: "⑭ Comfort Inn榮站前" },
-  "comfort-fushimi": { num: "15", x: 440, y: 282, short: "⑮ Comfort名古屋伏見" },
-  "delstyle-nayabashi": { num: "16", x: 374, y: 294, short: "⑯ DEL style納屋橋" },
-  "grandbase": { num: "17", x: 110, y: 252, short: "⑰ GRAND BASE駅西" },
-  "samurai-house3": { num: "18", x: 138, y: 252, short: "⑱ SAMURAI獨棟包棟" },
-  "central-res": { num: "19", x: 62, y: 118, short: "⑲ Central包層(中村公園)" }
+  "comfort": { num: "1", x: 208, y: 146, short: "① Comfort新幹線口" },
+  "chisun": { num: "2", x: 236, y: 138, short: "② Chisun平價王" },
+  "toyoko-shinkansen": { num: "3", x: 192, y: 214, short: "③ 東橫INN新幹線口" },
+  "sotetsu-shinkansen": { num: "4", x: 220, y: 226, short: "④ 相鐵新幹線口" },
+  "daiwa-shinkansen": { num: "5", x: 204, y: 176, short: "⑤ 大和魯內新幹線口" },
+  "daiwa-taiko": { num: "6", x: 250, y: 230, short: "⑥ 大和魯內太閤通口" },
+  "richmond-shinkansen": { num: "7", x: 176, y: 140, short: "⑦ Richmond新幹線口" },
+  "vessel-campana": { num: "8", x: 276, y: 138, short: "⑧ Vessel Campana名駅" },
+  "cypress-ekimae": { num: "9", x: 304, y: 150, short: "⑨ Cypress名古屋駅前" },
+  "sotetsu-sakura": { num: "10", x: 292, y: 214, short: "⑩ 相鐵櫻通口" },
+  "toyoko-sakura": { num: "11", x: 324, y: 214, short: "⑪ 東橫INN櫻通新館" },
+  "comfort-era": { num: "12", x: 356, y: 222, short: "⑫ Comfort ERA名駅南" },
+  "vessel-sakae": { num: "13", x: 490, y: 224, short: "⑬ Vessel Inn榮站前" },
+  "comfort-sakae": { num: "14", x: 550, y: 232, short: "⑭ Comfort Inn榮站前" },
+  "comfort-fushimi": { num: "15", x: 458, y: 280, short: "⑮ Comfort名古屋伏見" },
+  "delstyle-nayabashi": { num: "16", x: 386, y: 254, short: "⑯ DEL style納屋橋" },
+  "grandbase": { num: "17", x: 148, y: 218, short: "⑰ GRAND BASE駅西" },
+  "samurai-house3": { num: "18", x: 112, y: 224, short: "⑱ SAMURAI獨棟包棟" },
+  "central-res": { num: "19", x: 64, y: 82, short: "⑲ Central包層(中村公園)" }
+};
+
+// Zero-Truncation Metadata for the 5x4 Instant Keypad (Works on 360px Phone & Desktop!)
+const KEYPAD_META = {
+  "comfort":             { cNum: "①", label: "新幹線口", sub: "¥2.2萬·5分", priceTag: "¥2.2~3.0萬/晚", dot: "#2563eb" },
+  "chisun":              { cNum: "②", label: "Chisun",   sub: "¥1.6萬·4分", priceTag: "¥1.6~2.5萬/晚", dot: "#2563eb" },
+  "toyoko-shinkansen":   { cNum: "③", label: "東橫西口", sub: "¥1.9萬·4分", priceTag: "¥1.9~2.6萬/晚", dot: "#2563eb" },
+  "sotetsu-shinkansen":  { cNum: "④", label: "相鐵西口", sub: "¥2.1萬·4分", priceTag: "¥2.1~3.1萬/晚", dot: "#2563eb" },
+  "daiwa-shinkansen":    { cNum: "⑤", label: "大和西口", sub: "¥2.4萬·3分", priceTag: "¥2.4~3.5萬/晚", dot: "#2563eb" },
+  "daiwa-taiko":         { cNum: "⑥", label: "大和太閤", sub: "¥2.6萬·4分", priceTag: "¥2.6~3.8萬/晚", dot: "#2563eb" },
+  "richmond-shinkansen": { cNum: "⑦", label: "龜島Rich", sub: "¥2.4萬·5分", priceTag: "¥2.4~3.4萬/晚", dot: "#2563eb" },
+  "vessel-campana":      { cNum: "⑧", label: "Vessel名", sub: "¥2.4萬·4分", priceTag: "¥2.4~3.5萬/晚", dot: "#e11d48" },
+  "cypress-ekimae":      { cNum: "⑨", label: "Cypress",  sub: "¥2.1萬·3分", priceTag: "¥2.1~3.1萬/晚", dot: "#e11d48" },
+  "sotetsu-sakura":      { cNum: "⑩", label: "相鐵櫻通", sub: "¥2.2萬·4分", priceTag: "¥2.2~3.2萬/晚", dot: "#e11d48" },
+  "toyoko-sakura":       { cNum: "⑪", label: "東橫櫻通", sub: "¥1.95萬·4分", priceTag: "¥1.95~2.7萬/晚", dot: "#e11d48" },
+  "comfort-era":         { cNum: "⑫", label: "名駅南ERA",sub: "¥2.0萬·6分", priceTag: "¥2.0~2.9萬/晚", dot: "#e11d48" },
+  "vessel-sakae":        { cNum: "⑬", label: "榮Vessel", sub: "¥2.1萬·2分", priceTag: "¥2.1~3.2萬/晚", dot: "#d97706" },
+  "comfort-sakae":       { cNum: "⑭", label: "榮Comf",   sub: "¥1.9萬·1分", priceTag: "¥1.9~2.8萬/晚", dot: "#d97706" },
+  "comfort-fushimi":     { cNum: "⑮", label: "伏見Comf", sub: "¥2.0萬·4分", priceTag: "¥2.0~2.9萬/晚", dot: "#d97706" },
+  "delstyle-nayabashi":  { cNum: "⑯", label: "納屋橋",   sub: "¥2.3萬·7分", priceTag: "¥2.3~3.5萬/晚", dot: "#d97706" },
+  "grandbase":           { cNum: "⑰", label: "駅西公寓", sub: "¥2.7萬·4分", priceTag: "¥2.7~4.0萬/晚", dot: "#059669" },
+  "samurai-house3":      { cNum: "⑱", label: "獨棟包棟", sub: "¥4.2萬·3分", priceTag: "¥4.2~5.8萬/晚", dot: "#059669" },
+  "central-res":         { cNum: "⑲", label: "中村包層", sub: "¥3.8萬·2分", priceTag: "¥3.8~5.2萬/晚", dot: "#059669" },
+  "osaka-eslead":        { cNum: "✅", label: "大阪已訂", sub: "鶴橋·1分",   priceTag: "✅ 前3晚已訂妥", dot: "#059669" }
 };
 
 const HOTELS_DAY_DIR_MODES = [
-  { id: "all", pill: "🗺️ 全覽：19間住宿＋全景點方向" },
-  { id: "day4", pill: "📅 D4 動線 (西抵➔北名古屋城➔東綠洲21)" },
-  { id: "day5", pill: "📅 D5 動線 (太閤通口➔往北牧歌之里)" },
-  { id: "day6", pill: "📅 D6 動線 (往東吉卜力公園)" },
-  { id: "day7", pill: "📅 D7 動線 (中吐司➔南名古屋港➔東榮)" },
-  { id: "day8", pill: "📅 D8 動線 (中科學館➔南機場返台)" }
+  { id: "all",  pill: "🗺️全區" },
+  { id: "day4", pill: "🏯D4北" },
+  { id: "day5", pill: "❄️D5雪" },
+  { id: "day6", pill: "🌱D6東" },
+  { id: "day7", pill: "⚓D7港" },
+  { id: "day8", pill: "✈️D8機" }
 ];
 
 const METRO_SPOTS = [
-  { id: "all", pill: "🌟 19間住宿＋全地鐵總覽", name: "名古屋全地鐵 × 19間住宿分佈 × 全景點總覽", dayTag: "全局總覽", mustGo: true, node: "meieki" },
-  { id: "day4", pill: "📅 Day 4 整日方向", name: "Day 4 整日動向：新大阪新幹線抵 ➔ 名古屋城・豬排(北) ➔ 綠洲21(東)", dayTag: "Day 4 整日", mustGo: true, node: "castle" },
-  { id: "day5", pill: "📅 Day 5 整日方向", name: "Day 5 整日動向：名古屋站太閤通口集合 ➔ 往北牧歌之里玩雪", dayTag: "Day 5 整日", mustGo: true, node: "bokka" },
-  { id: "day6", pill: "📅 Day 6 整日方向", name: "Day 6 整日動向：往東前往吉卜力公園（直達巴士 或 東山線＋Linimo）", dayTag: "Day 6 整日", mustGo: true, node: "ghibli" },
-  { id: "day7", pill: "📅 Day 7 整日方向", name: "Day 7 整日動向：KAKO吐司(中) ➔ 往南名古屋港海洋館 ➔ 往東榮商圈", dayTag: "Day 7 整日", mustGo: true, node: "port" },
-  { id: "day8", pill: "📅 Day 8 整日方向", name: "Day 8 整日動向：伏見站科學館(中) ➔ 往南搭 μ-SKY 至中部國際機場", dayTag: "Day 8 整日", mustGo: true, node: "airport" },
-  { id: "castle", pill: "🏯 名古屋城・豬排", name: "名古屋城 ＆ 矢場味噌豬排（金鯱橫丁）", dayTag: "Day 4 必去", mustGo: true, node: "castle" },
-  { id: "sakae", pill: "✨ 綠洲21・榮商圈", name: "綠洲21 水之宇宙船 ＆ 榮商圈逛街", dayTag: "Day 4 & 7 必去", mustGo: true, node: "sakae" },
-  { id: "bokka", pill: "❄️ 牧歌之里(玩雪)", name: "牧歌之里 冰雪樂園（太閤通口搭直達巴士）", dayTag: "Day 5 必去", mustGo: true, node: "bokka" },
-  { id: "ghibli", pill: "🌱 吉卜力公園", name: "吉卜力公園（愛・地球博記念公園）", dayTag: "Day 6 必去", mustGo: true, node: "ghibli" },
-  { id: "kako", pill: "🍞 KAKO花車吐司", name: "KAKO 花車本店（四色果醬紅豆鮮奶油吐司）", dayTag: "Day 7 早餐必去", mustGo: true, node: "kokusai" },
-  { id: "port", pill: "⚓ 海洋博物館・破冰船", name: "名古屋海洋博物館 ＆ 南極破冰船富士號", dayTag: "Day 7 必去", mustGo: true, node: "port" },
-  { id: "science", pill: "🔬 名古屋市科學館", name: "名古屋市科學館（世界最大星象儀・小學生免費）", dayTag: "Day 8 必去", mustGo: true, node: "fushimi" },
-  { id: "airport", pill: "✈️ 中部國際機場", name: "中部國際機場 新特麗亞 (NGO)", dayTag: "Day 8 返台", mustGo: true, node: "airport" },
-  { id: "osu", pill: "🏮 順遊：大須商圈", name: "大須觀音 ＆ 大須拱廊商店街", dayTag: "熱門大景點", mustGo: false, node: "osu" },
-  { id: "atsuta", pill: "⛩️ 順遊：熱田神宮", name: "熱田神宮（蓬萊軒鰻魚飯）", dayTag: "熱門大景點", mustGo: false, node: "atsuta" },
-  { id: "legoland", pill: "🧱 順遊：樂高樂園", name: "日本樂高樂園 Legoland ＆ 磁浮鐵道館", dayTag: "熱門大景點", mustGo: false, node: "legoland" }
+  { id: "all", pill: "🌟 全覽", name: "名古屋全地鐵 × 19間住宿分佈總覽", dayTag: "全局總覽", mustGo: true, node: "meieki" },
+  { id: "day4", pill: "📅D4整日", name: "Day 4 動向：新幹線抵 ➔ 名古屋城(北) ➔ 綠洲21(東)", dayTag: "Day 4", mustGo: true, node: "castle" },
+  { id: "day5", pill: "📅D5整日", name: "Day 5 動向：太閤通口集合 ➔ 往北牧歌之里玩雪", dayTag: "Day 5", mustGo: true, node: "bokka" },
+  { id: "day6", pill: "📅D6整日", name: "Day 6 動向：往東前往吉卜力公園", dayTag: "Day 6", mustGo: true, node: "ghibli" },
+  { id: "day7", pill: "📅D7整日", name: "Day 7 動向：KAKO吐司 ➔ 往南名古屋港 ➔ 榮商圈", dayTag: "Day 7", mustGo: true, node: "port" },
+  { id: "day8", pill: "📅D8整日", name: "Day 8 動向：伏見科學館 ➔ 往南搭 μ-SKY 至機場", dayTag: "Day 8", mustGo: true, node: "airport" },
+  { id: "castle", pill: "🏯名古屋城", name: "名古屋城 ＆ 矢場味噌豬排", dayTag: "Day 4 必去", mustGo: true, node: "castle" },
+  { id: "sakae", pill: "✨綠洲21", name: "綠洲21 水之宇宙船 ＆ 榮商圈", dayTag: "Day 4 & 7", mustGo: true, node: "sakae" },
+  { id: "bokka", pill: "❄️牧歌之里", name: "牧歌之里 冰雪樂園（太閤通口巴士）", dayTag: "Day 5 必去", mustGo: true, node: "bokka" },
+  { id: "ghibli", pill: "🌱吉卜力", name: "吉卜力公園（愛・地球博記念公園）", dayTag: "Day 6 必去", mustGo: true, node: "ghibli" },
+  { id: "kako", pill: "🍞KAKO吐司", name: "KAKO 花車本店（四色果醬吐司）", dayTag: "Day 7 必去", mustGo: true, node: "kokusai" },
+  { id: "port", pill: "⚓海洋館", name: "名古屋海洋博物館 ＆ 南極破冰船", dayTag: "Day 7 必去", mustGo: true, node: "port" },
+  { id: "science", pill: "🔬科學館", name: "名古屋市科學館（小學生免費）", dayTag: "Day 8 必去", mustGo: true, node: "fushimi" },
+  { id: "airport", pill: "✈️中部機場", name: "中部國際機場 新特麗亞 (NGO)", dayTag: "Day 8 返台", mustGo: true, node: "airport" },
+  { id: "osu", pill: "🏮大須", name: "大須觀音 ＆ 大須拱廊商店街", dayTag: "順遊", mustGo: false, node: "osu" },
+  { id: "atsuta", pill: "⛩️熱田神宮", name: "熱田神宮（蓬萊軒鰻魚飯）", dayTag: "順遊", mustGo: false, node: "atsuta" },
+  { id: "legoland", pill: "🧱樂高樂園", name: "日本樂高樂園 ＆ 磁浮鐵道館", dayTag: "順遊", mustGo: false, node: "legoland" }
 ];
 
 const HOTEL_METRO_HUB = {
@@ -2823,7 +2844,7 @@ function buildNagoyaMetroBigSvg(hotelId, spotId, spotClickFnName = "selectMetroS
   const spotStroke = (id, defColor) => isTarget(id) ? "#1d4ed8" : defColor;
   const spotWidth = id => isTarget(id) ? "2.8" : "1.5";
 
-  // Build All 18 Non-Selected Hotel Pins (clickable!)
+  // Build All 18 Non-Selected Hotel Pins (large tap-friendly circles!)
   const otherPinsSvg = Object.entries(HOTEL_PIN_COORDS)
     .filter(([id]) => id !== activeHotel.id)
     .map(([id, p]) => {
@@ -2834,336 +2855,677 @@ function buildNagoyaMetroBigSvg(hotelId, spotId, spotClickFnName = "selectMetroS
       const txtCol = isApt ? "#065f46" : "#1e3a8a";
       return `
         <g class="hotel-pin-click" onclick="clickGlobalHotelPin('${id}')">
-          <title>${p.short}（點擊查看此住宿）</title>
-          <circle cx="${p.x}" cy="${p.y}" r="10.2" fill="${fillCol}" stroke="${borderCol}" stroke-width="2" />
-          <text x="${p.x}" y="${p.y + 3.6}" text-anchor="middle" font-size="9.6" font-weight="800" fill="${txtCol}">${p.num}</text>
+          <title>${p.short}（點擊秒切此住宿）</title>
+          <circle cx="${p.x}" cy="${p.y}" r="11" fill="${fillCol}" stroke="${borderCol}" stroke-width="2.1" />
+          <text x="${p.x}" y="${p.y + 3.8}" text-anchor="middle" font-size="10.2" font-weight="800" fill="${txtCol}">${p.num}</text>
         </g>
       `;
     }).join("");
 
-  // Active Selected Hotel Pin + Floating Callout Flag (clamped inside 800x520)
-  const calloutCx = Math.max(106, Math.min(694, activePin.x));
-  const calloutY = activePin.y > 95 ? activePin.y - 36 : activePin.y + 20;
+  // Active Selected Hotel Pin + Floating Callout Flag (clamped inside 820x440)
+  const calloutCx = Math.max(112, Math.min(708, activePin.x));
+  const calloutY = activePin.y > 78 ? activePin.y - 31 : activePin.y + 24;
   const activePinSvg = `
-    <g>
-      <line x1="${activePin.x}" y1="${activePin.y}" x2="${stX}" y2="${stY}" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="4 3" />
-      <circle cx="${activePin.x}" cy="${activePin.y}" r="15" fill="#ef4444" class="anim-pulse-circle" />
-      <circle cx="${activePin.x}" cy="${activePin.y}" r="12.5" fill="#dc2626" stroke="#fef08a" stroke-width="2.8" />
-      <text x="${activePin.x}" y="${activePin.y + 4}" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">${activePin.num}</text>
+    <g class="active-pin-group">
+      <line x1="${activePin.x}" y1="${activePin.y}" x2="${stX}" y2="${stY}" stroke="#dc2626" stroke-width="2.6" stroke-dasharray="4 3" />
+      <circle cx="${activePin.x}" cy="${activePin.y}" r="15.5" fill="#ef4444" class="anim-pulse-circle" />
+      <circle cx="${activePin.x}" cy="${activePin.y}" r="13.2" fill="#dc2626" stroke="#fef08a" stroke-width="2.8" />
+      <text x="${activePin.x}" y="${activePin.y + 4.3}" text-anchor="middle" font-size="11.5" font-weight="900" fill="#ffffff">${activePin.num}</text>
       <g transform="translate(${calloutCx}, ${calloutY})">
-        <rect x="-92" y="-11" width="184" height="22" rx="11" fill="#991b1b" stroke="#fef08a" stroke-width="1.5" />
-        <text x="0" y="3.8" text-anchor="middle" font-size="10.2" font-weight="800" fill="#ffffff">📍 目前：${activePin.short}</text>
+        <rect x="-98" y="-11" width="196" height="22" rx="11" fill="#991b1b" stroke="#fef08a" stroke-width="1.5" />
+        <text x="0" y="3.8" text-anchor="middle" font-size="10.5" font-weight="800" fill="#ffffff">📍 目前：${activePin.short}</text>
       </g>
     </g>
   `;
 
   return `
-    <svg viewBox="0 0 800 520" width="100%" height="auto" role="img" aria-label="名古屋全局地鐵系統與19間推薦住宿相對位置大地圖">
-      <rect x="0" y="0" width="800" height="520" fill="#f8fafc" />
+    <svg viewBox="0 0 820 440" width="100%" height="auto" role="img" aria-label="名古屋全局地鐵系統與19間推薦住宿相對位置大地圖">
+      <rect x="0" y="0" width="820" height="440" fill="#f8fafc" />
 
-      <!-- Compass & Direction Hints -->
-      <g transform="translate(766, 28)">
-        <circle cx="0" cy="0" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
-        <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="#334155">↑北</text>
+      <!-- Compass & Legend Strip -->
+      <g transform="translate(790, 24)">
+        <circle cx="0" cy="0" r="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+        <text x="0" y="4" text-anchor="middle" font-size="10.8" font-weight="800" fill="#334155">↑北</text>
       </g>
-      <rect x="14" y="10" width="198" height="22" rx="6" fill="#eff6ff" stroke="#bfdbfe" />
-      <text x="113" y="24.5" text-anchor="middle" font-size="10" font-weight="800" fill="#1e40af">👆 點圓圈 ①～⑲ 切換住宿｜點景點看路線</text>
+      <rect x="10" y="8" width="144" height="21" rx="6" fill="#eff6ff" stroke="#bfdbfe" />
+      <text x="82" y="22" text-anchor="middle" font-size="10" font-weight="800" fill="#1e40af">👆 點①～⑲或景點即時連動</text>
 
       <!-- Directional Orientation Tags -->
-      <text x="380" y="24" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0f766e">⬆️ 往北方向（D4名古屋城・D5牧歌之里）</text>
-      <text x="722" y="212" text-anchor="middle" font-size="10.5" font-weight="800" fill="#15803d">➡️ 往東方向（D6吉卜力）</text>
-      <text x="82" y="492" text-anchor="middle" font-size="10.2" font-weight="800" fill="#0369a1">⬇️ 往南（名古屋港・機場）</text>
+      <text x="386" y="18" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0f766e">⬆️ 往北（D4名古屋城・D5牧歌之里）</text>
+      <text x="742" y="186" text-anchor="middle" font-size="10.5" font-weight="800" fill="#15803d">➡️ 往東（D6吉卜力）</text>
+      <text x="76" y="424" text-anchor="middle" font-size="10.2" font-weight="800" fill="#0369a1">⬇️ 往南（海博館・機場）</text>
 
       <!-- ==================== BASE SUBWAY & RAIL NETWORK ==================== -->
       <g opacity="${dimOp}">
         <!-- Inbound Shinkansen from Shin-Osaka -->
-        <line x1="36" y1="220" x2="250" y2="220" stroke="#64748b" stroke-width="5" stroke-dasharray="7 5" />
+        <line x1="36" y1="186" x2="252" y2="186" stroke="#64748b" stroke-width="5" stroke-dasharray="7 5" />
         <!-- North Highway Bus to Bokka no Sato -->
-        <line x1="250" y1="220" x2="250" y2="48" stroke="#0f766e" stroke-width="4.5" stroke-dasharray="6 5" />
+        <line x1="252" y1="186" x2="252" y2="42" stroke="#0f766e" stroke-width="4.5" stroke-dasharray="6 5" />
         <!-- Aonami Line South to Legoland -->
-        <line x1="250" y1="220" x2="250" y2="484" stroke="#0d9488" stroke-width="5" />
+        <line x1="252" y1="186" x2="252" y2="414" stroke="#0d9488" stroke-width="5" />
         <!-- Meitetsu / JR Diagonal to Kanayama & Airport -->
-        <path d="M 250 220 L 510 434 L 706 484" fill="none" stroke="#0369a1" stroke-width="5" stroke-dasharray="8 4" />
-        <line x1="510" y1="434" x2="604" y2="434" stroke="#7c3aed" stroke-width="5" />
+        <path d="M 252 186 L 520 372 L 716 414" fill="none" stroke="#0369a1" stroke-width="5" stroke-dasharray="8 4" />
+        <line x1="520" y1="372" x2="616" y2="372" stroke="#7c3aed" stroke-width="5" />
 
         <!-- Meijo Loop Eastern Half -->
-        <path d="M 510 88 L 594 88 L 594 434 L 510 434" fill="none" stroke="#c4b5fd" stroke-width="4" stroke-dasharray="5 5" />
+        <path d="M 520 68 L 604 68 L 604 372 L 520 372" fill="none" stroke="#c4b5fd" stroke-width="4" stroke-dasharray="5 5" />
 
         <!-- Purple Line: Meijo & Meiko -->
-        <line x1="510" y1="88" x2="510" y2="484" stroke="#7c3aed" stroke-width="7" stroke-linecap="round" />
+        <line x1="520" y1="68" x2="520" y2="414" stroke="#7c3aed" stroke-width="7" stroke-linecap="round" />
 
         <!-- Red Line: Sakura-dori -->
-        <line x1="128" y1="220" x2="555" y2="220" stroke="#e11d48" stroke-width="7" stroke-linecap="round" />
+        <line x1="128" y1="186" x2="565" y2="186" stroke="#e11d48" stroke-width="7" stroke-linecap="round" />
 
         <!-- Blue Line: Tsurumai -->
-        <path d="M 412 186 L 412 380 L 510 380" fill="none" stroke="#2563eb" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M 424 156 L 424 330 L 520 330" fill="none" stroke="#2563eb" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
 
         <!-- Yellow Line: Higashiyama -->
-        <path d="M 62 148 L 152 148 L 250 220 L 412 304 L 636 304" fill="none" stroke="#f59e0b" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M 64 116 L 156 116 L 252 186 L 424 264 L 646 264" fill="none" stroke="#f59e0b" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round" />
 
         <!-- Light Blue Line: Linimo Maglev -->
-        <line x1="636" y1="304" x2="742" y2="304" stroke="#0284c7" stroke-width="6.5" stroke-linecap="round" />
+        <line x1="646" y1="264" x2="754" y2="264" stroke="#0284c7" stroke-width="6.5" stroke-linecap="round" />
         <!-- Direct Bus Curve Meieki -> Ghibli -->
-        <path d="M 250 220 Q 515 138 742 304" fill="none" stroke="#0ea5e9" stroke-width="2.2" stroke-dasharray="4 5" />
+        <path d="M 252 186 Q 530 112 754 264" fill="none" stroke="#0ea5e9" stroke-width="2.2" stroke-dasharray="4 5" />
       </g>
 
       <!-- ==================== ACTIVE ANIMATED ROUTE HIGHLIGHT ==================== -->
       ${!route.isAll && route.path ? `
-        <path d="${route.path}" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" opacity="0.94" />
+        <path d="${route.path}" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" opacity="0.95" />
         <path d="${route.path}" fill="none" stroke="${route.color}" stroke-width="6.8" stroke-linecap="round" stroke-linejoin="round" class="anim-metro-route" />
         ${route.path.includes("L") ? `
-          <circle r="7.8" fill="${route.color}" stroke="#ffffff" stroke-width="2.6">
-            <animateMotion dur="3.1s" repeatCount="indefinite" path="${route.path}" />
+          <circle r="8" fill="${route.color}" stroke="#ffffff" stroke-width="2.6">
+            <animateMotion dur="2.9s" repeatCount="indefinite" path="${route.path}" />
           </circle>
         ` : ""}
       ` : ""}
 
       <!-- ==================== STATION NODES & LABELS ==================== -->
-      <rect x="8" y="201" width="62" height="36" rx="6" fill="#334155" />
-      <text x="39" y="216" text-anchor="middle" font-size="9.5" font-weight="800" fill="#ffffff">🚄D4新大阪</text>
-      <text x="39" y="229" text-anchor="middle" font-size="8.8" font-weight="700" fill="#cbd5e1">50分抵名駅</text>
+      <rect x="6" y="168" width="60" height="34" rx="6" fill="#334155" />
+      <text x="36" y="182" text-anchor="middle" font-size="9.5" font-weight="800" fill="#ffffff">🚄D4新大阪</text>
+      <text x="36" y="195" text-anchor="middle" font-size="8.8" font-weight="700" fill="#cbd5e1">50分抵名駅</text>
 
-      <circle cx="62" cy="148" r="6" fill="#ffffff" stroke="#f59e0b" stroke-width="3" />
-      <text x="62" y="168" text-anchor="middle" font-size="10.2" font-weight="800" fill="#334155">中村公園</text>
+      <circle cx="64" cy="116" r="6" fill="#ffffff" stroke="#f59e0b" stroke-width="3" />
+      <text x="64" y="135" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">中村公園</text>
 
-      <circle cx="152" cy="148" r="6" fill="#ffffff" stroke="#f59e0b" stroke-width="3" />
-      <text x="132" y="168" text-anchor="middle" font-size="10.2" font-weight="800" fill="#334155">龜島站</text>
+      <circle cx="156" cy="116" r="6" fill="#ffffff" stroke="#f59e0b" stroke-width="3" />
+      <text x="142" y="104" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">龜島站</text>
 
-      <circle cx="128" cy="220" r="6.5" fill="#ffffff" stroke="#e11d48" stroke-width="3" />
-      <rect x="96" y="192" width="64" height="19" rx="5" fill="#fff1f2" stroke="#fda4af" />
-      <text x="128" y="205" text-anchor="middle" font-size="10.2" font-weight="800" fill="#9f1239">太閤通站</text>
+      <circle cx="128" cy="186" r="6.5" fill="#ffffff" stroke="#e11d48" stroke-width="3" />
+      <rect x="94" y="158" width="68" height="19" rx="5" fill="#fff1f2" stroke="#fda4af" />
+      <text x="128" y="171" text-anchor="middle" font-size="10.5" font-weight="800" fill="#9f1239">太閤通站</text>
 
       <!-- NAGOYA STATION MAIN HUB -->
-      <circle cx="250" cy="220" r="11" fill="#0f172a" stroke="#ffffff" stroke-width="3" />
-      <rect x="212" y="206" width="76" height="22" rx="6" fill="#0f172a" />
-      <text x="250" y="220.5" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">🚉名古屋站</text>
+      <circle cx="252" cy="186" r="11" fill="#0f172a" stroke="#ffffff" stroke-width="3" />
+      <rect x="212" y="173" width="80" height="22" rx="6" fill="#0f172a" />
+      <text x="252" y="187.5" text-anchor="middle" font-size="11.2" font-weight="800" fill="#ffffff">🚉名古屋站</text>
 
-      <circle cx="344" cy="220" r="6" fill="#ffffff" stroke="#e11d48" stroke-width="3" />
-      <text x="352" y="208" text-anchor="middle" font-size="10.2" font-weight="800" fill="#334155">國際中心</text>
+      <circle cx="354" cy="186" r="6" fill="#ffffff" stroke="#e11d48" stroke-width="3" />
+      <text x="360" y="174" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">國際中心</text>
 
-      <circle cx="412" cy="220" r="6" fill="#ffffff" stroke="#475569" stroke-width="2.8" />
-      <text x="438" y="210" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">丸之內</text>
+      <circle cx="424" cy="186" r="5.8" fill="#ffffff" stroke="#475569" stroke-width="2.8" />
+      <text x="450" y="176" text-anchor="middle" font-size="10.2" font-weight="700" fill="#475569">丸之內</text>
 
-      <circle cx="510" cy="220" r="6.5" fill="#ffffff" stroke="#7c3aed" stroke-width="3" />
-      <text x="550" y="224" text-anchor="middle" font-size="10.5" font-weight="800" fill="#4c1d95">久屋大通</text>
+      <circle cx="520" cy="186" r="6.5" fill="#ffffff" stroke="#7c3aed" stroke-width="3" />
+      <text x="562" y="190" text-anchor="middle" font-size="10.8" font-weight="800" fill="#4c1d95">久屋大通</text>
 
-      <circle cx="412" cy="304" r="7" fill="#ffffff" stroke="#f59e0b" stroke-width="3" />
-      <text x="412" y="324" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">伏見站</text>
+      <circle cx="424" cy="264" r="7" fill="#ffffff" stroke="#f59e0b" stroke-width="3" />
+      <text x="424" y="284" text-anchor="middle" font-size="10.8" font-weight="800" fill="#334155">伏見站</text>
 
-      <circle cx="510" cy="304" r="8" fill="#0f172a" stroke="#f59e0b" stroke-width="3" />
-      <text x="534" y="321" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">榮站</text>
+      <circle cx="520" cy="264" r="8" fill="#0f172a" stroke="#f59e0b" stroke-width="3" />
+      <text x="546" y="281" text-anchor="middle" font-size="11.2" font-weight="800" fill="#0f172a">榮站</text>
 
-      <circle cx="636" cy="304" r="6" fill="#ffffff" stroke="#0284c7" stroke-width="3" />
-      <text x="636" y="324" text-anchor="middle" font-size="10" font-weight="800" fill="#0369a1">藤が丘(轉磁浮)</text>
+      <circle cx="646" cy="264" r="6" fill="#ffffff" stroke="#0284c7" stroke-width="3" />
+      <text x="646" y="284" text-anchor="middle" font-size="10.2" font-weight="800" fill="#0369a1">藤が丘(轉磁浮)</text>
 
-      <circle cx="510" cy="380" r="5.5" fill="#ffffff" stroke="#7c3aed" stroke-width="2.8" />
-      <text x="540" y="384" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">上前津</text>
+      <circle cx="520" cy="330" r="5.5" fill="#ffffff" stroke="#7c3aed" stroke-width="2.8" />
+      <text x="550" y="334" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">上前津</text>
 
-      <circle cx="510" cy="434" r="7.5" fill="#0f172a" stroke="#ffffff" stroke-width="2.5" />
-      <text x="474" y="438" text-anchor="middle" font-size="10.8" font-weight="800" fill="#0f172a">金山站</text>
+      <circle cx="520" cy="372" r="7.5" fill="#0f172a" stroke="#ffffff" stroke-width="2.5" />
+      <text x="484" y="376" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">金山站</text>
 
       <!-- ==================== CLICKABLE ATTRACTION CARDS ==================== -->
       <!-- D5 Bokka -->
       <g class="metro-click-target" onclick="${spotClickFnName}('bokka')">
-        <rect x="166" y="32" width="168" height="38" rx="9" fill="${isTarget('bokka') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('bokka', '#0f766e')}" stroke-width="${spotWidth('bokka')}" />
-        <text x="250" y="48" text-anchor="middle" font-size="11.2" font-weight="800" fill="#0f172a">❄️ D5 牧歌之里 (玩雪)</text>
-        <text x="250" y="62" text-anchor="middle" font-size="9.5" font-weight="700" fill="#0f766e">太閤通口直達巴士約 2h</text>
+        <rect x="168" y="24" width="168" height="34" rx="8" fill="${isTarget('bokka') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('bokka', '#0f766e')}" stroke-width="${spotWidth('bokka')}" />
+        <text x="252" y="39" text-anchor="middle" font-size="11.2" font-weight="800" fill="#0f172a">❄️ D5 牧歌之里 (玩雪)</text>
+        <text x="252" y="52" text-anchor="middle" font-size="9.5" font-weight="700" fill="#0f766e">太閤通口直達巴士約 2h</text>
       </g>
 
       <!-- D4 Castle -->
       <g class="metro-click-target" onclick="${spotClickFnName}('castle')">
-        <circle cx="510" cy="88" r="7" fill="#7c3aed" stroke="#ffffff" stroke-width="2.5" />
-        <rect x="420" y="40" width="180" height="38" rx="9" fill="${isTarget('castle') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('castle', '#7c3aed')}" stroke-width="${spotWidth('castle')}" />
-        <text x="510" y="56" text-anchor="middle" font-size="11.2" font-weight="800" fill="#0f172a">🏯 D4 名古屋城＋矢場豬排</text>
-        <text x="510" y="70" text-anchor="middle" font-size="9.5" font-weight="700" fill="#6d28d9">名城線【名古屋城站】7號口</text>
+        <circle cx="520" cy="68" r="7" fill="#7c3aed" stroke="#ffffff" stroke-width="2.5" />
+        <rect x="430" y="26" width="180" height="34" rx="8" fill="${isTarget('castle') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('castle', '#7c3aed')}" stroke-width="${spotWidth('castle')}" />
+        <text x="520" y="41" text-anchor="middle" font-size="11.2" font-weight="800" fill="#0f172a">🏯 D4 名古屋城＋矢場豬排</text>
+        <text x="520" y="54" text-anchor="middle" font-size="9.5" font-weight="700" fill="#6d28d9">名城線【名古屋城站】7號口</text>
       </g>
 
       <!-- D7 KAKO Toast -->
       <g class="metro-click-target" onclick="${spotClickFnName}('kako')">
-        <rect x="306" y="132" width="136" height="36" rx="8" fill="${isTarget('kako') ? '#eff6ff' : '#fffbeb'}" stroke="${spotStroke('kako', '#f59e0b')}" stroke-width="${spotWidth('kako')}" />
-        <text x="374" y="148" text-anchor="middle" font-size="10.8" font-weight="800" fill="#78350f">🍞 D7 KAKO花車吐司</text>
-        <text x="374" y="161" text-anchor="middle" font-size="9.4" font-weight="700" fill="#b45309">國際中心走4分/名駅走9分</text>
-        <line x1="344" y1="168" x2="344" y2="212" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="3 3" />
+        <rect x="314" y="106" width="136" height="33" rx="8" fill="${isTarget('kako') ? '#eff6ff' : '#fffbeb'}" stroke="${spotStroke('kako', '#f59e0b')}" stroke-width="${spotWidth('kako')}" />
+        <text x="382" y="121" text-anchor="middle" font-size="10.8" font-weight="800" fill="#78350f">🍞 D7 KAKO花車吐司</text>
+        <text x="382" y="133" text-anchor="middle" font-size="9.2" font-weight="700" fill="#b45309">國際中心4分/名駅9分</text>
+        <line x1="354" y1="139" x2="354" y2="178" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="3 3" />
       </g>
 
       <!-- D4 & D7 Oasis 21 / Sakae -->
       <g class="metro-click-target" onclick="${spotClickFnName}('sakae')">
-        <rect x="524" y="244" width="132" height="36" rx="8" fill="${isTarget('sakae') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('sakae', '#d97706')}" stroke-width="${spotWidth('sakae')}" />
-        <text x="590" y="260" text-anchor="middle" font-size="10.6" font-weight="800" fill="#0f172a">✨ D4/7 綠洲21・榮</text>
-        <text x="590" y="273" text-anchor="middle" font-size="9.2" font-weight="700" fill="#b45309">榮站4A直通・久屋大通旁</text>
+        <rect x="556" y="204" width="128" height="32" rx="8" fill="${isTarget('sakae') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('sakae', '#d97706')}" stroke-width="${spotWidth('sakae')}" />
+        <text x="620" y="218" text-anchor="middle" font-size="10.6" font-weight="800" fill="#0f172a">✨ D4/7 綠洲21・榮</text>
+        <text x="620" y="230" text-anchor="middle" font-size="9" font-weight="700" fill="#b45309">榮站4A直通・久屋大通旁</text>
       </g>
 
       <!-- D6 Ghibli Park -->
       <g class="metro-click-target" onclick="${spotClickFnName}('ghibli')">
-        <circle cx="742" cy="304" r="7" fill="#0284c7" stroke="#ffffff" stroke-width="2.5" />
-        <rect x="664" y="242" width="126" height="40" rx="9" fill="${isTarget('ghibli') ? '#eff6ff' : '#f0fdf4'}" stroke="${spotStroke('ghibli', '#16a34a')}" stroke-width="${spotWidth('ghibli')}" />
-        <text x="727" y="259" text-anchor="middle" font-size="11" font-weight="800" fill="#14532d">🌱 D6 吉卜力公園</text>
-        <text x="727" y="274" text-anchor="middle" font-size="9.2" font-weight="700" fill="#15803d">磁浮線Linimo / 巴士</text>
+        <circle cx="754" cy="264" r="7" fill="#0284c7" stroke="#ffffff" stroke-width="2.5" />
+        <rect x="682" y="208" width="128" height="35" rx="8" fill="${isTarget('ghibli') ? '#eff6ff' : '#f0fdf4'}" stroke="${spotStroke('ghibli', '#16a34a')}" stroke-width="${spotWidth('ghibli')}" />
+        <text x="746" y="223" text-anchor="middle" font-size="11" font-weight="800" fill="#14532d">🌱 D6 吉卜力公園</text>
+        <text x="746" y="236" text-anchor="middle" font-size="9.2" font-weight="700" fill="#15803d">磁浮線Linimo / 巴士</text>
       </g>
 
       <!-- D8 Science Museum -->
       <g class="metro-click-target" onclick="${spotClickFnName}('science')">
-        <rect x="268" y="318" width="128" height="36" rx="8" fill="${isTarget('science') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('science', '#2563eb')}" stroke-width="${spotWidth('science')}" />
-        <text x="332" y="334" text-anchor="middle" font-size="10.6" font-weight="800" fill="#0f172a">🔬 D8 名古屋市科學館</text>
-        <text x="332" y="347" text-anchor="middle" font-size="9.2" font-weight="700" fill="#1d4ed8">伏見站走5分・小學生免費</text>
+        <rect x="272" y="276" width="128" height="32" rx="8" fill="${isTarget('science') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('science', '#2563eb')}" stroke-width="${spotWidth('science')}" />
+        <text x="336" y="290" text-anchor="middle" font-size="10.6" font-weight="800" fill="#0f172a">🔬 D8 名古屋市科學館</text>
+        <text x="336" y="302" text-anchor="middle" font-size="9" font-weight="700" fill="#1d4ed8">伏見站走5分・小學生免費</text>
       </g>
 
       <!-- Optional Osu -->
       <g class="metro-click-target" onclick="${spotClickFnName}('osu')">
-        <circle cx="412" cy="380" r="6" fill="#2563eb" stroke="#ffffff" stroke-width="2" />
-        <rect x="268" y="364" width="128" height="34" rx="8" fill="${isTarget('osu') ? '#eff6ff' : '#f8fafc'}" stroke="${spotStroke('osu', '#94a3b8')}" stroke-width="${spotWidth('osu')}" stroke-dasharray="${isTarget('osu') ? 'none' : '4 3'}" />
-        <text x="332" y="379" text-anchor="middle" font-size="10.2" font-weight="800" fill="#334155">🏮 順遊：大須觀音商圈</text>
-        <text x="332" y="391" text-anchor="middle" font-size="9" font-weight="700" fill="#64748b">大須觀音/上前津站</text>
+        <circle cx="424" cy="330" r="6" fill="#2563eb" stroke="#ffffff" stroke-width="2" />
+        <rect x="276" y="316" width="124" height="30" rx="7" fill="${isTarget('osu') ? '#eff6ff' : '#f8fafc'}" stroke="${spotStroke('osu', '#94a3b8')}" stroke-width="${spotWidth('osu')}" stroke-dasharray="${isTarget('osu') ? 'none' : '4 3'}" />
+        <text x="338" y="335" text-anchor="middle" font-size="10.2" font-weight="800" fill="#334155">🏮 順遊：大須商圈</text>
       </g>
 
       <!-- Optional Atsuta -->
       <g class="metro-click-target" onclick="${spotClickFnName}('atsuta')">
-        <circle cx="604" cy="434" r="6" fill="#7c3aed" stroke="#ffffff" stroke-width="2" />
-        <rect x="614" y="408" width="142" height="34" rx="8" fill="${isTarget('atsuta') ? '#eff6ff' : '#f8fafc'}" stroke="${spotStroke('atsuta', '#94a3b8')}" stroke-width="${spotWidth('atsuta')}" stroke-dasharray="${isTarget('atsuta') ? 'none' : '4 3'}" />
-        <text x="685" y="423" text-anchor="middle" font-size="10.2" font-weight="800" fill="#334155">⛩️ 順遊：熱田神宮</text>
-        <text x="685" y="435" text-anchor="middle" font-size="9" font-weight="700" fill="#64748b">神宮前站・蓬萊軒鰻魚飯</text>
+        <circle cx="616" cy="372" r="6" fill="#7c3aed" stroke="#ffffff" stroke-width="2" />
+        <rect x="626" y="352" width="136" height="30" rx="7" fill="${isTarget('atsuta') ? '#eff6ff' : '#f8fafc'}" stroke="${spotStroke('atsuta', '#94a3b8')}" stroke-width="${spotWidth('atsuta')}" stroke-dasharray="${isTarget('atsuta') ? 'none' : '4 3'}" />
+        <text x="694" y="371" text-anchor="middle" font-size="10.2" font-weight="800" fill="#334155">⛩️ 順遊：熱田神宮</text>
       </g>
 
       <!-- Optional Legoland -->
       <g class="metro-click-target" onclick="${spotClickFnName}('legoland')">
-        <circle cx="250" cy="484" r="6.5" fill="#0d9488" stroke="#ffffff" stroke-width="2" />
-        <rect x="156" y="468" width="154" height="36" rx="8" fill="${isTarget('legoland') ? '#eff6ff' : '#f8fafc'}" stroke="${spotStroke('legoland', '#94a3b8')}" stroke-width="${spotWidth('legoland')}" stroke-dasharray="${isTarget('legoland') ? 'none' : '4 3'}" />
-        <text x="233" y="484" text-anchor="middle" font-size="10.2" font-weight="800" fill="#334155">🧱 順遊：樂高樂園・磁浮館</text>
-        <text x="233" y="497" text-anchor="middle" font-size="9" font-weight="700" fill="#0f766e">青波線金城ふ頭24分</text>
+        <circle cx="252" cy="414" r="6.5" fill="#0d9488" stroke="#ffffff" stroke-width="2" />
+        <rect x="148" y="396" width="152" height="32" rx="8" fill="${isTarget('legoland') ? '#eff6ff' : '#f8fafc'}" stroke="${spotStroke('legoland', '#94a3b8')}" stroke-width="${spotWidth('legoland')}" stroke-dasharray="${isTarget('legoland') ? 'none' : '4 3'}" />
+        <text x="224" y="416" text-anchor="middle" font-size="10.2" font-weight="800" fill="#334155">🧱 樂高樂園・磁浮館</text>
       </g>
 
       <!-- D7 Maritime Museum -->
       <g class="metro-click-target" onclick="${spotClickFnName}('port')">
-        <circle cx="510" cy="484" r="7" fill="#7c3aed" stroke="#ffffff" stroke-width="2.5" />
-        <rect x="386" y="468" width="194" height="38" rx="9" fill="${isTarget('port') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('port', '#7c3aed')}" stroke-width="${spotWidth('port')}" />
-        <text x="483" y="485" text-anchor="middle" font-size="10.8" font-weight="800" fill="#0f172a">⚓ D7 名古屋海洋博物館・破冰船</text>
-        <text x="483" y="499" text-anchor="middle" font-size="9.2" font-weight="700" fill="#6d28d9">名港線終點【名古屋港站】旁水族館</text>
+        <circle cx="520" cy="414" r="7" fill="#7c3aed" stroke="#ffffff" stroke-width="2.5" />
+        <rect x="382" y="396" width="194" height="34" rx="8" fill="${isTarget('port') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('port', '#7c3aed')}" stroke-width="${spotWidth('port')}" />
+        <text x="479" y="411" text-anchor="middle" font-size="10.8" font-weight="800" fill="#0f172a">⚓ D7 名古屋海洋博物館・破冰船</text>
+        <text x="479" y="424" text-anchor="middle" font-size="9" font-weight="700" fill="#6d28d9">名港線終點【名古屋港站】</text>
       </g>
 
       <!-- D8 Airport -->
       <g class="metro-click-target" onclick="${spotClickFnName}('airport')">
-        <circle cx="706" cy="484" r="7" fill="#0369a1" stroke="#ffffff" stroke-width="2.5" />
-        <rect x="610" y="468" width="178" height="38" rx="9" fill="${isTarget('airport') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('airport', '#0369a1')}" stroke-width="${spotWidth('airport')}" />
-        <text x="699" y="485" text-anchor="middle" font-size="10.8" font-weight="800" fill="#0f172a">✈️ D8 中部國際機場 (NGO)</text>
-        <text x="699" y="499" text-anchor="middle" font-size="9.2" font-weight="700" fill="#0369a1">名鐵 μ-SKY 特急 28 分直達</text>
+        <circle cx="716" cy="414" r="7" fill="#0369a1" stroke="#ffffff" stroke-width="2.5" />
+        <rect x="614" y="396" width="186" height="34" rx="8" fill="${isTarget('airport') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('airport', '#0369a1')}" stroke-width="${spotWidth('airport')}" />
+        <text x="707" y="411" text-anchor="middle" font-size="10.8" font-weight="800" fill="#0f172a">✈️ D8 中部國際機場 (NGO)</text>
+        <text x="707" y="424" text-anchor="middle" font-size="9" font-weight="700" fill="#0369a1">名鐵 μ-SKY 特急 28 分直達</text>
       </g>
 
       <!-- ==================== TRANSFER RING ==================== -->
       ${trCoord ? `
         <g transform="translate(${trCoord[0]}, ${trCoord[1]})">
           <circle r="12" fill="none" stroke="#f59e0b" stroke-width="3" />
-          <rect x="-26" y="-27" width="52" height="16" rx="8" fill="#fef08a" stroke="#eab308" stroke-width="1.2" />
-          <text x="0" y="-16" text-anchor="middle" font-size="9.2" font-weight="800" fill="#713f12">🔄 轉乘</text>
+          <rect x="-26" y="-26" width="52" height="16" rx="8" fill="#fef08a" stroke="#eab308" stroke-width="1.2" />
+          <text x="0" y="-15" text-anchor="middle" font-size="9.2" font-weight="800" fill="#713f12">🔄 轉乘</text>
         </g>
       ` : ""}
 
-      <!-- ==================== ALL 19 HOTEL NUMBERED PINS (18 OTHERS + 1 ACTIVE PULSING) ==================== -->
+      <!-- ==================== ALL 19 HOTEL NUMBERED PINS ==================== -->
       ${otherPinsSvg}
       ${activePinSvg}
     </svg>
   `;
 }
 
-// Click any of the ①~⑲ pins directly on ANY Global Map!
-function clickGlobalHotelPin(hId) {
-  selectedHotelId = hId;
-  metroHotelId = hId;
-  // Ensure hotelFilter shows Nagoya hotels if user had filtered to another zone
-  const visible = getFilteredHotels();
-  if (!visible.some(x => x.id === hId)) {
-    hotelFilter = "nagoya";
-    ["nagoya", "taiko", "sakura", "sakae", "apartment", "osaka"].forEach(f => {
-      const btn = document.getElementById(`hfilter-${f}`);
-      if (btn) btn.classList.toggle("active", f === "nagoya");
-    });
+// ==================== ZERO-SCROLL COCKPIT & GLOBAL SYNC CONTROLLERS ====================
+function doesHotelMatchFilter(h, filter) {
+  if (filter === "nagoya") return h.city === "nagoya";
+  if (filter === "taiko_core" || filter === "taiko") return h.zone === "taiko" && h.category === "hotel";
+  if (filter === "sakura") return h.zone === "sakura";
+  if (filter === "sakae") return h.zone === "sakae";
+  if (filter === "apartment") return h.category === "apartment";
+  if (filter === "osaka") return h.city === "osaka";
+  return true;
+}
+
+function getSortedAllHotels() {
+  const nagoya = HOTELS_DATA.filter(h => h.city === "nagoya");
+  const osaka = HOTELS_DATA.filter(h => h.city === "osaka");
+  if (hotelSort === "price") {
+    nagoya.sort((a, b) => a.minPriceYen - b.minPriceYen || a.recOrder - b.recOrder);
+  } else if (hotelSort === "walk") {
+    nagoya.sort((a, b) => a.primaryWalkMin - b.primaryWalkMin || a.minPriceYen - b.minPriceYen);
+  } else {
+    nagoya.sort((a, b) => a.recOrder - b.recOrder);
   }
-  renderHotelsGlobalOverview();
+  return [...nagoya, ...osaka];
+}
+
+function getFilteredHotels() {
+  return getSortedAllHotels().filter(h => doesHotelMatchFilter(h, hotelFilter));
+}
+
+function clickGlobalHotelPin(hId) {
+  selectHotelInstant(hId, true);
+}
+
+function selectHotelInstant(hId, autoClearFilterIfOutside = true) {
+  const target = HOTELS_DATA.find(x => x.id === hId);
+  if (!target) return;
+
+  selectedHotelId = hId;
+  if (target.city === "nagoya") {
+    metroHotelId = hId;
+  }
+
+  if (autoClearFilterIfOutside && !doesHotelMatchFilter(target, hotelFilter)) {
+    hotelFilter = target.city === "osaka" ? "osaka" : "nagoya";
+    syncFilterButtonsUI();
+  }
+
+  try {
+    sessionStorage.setItem("nagoya2027_hotel", hId);
+  } catch (e) {}
+
+  renderHotelsCockpit(true);
   renderHotelsList();
-  renderMapPane();
+  renderMetroPanel();
+  if (document.getElementById("hotel-detail-modal")?.classList.contains("open")) {
+    renderHotelDetailModalBody(hId);
+  }
+}
+
+function syncFilterButtonsUI() {
+  ["nagoya", "taiko_core", "sakura", "sakae", "apartment", "osaka"].forEach(f => {
+    const kBtn = document.getElementById(`kzone-${f}`);
+    const lBtn = document.getElementById(`hfilter-${f}`);
+    if (kBtn) kBtn.classList.toggle("active", f === hotelFilter);
+    if (lBtn) lBtn.classList.toggle("active", f === hotelFilter);
+  });
+}
+
+function setHotelFilter(filter) {
+  hotelFilter = filter;
+  syncFilterButtonsUI();
+  const filtered = getFilteredHotels();
+  if (filtered.length > 0 && !filtered.some(h => h.id === selectedHotelId)) {
+    selectedHotelId = filtered[0].id;
+    if (filtered[0].city === "nagoya") metroHotelId = filtered[0].id;
+  }
+  renderHotelsCockpit(true);
+  renderHotelsList();
   renderMetroPanel();
 }
 
-// ==================== #panel-hotels Top Full-Width Global Map Controller ====================
+function setHotelSort(sortVal) {
+  hotelSort = sortVal;
+  const s1 = document.getElementById("cockpit-sort-select");
+  const s2 = document.getElementById("hotel-sort-select");
+  if (s1) s1.value = sortVal;
+  if (s2) s2.value = sortVal;
+
+  const filtered = getFilteredHotels();
+  if (filtered.length > 0) {
+    selectedHotelId = filtered[0].id;
+    if (filtered[0].city === "nagoya") metroHotelId = filtered[0].id;
+  }
+  renderHotelsCockpit(true);
+  renderHotelsList();
+  renderMetroPanel();
+}
+
+function stepHotel(delta) {
+  const list = getFilteredHotels();
+  if (list.length === 0) return;
+  const idx = list.findIndex(h => h.id === selectedHotelId);
+  const nextIdx = idx === -1 ? 0 : (idx + delta + list.length) % list.length;
+  selectHotelInstant(list[nextIdx].id, false);
+}
+
+function setHotelsViewMode(mode) {
+  hotelsViewMode = mode;
+  const cView = document.getElementById("hotels-cockpit-view");
+  const lView = document.getElementById("hotels-full-list-view");
+  const bCockpit = document.getElementById("vbtn-cockpit");
+  const bList = document.getElementById("vbtn-list");
+
+  if (cView) cView.style.display = mode === "cockpit" ? "" : "none";
+  if (lView) lView.style.display = mode === "list" ? "block" : "none";
+  if (bCockpit) bCockpit.classList.toggle("active", mode === "cockpit");
+  if (bList) bList.classList.toggle("active", mode === "list");
+
+  updateCompactChrome();
+  if (mode === "cockpit") {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+}
+
+function setCockpitMapMode(mode) {
+  cockpitMapMode = mode;
+  renderHotelsCockpit(false);
+}
+
+function quickToggleGlobalAndStreet() {
+  cockpitMapMode = cockpitMapMode === "global" ? "schematic" : "global";
+  renderHotelsCockpit(false);
+}
+
 function setHotelsGlobalMode(modeId) {
   hotelsGlobalMode = modeId;
-  renderHotelsGlobalOverview();
+  if (cockpitMapMode !== "global") cockpitMapMode = "global";
+  renderHotelsCockpit(false);
 }
 
-function toggleHotelsGlobalZoom() {
-  hotelsGlobalZoomed = !hotelsGlobalZoomed;
-  const sc = document.getElementById("hotels-global-svg-scroll");
-  const btn = document.getElementById("btn-hglobal-zoom");
-  if (sc) sc.classList.toggle("zoomed", hotelsGlobalZoomed);
-  if (btn) btn.textContent = hotelsGlobalZoomed ? "📐 縮回螢幕寬度" : "🔍 手機放大滑動";
-}
+function renderHotelsCockpit(flashCard = false) {
+  const keypadEl = document.getElementById("cockpit-keypad-grid");
+  if (!keypadEl) return;
 
-function toggleHotelsGlobalCollapse() {
-  hotelsGlobalCollapsed = !hotelsGlobalCollapsed;
-  const body = document.getElementById("hotels-global-body");
-  const btn = document.getElementById("btn-hglobal-collapse");
-  if (body) body.style.display = hotelsGlobalCollapsed ? "none" : "block";
-  if (btn) btn.textContent = hotelsGlobalCollapsed ? "🔽 展開全局地鐵＆19間住宿大圖" : "🔼 收合全局大地圖";
-}
+  const h = HOTELS_DATA.find(item => item.id === selectedHotelId) || HOTELS_DATA[0];
+  const spec = SCHEMATIC_MAP_SPECS[h.id] || SCHEMATIC_MAP_SPECS["comfort"];
+  const isOsaka = h.city === "osaka";
+  const effectiveMapMode = (isOsaka && cockpitMapMode === "global") ? "schematic" : cockpitMapMode;
 
-function renderHotelsGlobalOverview() {
-  const pillsEl = document.getElementById("hotels-day-dir-pills");
-  if (!pillsEl) return;
+  // 1. Mode Tab Buttons
+  ["global", "schematic", "gmap"].forEach(m => {
+    const btn = document.getElementById(`cmode-${m}`);
+    if (btn) btn.classList.toggle("active", m === effectiveMapMode);
+  });
 
-  const activeNagoyaId = HOTELS_DATA.some(h => h.id === selectedHotelId && h.city === "nagoya")
-    ? selectedHotelId
-    : metroHotelId;
-
-  pillsEl.innerHTML = HOTELS_DAY_DIR_MODES.map(m => {
-    const activeCls = m.id === hotelsGlobalMode ? "active" : "";
-    return `<button type="button" class="spot-pill ${activeCls}" onclick="setHotelsGlobalMode('${m.id}')">${m.pill}</button>`;
-  }).join("");
-
-  const svgHolder = document.getElementById("hotels-global-svg-holder");
-  if (svgHolder) {
-    svgHolder.innerHTML = buildNagoyaMetroBigSvg(activeNagoyaId, hotelsGlobalMode, "setHotelsGlobalMode");
+  // 2. 6-Button Zero-Horizontal-Scroll Daily Itinerary Direction Bar
+  const dirBar = document.getElementById("cockpit-dir-bar");
+  if (dirBar) {
+    dirBar.style.display = effectiveMapMode === "global" ? "grid" : "none";
+    dirBar.innerHTML = HOTELS_DAY_DIR_MODES.map(m => {
+      const act = m.id === hotelsGlobalMode ? "active" : "";
+      return `<button type="button" class="cdir-btn ${act}" onclick="setHotelsGlobalMode('${m.id}')">${m.pill}</button>`;
+    }).join("");
   }
 
-  const route = computeMetroRoute(activeNagoyaId, hotelsGlobalMode);
-  const statusEl = document.getElementById("hotels-global-status");
-  if (statusEl) {
-    statusEl.innerHTML = `
-      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 5px;">
-        <span style="font-size: 13.8px; font-weight: 800; color: #1e3a8a;">${route.totalMinText}</span>
-        <span class="chip chip-green">${route.badge}</span>
+  // 3. Render Map Stage (Global / Street Schematic / Google Map)
+  const gStage = document.getElementById("cockpit-global-stage");
+  const sStage = document.getElementById("cockpit-schematic-stage");
+  const gmStage = document.getElementById("cockpit-gmap-stage");
+
+  if (gStage) gStage.style.display = effectiveMapMode === "global" ? "flex" : "none";
+  if (sStage) sStage.style.display = effectiveMapMode === "schematic" ? "block" : "none";
+  if (gmStage) gmStage.style.display = effectiveMapMode === "gmap" ? "block" : "none";
+
+  const activeNagoyaId = !isOsaka ? h.id : metroHotelId;
+  if (effectiveMapMode === "global" && gStage) {
+    gStage.innerHTML = buildNagoyaMetroBigSvg(activeNagoyaId, hotelsGlobalMode, "setHotelsGlobalMode");
+  } else if (effectiveMapMode === "schematic" && sStage) {
+    document.getElementById("cmicro-exit").textContent = spec.exitBadge;
+    document.getElementById("cmicro-walk").textContent = spec.totalWalk;
+    document.getElementById("cmicro-svg").innerHTML = buildSchematicSvg(h.id);
+  } else if (effectiveMapMode === "gmap") {
+    const iframe = document.getElementById("cockpit-gmap-iframe");
+    const embedSrc = `https://www.google.com/maps/embed?hl=zh-TW&origin=mfe&pb=!1m3!2m1!1s${encodeURIComponent(h.embedQuery)}!6i16`;
+    if (iframe && iframe.getAttribute("data-hotel") !== h.id) {
+      iframe.src = embedSrc;
+      iframe.setAttribute("data-hotel", h.id);
+    }
+  }
+
+  // 4. Live Verdict Bar & Quick Toggle Button
+  const verdictEl = document.getElementById("cockpit-verdict-text");
+  const qToggleBtn = document.getElementById("cockpit-quick-toggle-btn");
+  if (verdictEl) {
+    if (isOsaka) {
+      verdictEl.innerHTML = `✅ 大阪前 3 晚已訂妥：鶴橋站 4 號口走 1 分鐘！點選 ①～⑲ 即可切回名古屋全局地鐵圖`;
+    } else if (effectiveMapMode === "global") {
+      const route = computeMetroRoute(h.id, hotelsGlobalMode);
+      verdictEl.innerHTML = hotelsGlobalMode === "all"
+        ? route.tip.replace(/<\/?strong>/g, "")
+        : `${route.badge}｜${route.totalMinText}`;
+    } else {
+      verdictEl.innerHTML = `${spec.subStationsBar}`;
+    }
+  }
+  if (qToggleBtn) {
+    qToggleBtn.textContent = effectiveMapMode === "global" ? "✨ 看出口超商" : "🌐 回全局大圖";
+  }
+
+  // Desktop Bonus Walk Strip
+  const dWalk = document.getElementById("cockpit-desktop-walk");
+  if (dWalk) {
+    dWalk.innerHTML = `
+      <div style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        <strong>🚶 出站順路超商：</strong>${h.walkSteps.from} <span class="walk-arrow">➔</span> ${h.walkSteps.via} <span class="walk-arrow">➔</span> ${h.walkSteps.to}
       </div>
-      <div style="font-size: 12.6px; color: var(--text-primary);">${route.tip}</div>
+      ${!isOsaka ? `<button type="button" class="btn-mini-nav" onclick="openHotelInMetroMap('${h.id}')">🚇 各景點時間</button>` : ""}
     `;
   }
+
+  // 5. Render 5x4 Zero-Scroll 20-Hotel Instant Keypad
+  const allSorted = getSortedAllHotels();
+  keypadEl.innerHTML = allSorted.map(item => {
+    const km = KEYPAD_META[item.id] || { cNum: "•", label: item.name.slice(0, 4), sub: "", dot: "#2563eb" };
+    const isAct = item.id === h.id ? "active" : "";
+    const isDim = !doesHotelMatchFilter(item, hotelFilter) && item.id !== h.id ? "dimmed" : "";
+    return `
+      <button type="button" class="hk-tile ${isAct} ${isDim}" onclick="selectHotelInstant('${item.id}', true)" title="${item.name}（${item.priceRange}）">
+        <span class="hk-top"><i class="hk-dot" style="background:${km.dot};"></i>${km.cNum}${km.label}</span>
+        <span class="hk-sub">${km.sub}</span>
+      </button>
+    `;
+  }).join("");
+
+  // 6. Render Active Hotel Focused Detail Card
+  const kmCur = KEYPAD_META[h.id] || { priceTag: h.priceRange };
+  const detailBox = document.getElementById("cockpit-detail-content");
+  if (detailBox) {
+    detailBox.innerHTML = `
+      <div class="cdetail-header">
+        <button type="button" class="cdetail-step-btn" onclick="stepHotel(-1)" title="上一間住宿 (←)">◀</button>
+        <div class="cdetail-title-wrap">
+          <div class="cdetail-title-row">
+            <h3 class="cdetail-name">${h.name}</h3>
+            <span class="cdetail-price-pill">${kmCur.priceTag}</span>
+          </div>
+        </div>
+        <button type="button" class="cdetail-step-btn" onclick="stepHotel(1)" title="下一間住宿 (→)">▶</button>
+      </div>
+
+      <div class="cdetail-station-line" title="${h.primaryStation} ｜ ${h.secondaryStation}">
+        ${h.stationInfo}
+      </div>
+
+      <div class="cdetail-konbini-line" title="${h.konbiniRoute}">
+        🏪 ${h.konbiniRoute}
+      </div>
+
+      <div class="cdetail-desktop-extra">
+        <div>🛏️ <strong>4大5小配法：</strong>${h.roomPlan}</div>
+        <div>👧 <strong>兒童免費規定：</strong>${h.kidRule}</div>
+        <div>💰 <strong>最省訂法：</strong>${h.bestAppTip}</div>
+      </div>
+
+      <div class="cdetail-actions">
+        <button type="button" class="cact-btn cact-primary" onclick="openHotelDetailModal('${h.id}')">
+          📖 詳細＆比價
+        </button>
+        ${!isOsaka ? `
+          <a class="cact-btn cact-accent" href="${h.links.google}" target="_blank" rel="noopener noreferrer">
+            🔍 Google比價
+          </a>
+          <a class="cact-btn" href="${h.links.official}" target="_blank" rel="noopener noreferrer">
+            🏨 官網/直訂
+          </a>
+          <a class="cact-btn" href="${h.links.rakuten}" target="_blank" rel="noopener noreferrer">
+            🇯🇵 樂天
+          </a>
+        ` : ""}
+        <a class="cact-btn" href="${h.walkMapUrl}" target="_blank" rel="noopener noreferrer">
+          🚶 導航
+        </a>
+      </div>
+    `;
+  }
+
+  if (flashCard) {
+    const pane = document.getElementById("cockpit-detail-pane");
+    if (pane) {
+      pane.classList.remove("flash-update");
+      void pane.offsetWidth;
+      pane.classList.add("flash-update");
+    }
+  }
 }
 
-// ==================== #panel-metro Dedicated Full Metro Tab Controller ====================
-function initMetroControls() {
-  const sel = document.getElementById("metro-hotel-select");
-  if (!sel) return;
-  const groups = [
-    { label: "🚄 名古屋站・太閤通口／太閤通站區 (10間)", zone: "taiko" },
-    { label: "🚇 名古屋站・櫻通口／國際中心站區 (5間)", zone: "sakura" },
-    { label: "🛍️ 伏見（科學館）・榮・久屋大通區 (4間)", zone: "sakae" }
-  ];
-  sel.innerHTML = groups.map(g => {
-    const items = HOTELS_DATA.filter(h => h.city === "nagoya" && h.zone === g.zone)
-      .sort((a, b) => a.recOrder - b.recOrder);
-    return `<optgroup label="${g.label}">` + items.map(h =>
-      `<option value="${h.id}">${h.name}（${h.stationInfo.split("｜")[0].replace("🥇", "")}）</option>`
-    ).join("") + `</optgroup>`;
+// ==================== SLIDE-UP HOTEL FULL DETAIL & OTA MODAL ====================
+function renderHotelDetailModalBody(hotelId) {
+  const h = HOTELS_DATA.find(x => x.id === hotelId) || HOTELS_DATA[0];
+  const isOsaka = h.city === "osaka";
+  const body = document.getElementById("hotel-modal-body");
+  if (!body) return;
+
+  body.innerHTML = `
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px;">
+      <div style="display: flex; gap: 6px;">
+        <button type="button" class="btn-mini-nav" onclick="stepHotel(-1)">◀ 上一間</button>
+        <button type="button" class="btn-mini-nav" onclick="stepHotel(1)">下一間 ▶</button>
+      </div>
+      <button type="button" class="btn-mini-nav" onclick="closeHotelDetailModal()" style="padding: 5px 12px;">✕ 關閉</button>
+    </div>
+
+    <div style="margin-bottom: 6px;">
+      <span class="chip ${isOsaka ? 'chip-green' : 'chip-brand'}">${h.rankBadge}</span>
+    </div>
+    <h3 style="margin: 0 0 2px; font-size: 18px; font-weight: 800;">${h.name}</h3>
+    <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 8px;">日文原名：${h.jpName}</div>
+    <div style="font-size: 14px; font-weight: 800; color: var(--brand); margin-bottom: 12px;">💰 ${h.priceRange}</div>
+
+    <div class="station-dual-box">
+      <div class="st-line-primary">${h.primaryStation}</div>
+      <div class="st-line-secondary">${h.secondaryStation}</div>
+    </div>
+
+    <div class="konbini-highlight">
+      🏪 <strong>地鐵回住宿順路超商：</strong>${h.konbiniRoute}
+    </div>
+
+    <div class="hotel-meta-list" style="background: var(--bg-page); padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-light);">
+      <div>🛏️ <strong>4大5小（6–10歲）推薦配法：</strong>${h.roomPlan}</div>
+      <div>👧 <strong>兒童同床優惠規定：</strong>${h.kidRule}</div>
+      <div>💡 <strong>最划算比價 App 秘訣：</strong>${h.bestAppTip}</div>
+    </div>
+
+    <div style="font-size: 12.5px; font-weight: 800; margin: 12px 0 6px;">👇 點選各大比價平台直接查價：</div>
+    <div class="ota-btn-row" style="padding-top: 4px; border-top: none;">
+      ${!isOsaka ? `
+        <a class="ota-chip-link best-ota" href="${h.links.google}" target="_blank" rel="noopener noreferrer">🔍 Google 飯店比價</a>
+        <a class="ota-chip-link best-ota" href="${h.links.official}" target="_blank" rel="noopener noreferrer">🏨 官網 / 直訂最優惠</a>
+        <a class="ota-chip-link" href="${h.links.rakuten}" target="_blank" rel="noopener noreferrer">🇯🇵 樂天旅遊</a>
+        <a class="ota-chip-link" href="${h.links.agoda}" target="_blank" rel="noopener noreferrer">Agoda</a>
+        <a class="ota-chip-link" href="${h.links.trip}" target="_blank" rel="noopener noreferrer">Trip.com</a>
+      ` : `
+        <a class="ota-chip-link best-ota" href="${h.links.trip}" target="_blank" rel="noopener noreferrer">🚇 查看去黑門市場路線</a>
+      `}
+      <a class="ota-chip-link" href="${h.walkMapUrl}" target="_blank" rel="noopener noreferrer">🚶 Google 步行導航</a>
+    </div>
+  `;
+}
+
+function openHotelDetailModal(hotelId) {
+  renderHotelDetailModalBody(hotelId || selectedHotelId);
+  const modal = document.getElementById("hotel-detail-modal");
+  if (modal) modal.classList.add("open");
+}
+
+function closeHotelDetailModal() {
+  const modal = document.getElementById("hotel-detail-modal");
+  if (modal) modal.classList.remove("open");
+}
+
+// ==================== FULL LIST VIEW RENDERER (OPTIONAL DOCUMENT VIEW) ====================
+function selectHotelFromFullList(hotelId) {
+  selectHotelInstant(hotelId, true);
+  setHotelsViewMode("cockpit");
+}
+
+function renderHotelsList() {
+  const container = document.getElementById("hotels-cards-container");
+  if (!container) return;
+  const list = getFilteredHotels();
+  const countLabel = document.getElementById("hotels-count-label");
+  if (countLabel) {
+    countLabel.textContent = `📋 目前顯示 ${list.length} 間符合條件住宿（點選任一卡片可立即切回「⚡ 一屏秒切大地圖」定位！）`;
+  }
+
+  container.innerHTML = list.map(h => {
+    const isSelected = h.id === selectedHotelId ? "selected" : "";
+    const isOsaka = h.city === "osaka";
+    return `
+      <article id="hcard-${h.id}" class="hotel-card ${isSelected}" onclick="selectHotelFromFullList('${h.id}')">
+        <div class="hotel-rank-row">
+          <span class="chip ${isOsaka ? "chip-green" : "chip-brand"}">${h.rankBadge}</span>
+          <span class="hotel-price-tag">${h.priceRange}</span>
+        </div>
+        <h3 class="hotel-name">${h.name}</h3>
+
+        <div class="station-dual-box">
+          <div class="st-line-primary">${h.primaryStation}</div>
+          <div class="st-line-secondary">${h.secondaryStation}</div>
+        </div>
+
+        <div class="hotel-meta-list">
+          <div>🛏️ <strong>4大5小（6–10歲）配法：</strong>${h.roomPlan}</div>
+          <div>👧 <strong>兒童優惠規定：</strong>${h.kidRule}</div>
+        </div>
+
+        <div class="konbini-highlight">
+          🏪 <strong>地鐵回住宿順路超商：</strong>${h.konbiniRoute}
+        </div>
+
+        <div style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 10px;">
+          💰 <strong>最划算訂法：</strong>${h.bestAppTip}
+        </div>
+
+        <div class="ota-btn-row" onclick="event.stopPropagation()">
+          <button type="button" class="ota-chip-link best-ota" onclick="selectHotelFromFullList('${h.id}')">
+            ⚡ 在一屏大地圖定位此間
+          </button>
+          <a class="ota-chip-link" href="${h.walkMapUrl}" target="_blank" rel="noopener noreferrer">
+            🚶 步行導航
+          </a>
+          ${!isOsaka ? `
+            <a class="ota-chip-link best-ota" href="${h.links.google}" target="_blank" rel="noopener noreferrer">🔍 Google比價</a>
+            <a class="ota-chip-link" href="${h.links.official}" target="_blank" rel="noopener noreferrer">🏨 官網/直訂</a>
+            <a class="ota-chip-link" href="${h.links.rakuten}" target="_blank" rel="noopener noreferrer">🇯🇵 樂天旅遊</a>
+            <a class="ota-chip-link" href="${h.links.agoda}" target="_blank" rel="noopener noreferrer">Agoda</a>
+            <a class="ota-chip-link" href="${h.links.trip}" target="_blank" rel="noopener noreferrer">Trip.com</a>
+          ` : ""}
+        </div>
+      </article>
+    `;
   }).join("");
 }
 
+// ==================== #panel-metro COMPACT ZERO-SCROLL SIMULATOR ====================
 function renderMetroPanel() {
-  const nagoyaHotels = HOTELS_DATA.filter(h => h.city === "nagoya");
+  const nagoyaHotels = HOTELS_DATA.filter(h => h.city === "nagoya").sort((a, b) => a.recOrder - b.recOrder);
   if (!nagoyaHotels.some(h => h.id === metroHotelId)) {
     metroHotelId = "comfort";
   }
   const h = nagoyaHotels.find(x => x.id === metroHotelId) || nagoyaHotels[0];
   const spec = SCHEMATIC_MAP_SPECS[h.id] || SCHEMATIC_MAP_SPECS["comfort"];
 
-  const sel = document.getElementById("metro-hotel-select");
-  if (sel) sel.value = h.id;
+  const curTag = document.getElementById("metro-cur-hotel-tag");
+  if (curTag) curTag.textContent = h.name.split("（")[0];
+
+  const numGrid = document.getElementById("metro-quick-num-grid");
+  if (numGrid) {
+    numGrid.innerHTML = nagoyaHotels.map(item => {
+      const km = KEYPAD_META[item.id] || { cNum: item.recOrder };
+      const act = item.id === h.id ? "active" : "";
+      return `<button type="button" class="mnum-btn ${act}" onclick="selectHotelInstant('${item.id}', true)" title="${item.name}">${km.cNum}</button>`;
+    }).join("") + `<button type="button" class="mnum-btn" onclick="stepHotel(1)" title="下一間">▶</button>`;
+  }
 
   const pillsWrap = document.getElementById("metro-spot-pills");
   if (pillsWrap) {
@@ -3173,7 +3535,7 @@ function renderMetroPanel() {
         !sp.mustGo ? "spot-optional" : "",
         sp.id === metroSpotId ? "active" : ""
       ].filter(Boolean).join(" ");
-      return `<button type="button" class="${cls}" onclick="selectMetroSpot('${sp.id}')">${sp.pill}</button>`;
+      return `<button type="button" class="${cls}" onclick="selectMetroSpot('${sp.id}')" style="padding:4px 8px; font-size:11.2px;">${sp.pill}</button>`;
     }).join("");
   }
 
@@ -3187,51 +3549,28 @@ function renderMetroPanel() {
   const routeCard = document.getElementById("metro-route-card");
   if (routeCard) {
     routeCard.innerHTML = `
-      <div class="metro-route-top">
-        <div class="metro-route-headline">🎯 檢視目標：${spotObj.name}</div>
-        <span class="chip chip-green">${route.badge}</span>
+      <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px; margin-bottom:4px;">
+        <div style="font-size:13.2px; font-weight:800; color:#1e3a8a;">🎯 ${spotObj.name}</div>
+        <span class="chip chip-green" style="font-size:11px; padding:2px 8px;">${route.badge}</span>
       </div>
-      <div style="font-size: 13.5px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">
+      <div style="font-size:12.4px; font-weight:800; color:var(--text-primary); margin-bottom:5px;">
         ${route.totalMinText}
       </div>
-      <div class="metro-step-flow">
+      <div class="metro-step-flow" style="margin:4px 0;">
         ${route.steps.map((st, idx) =>
-          `<span class="m-step-chip">${st}</span>${idx < route.steps.length - 1 ? '<span class="m-step-arrow">➔</span>' : ''}`
+          `<span class="m-step-chip" style="padding:3px 7px; font-size:11.5px;">${st}</span>${idx < route.steps.length - 1 ? '<span class="m-step-arrow">➔</span>' : ''}`
         ).join("")}
-      </div>
-      <div style="font-size: 12.8px; color: #1e3a8a; background: rgba(255,255,255,0.72); border-radius: 8px; padding: 8px 11px;">
-        💡 ${route.tip}
       </div>
     `;
   }
 
-  const mTitle = document.getElementById("metro-micro-title");
-  if (mTitle) {
-    mTitle.textContent = h.name;
-    document.getElementById("metro-micro-sub").textContent = `${h.priceRange}`;
-    document.getElementById("metro-micro-exit").textContent = spec.exitBadge;
-    document.getElementById("metro-micro-walk").textContent = spec.totalWalk;
-    document.getElementById("metro-micro-subbar").textContent = spec.subStationsBar;
+  const mWalk = document.getElementById("metro-micro-walk");
+  if (mWalk) {
+    mWalk.textContent = spec.totalWalk;
     document.getElementById("metro-micro-svg").innerHTML = buildSchematicSvg(h.id);
-    document.getElementById("metro-micro-konbini").innerHTML = `🏪 <strong>順路超商：</strong>${h.konbiniRoute}`;
+    document.getElementById("metro-micro-konbini").innerHTML = `🏪 ${h.konbiniRoute}`;
     document.getElementById("metro-micro-walk-btn").href = h.walkMapUrl;
   }
-}
-
-function selectMetroHotel(hId) {
-  metroHotelId = hId;
-  selectedHotelId = hId;
-  renderMetroPanel();
-  renderHotelsGlobalOverview();
-  renderHotelsList();
-  renderMapPane();
-}
-
-function stepMetroHotel(delta) {
-  const list = HOTELS_DATA.filter(h => h.city === "nagoya").sort((a, b) => a.recOrder - b.recOrder);
-  const idx = list.findIndex(h => h.id === metroHotelId);
-  const next = list[(idx + delta + list.length) % list.length];
-  selectMetroHotel(next.id);
 }
 
 function selectMetroSpot(spotId) {
@@ -3239,72 +3578,66 @@ function selectMetroSpot(spotId) {
   renderMetroPanel();
 }
 
-function toggleMetroZoom() {
-  metroZoomed = !metroZoomed;
-  const sc = document.getElementById("metro-svg-scroll");
-  const btn = document.getElementById("btn-metro-zoom");
-  if (sc) sc.classList.toggle("zoomed", metroZoomed);
-  if (btn) btn.textContent = metroZoomed ? "📐 縮回符合螢幕寬度" : "🔍 手機放大滑動檢視";
-}
-
 function openHotelInMetroMap(hotelId) {
   const target = HOTELS_DATA.find(h => h.id === hotelId && h.city === "nagoya");
   if (target) {
     metroHotelId = target.id;
+    selectedHotelId = target.id;
   }
   renderMetroPanel();
+  renderHotelsCockpit(false);
   switchTab("metro");
 }
 
 function openSpotInMetroMap(spotId) {
-  metroSpotId = spotId;
-  renderMetroPanel();
-  switchTab("metro");
-}
-
-function jumpToHotelFromMetro() {
-  if (hotelFilter === "osaka") {
-    setHotelFilter("nagoya");
-  } else {
-    const filtered = getFilteredHotels();
-    if (!filtered.some(h => h.id === metroHotelId)) {
-      setHotelFilter("nagoya");
-    }
-  }
-  selectedHotelId = metroHotelId;
-  renderHotelsGlobalOverview();
-  renderHotelsList();
-  renderMapPane();
+  hotelsGlobalMode = spotId;
+  cockpitMapMode = "global";
+  renderHotelsCockpit(false);
   switchTab("hotels");
 }
 
-// Tab Switching
+function jumpToHotelFromMetro() {
+  selectedHotelId = metroHotelId;
+  setHotelsViewMode("cockpit");
+  renderHotelsCockpit(true);
+  switchTab("hotels");
+}
+
+// ==================== ADAPTIVE CHROME & TAB ROUTING ====================
+function updateCompactChrome() {
+  const shouldCompact =
+    (currentTab === "hotels" && hotelsViewMode === "cockpit") ||
+    currentTab === "metro";
+  if (document.body && document.body.classList) {
+    document.body.classList.toggle("compact-chrome", shouldCompact);
+  }
+}
+
 function switchTab(tabId) {
   currentTab = tabId;
-  const tabs = ["itinerary", "metro", "hotels", "apps", "spots"];
+  const tabs = ["itinerary", "hotels", "metro", "apps", "spots"];
   tabs.forEach(t => {
     const panel = document.getElementById(`panel-${t}`);
     const dBtn = document.getElementById(`dnav-${t}`);
     const mBtn = document.getElementById(`mnav-${t}`);
-    if (panel) {
-      if (t === tabId) panel.classList.add("active");
-      else panel.classList.remove("active");
-    }
-    if (dBtn) {
-      if (t === tabId) dBtn.classList.add("active");
-      else dBtn.classList.remove("active");
-    }
-    if (mBtn) {
-      if (t === tabId) mBtn.classList.add("active");
-      else mBtn.classList.remove("active");
-    }
+    if (panel) panel.classList.toggle("active", t === tabId);
+    if (dBtn) dBtn.classList.toggle("active", t === tabId);
+    if (mBtn) mBtn.classList.toggle("active", t === tabId);
   });
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  updateCompactChrome();
+  try {
+    sessionStorage.setItem("nagoya2027_tab", tabId);
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, "", `#${tabId}`);
+    }
+  } catch (e) {}
+  window.scrollTo({ top: 0, behavior: "auto" });
 }
 
 // Render Itinerary
 function renderDaySelector() {
   const wrap = document.getElementById("day-selector");
+  if (!wrap) return;
   wrap.innerHTML = ITINERARY_DATA.map(d => {
     const active = !showAllDays && d.day === selectedDay ? "active" : "";
     return `
@@ -3335,6 +3668,7 @@ function toggleAllDays() {
 
 function renderDayCards() {
   const container = document.getElementById("itinerary-cards");
+  if (!container) return;
   const list = showAllDays
     ? ITINERARY_DATA
     : ITINERARY_DATA.filter(d => d.day === selectedDay);
@@ -3350,7 +3684,7 @@ function renderDayCards() {
           </div>
           ${metroSpot ? `
             <button type="button" class="btn-outline" onclick="openSpotInMetroMap('${metroSpot}')">
-              🚇 在全局地鐵圖看本日行程方向
+              🌐 對照 19 間住宿看本日出發方向
             </button>
           ` : ""}
         </div>
@@ -3388,267 +3722,12 @@ function renderDayCards() {
   }).join("");
 }
 
-// ==================== 住宿篩選、排序與三模式地圖渲染 ====================
-function setHotelFilter(filter) {
-  hotelFilter = filter;
-  ["nagoya", "taiko", "sakura", "sakae", "apartment", "osaka"].forEach(f => {
-    const btn = document.getElementById(`hfilter-${f}`);
-    if (btn) {
-      if (f === filter) btn.classList.add("active");
-      else btn.classList.remove("active");
-    }
-  });
-
-  const filtered = getFilteredHotels();
-  if (filtered.length > 0 && !filtered.some(h => h.id === selectedHotelId)) {
-    selectedHotelId = filtered[0].id;
-    if (filtered[0].city === "nagoya") metroHotelId = filtered[0].id;
-  }
-  renderHotelsGlobalOverview();
-  renderHotelsList();
-  renderMapPane();
-  renderMetroPanel();
-}
-
-function setHotelSort(sortVal) {
-  hotelSort = sortVal;
-  const filtered = getFilteredHotels();
-  if (filtered.length > 0) {
-    selectedHotelId = filtered[0].id;
-    if (filtered[0].city === "nagoya") metroHotelId = filtered[0].id;
-  }
-  renderHotelsGlobalOverview();
-  renderHotelsList();
-  renderMapPane();
-  renderMetroPanel();
-}
-
-function getFilteredHotels() {
-  let base = HOTELS_DATA;
-  if (hotelFilter === "nagoya") {
-    base = HOTELS_DATA.filter(h => h.city === "nagoya");
-  } else if (hotelFilter === "taiko") {
-    base = HOTELS_DATA.filter(h => h.zone === "taiko");
-  } else if (hotelFilter === "sakura") {
-    base = HOTELS_DATA.filter(h => h.zone === "sakura");
-  } else if (hotelFilter === "sakae") {
-    base = HOTELS_DATA.filter(h => h.zone === "sakae");
-  } else if (hotelFilter === "apartment") {
-    base = HOTELS_DATA.filter(h => h.category === "apartment");
-  } else if (hotelFilter === "osaka") {
-    base = HOTELS_DATA.filter(h => h.city === "osaka");
-  }
-
-  const sorted = [...base];
-  if (hotelSort === "price") {
-    sorted.sort((a, b) => a.minPriceYen - b.minPriceYen || a.recOrder - b.recOrder);
-  } else if (hotelSort === "walk") {
-    sorted.sort((a, b) => a.primaryWalkMin - b.primaryWalkMin || a.minPriceYen - b.minPriceYen);
-  } else {
-    sorted.sort((a, b) => a.recOrder - b.recOrder);
-  }
-  return sorted;
-}
-
-function stepHotel(delta) {
-  const list = getFilteredHotels();
-  if (list.length === 0) return;
-  const idx = list.findIndex(h => h.id === selectedHotelId);
-  const nextIdx = idx === -1 ? 0 : (idx + delta + list.length) % list.length;
-  selectHotelOnMap(list[nextIdx].id, false);
-}
-
-function selectHotelOnMap(hotelId, scrollMapOnMobile) {
-  selectedHotelId = hotelId;
-  if (HOTELS_DATA.some(h => h.id === hotelId && h.city === "nagoya")) {
-    metroHotelId = hotelId;
-    renderMetroPanel();
-  }
-  renderHotelsGlobalOverview();
-  renderHotelsList();
-  renderMapPane();
-  if (scrollMapOnMobile && window.innerWidth < 980) {
-    const mapEl = document.getElementById("hotel-map-card");
-    if (mapEl) mapEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }
-}
-
-function renderHotelsList() {
-  const container = document.getElementById("hotels-cards-container");
-  const list = getFilteredHotels();
-  const countLabel = document.getElementById("hotels-count-label");
-  if (countLabel) {
-    countLabel.textContent = `📋 目前顯示 ${list.length} 間符合條件住宿（點選卡片會在上方「全局地鐵圖」與右側「周邊超商小圖」同步定位！）`;
-  }
-
-  container.innerHTML = list.map(h => {
-    const isSelected = h.id === selectedHotelId ? "selected" : "";
-    const isOsaka = h.city === "osaka";
-    return `
-      <article id="hcard-${h.id}" class="hotel-card ${isSelected}" onclick="selectHotelOnMap('${h.id}', false)">
-        <div class="hotel-rank-row">
-          <span class="chip ${isOsaka ? "chip-green" : "chip-brand"}">${h.rankBadge}</span>
-          <span class="hotel-price-tag">${h.priceRange}</span>
-        </div>
-        <h3 class="hotel-name">${h.name}</h3>
-
-        <div class="station-dual-box">
-          <div class="st-line-primary">${h.primaryStation}</div>
-          <div class="st-line-secondary">${h.secondaryStation}</div>
-        </div>
-
-        <div class="hotel-meta-list">
-          <div>🛏️ <strong>4大5小（6–10歲）配法：</strong>${h.roomPlan}</div>
-          <div>👧 <strong>兒童優惠規定：</strong>${h.kidRule}</div>
-        </div>
-
-        <div class="konbini-highlight">
-          🏪 <strong>地鐵回住宿順路超商：</strong>${h.konbiniRoute}
-        </div>
-
-        <div style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 10px;">
-          💰 <strong>最划算訂法：</strong>${h.bestAppTip}
-        </div>
-
-        <div class="ota-btn-row" onclick="event.stopPropagation()">
-          <button type="button" class="ota-chip-link best-ota" onclick="selectHotelOnMap('${h.id}', true)">
-            🗺️ 顯示周邊街區小圖
-          </button>
-          ${!isOsaka ? `
-            <button type="button" class="ota-chip-link best-ota" onclick="selectHotelOnMap('${h.id}', true); setMapMode('global');">
-              🌐 看全局地鐵位置
-            </button>
-            <button type="button" class="ota-chip-link" onclick="openHotelInMetroMap('${h.id}')">
-              🚇 去各景點時間
-            </button>
-          ` : ""}
-          <a class="ota-chip-link" href="${h.walkMapUrl}" target="_blank" rel="noopener noreferrer">
-            🚶 步行導航
-          </a>
-          ${!isOsaka ? `
-            <a class="ota-chip-link best-ota" href="${h.links.google}" target="_blank" rel="noopener noreferrer">
-              🔍 Google比價
-            </a>
-            <a class="ota-chip-link" href="${h.links.official}" target="_blank" rel="noopener noreferrer">
-              🏨 官網/直訂
-            </a>
-            <a class="ota-chip-link" href="${h.links.rakuten}" target="_blank" rel="noopener noreferrer">
-              🇯🇵 樂天旅遊
-            </a>
-            <a class="ota-chip-link" href="${h.links.agoda}" target="_blank" rel="noopener noreferrer">
-              Agoda
-            </a>
-            <a class="ota-chip-link" href="${h.links.trip}" target="_blank" rel="noopener noreferrer">
-              Trip.com
-            </a>
-          ` : `
-            <a class="ota-chip-link best-ota" href="${h.links.trip}" target="_blank" rel="noopener noreferrer">
-              🚇 查看去黑門市場路線
-            </a>
-          `}
-        </div>
-      </article>
-    `;
-  }).join("");
-}
-
-function setMapMode(mode) {
-  mapMode = mode;
-  const sWrap = document.getElementById("schematic-map-wrap");
-  const glWrap = document.getElementById("global-mini-map-wrap");
-  const gWrap = document.getElementById("google-map-wrap");
-  const bSchem = document.getElementById("btn-mode-schematic");
-  const bGlobal = document.getElementById("btn-mode-global");
-  const bGmap = document.getElementById("btn-mode-gmap");
-  const bottomBtn = document.getElementById("btn-toggle-detail-bottom");
-
-  if (sWrap) sWrap.style.display = mode === "schematic" ? "block" : "none";
-  if (glWrap) glWrap.style.display = mode === "global" ? "block" : "none";
-  if (gWrap) gWrap.style.display = mode === "gmap" ? "block" : "none";
-
-  if (bSchem) bSchem.classList.toggle("active", mode === "schematic");
-  if (bGlobal) bGlobal.classList.toggle("active", mode === "global");
-  if (bGmap) bGmap.classList.toggle("active", mode === "gmap");
-
-  if (bottomBtn) {
-    bottomBtn.textContent = mode === "gmap" ? "✨ 切回周邊超商小動畫" : "🗺️ 看 Google 仔細地圖";
-  }
-}
-
-function toggleMapMode() {
-  setMapMode(mapMode === "gmap" ? "schematic" : "gmap");
-}
-
-function renderMapPane() {
-  const h = HOTELS_DATA.find(item => item.id === selectedHotelId) || HOTELS_DATA[0];
-  const spec = SCHEMATIC_MAP_SPECS[h.id] || SCHEMATIC_MAP_SPECS["comfort"];
-  const embedSrc = `https://www.google.com/maps/embed?hl=zh-TW&origin=mfe&pb=!1m3!2m1!1s${encodeURIComponent(h.embedQuery)}!6i16`;
-
-  const pillsWrap = document.getElementById("map-quick-pills");
-  if (pillsWrap) {
-    const visibleHotels = getFilteredHotels();
-    pillsWrap.innerHTML = visibleHotels.map(item => {
-      const sp = SCHEMATIC_MAP_SPECS[item.id];
-      const label = sp ? sp.shortPill : item.name;
-      const activeCls = item.id === h.id ? "active" : "";
-      return `<button type="button" id="qpill-${item.id}" class="q-pill ${activeCls}" onclick="selectHotelOnMap('${item.id}', false)">${label}</button>`;
-    }).join("");
-    const activePill = document.getElementById(`qpill-${h.id}`);
-    if (activePill && typeof activePill.scrollIntoView === "function") {
-      activePill.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-    }
-  }
-
-  document.getElementById("map-hotel-title").textContent = h.name;
-  document.getElementById("map-hotel-sub").textContent = h.stationInfo;
-
-  document.getElementById("schematic-exit-badge").textContent = spec.exitBadge;
-  document.getElementById("schematic-total-walk").textContent = spec.totalWalk;
-  const subBar = document.getElementById("schematic-sub-stations");
-  if (subBar) subBar.textContent = spec.subStationsBar;
-  document.getElementById("schematic-svg-holder").innerHTML = buildSchematicSvg(h.id);
-
-  // Update Global Mini Metro Position inside Sticky Card
-  const globalMiniHolder = document.getElementById("global-mini-svg-holder");
-  if (globalMiniHolder) {
-    const nagoyaTarget = h.city === "nagoya" ? h.id : metroHotelId;
-    globalMiniHolder.innerHTML = buildNagoyaMetroBigSvg(nagoyaTarget, hotelsGlobalMode, "setHotelsGlobalMode");
-  }
-
-  const iframe = document.getElementById("google-map-iframe");
-  if (iframe && iframe.getAttribute("data-hotel") !== h.id) {
-    iframe.src = embedSrc;
-    iframe.setAttribute("data-hotel", h.id);
-  }
-
-  document.getElementById("walk-strip-box").innerHTML = `
-    <div>
-      <div class="walk-node-title">${h.walkSteps.from}</div>
-      <div class="walk-node-sub">${spec.stepSub1}</div>
-    </div>
-    <div class="walk-arrow">➔</div>
-    <div>
-      <div class="walk-node-title">${h.walkSteps.via}</div>
-      <div class="walk-node-sub">${spec.stepSub2}</div>
-    </div>
-    <div class="walk-arrow">➔</div>
-    <div>
-      <div class="walk-node-title">${h.walkSteps.to}</div>
-      <div class="walk-node-sub">${spec.stepSub3}</div>
-    </div>
-  `;
-
-  document.getElementById("map-open-walk-btn").href = h.walkMapUrl;
-  const jumpMetroBtn = document.getElementById("btn-jump-metro-from-map");
-  if (jumpMetroBtn) {
-    jumpMetroBtn.style.display = h.city === "nagoya" ? "inline-flex" : "none";
-  }
-}
-
 // Price Comparison App Booking Calculator
 function updateSearchHelper() {
-  const mode = document.getElementById("helper-hotel-select").value;
+  const sel = document.getElementById("helper-hotel-select");
   const out = document.getElementById("helper-output");
+  if (!sel || !out) return;
+  const mode = sel.value;
 
   if (mode === "vessel") {
     out.innerHTML = `
@@ -3690,16 +3769,14 @@ function setSpotFilter(region) {
   spotFilter = region;
   ["all", "osaka", "nagoya"].forEach(r => {
     const btn = document.getElementById(`sfilter-${r}`);
-    if (btn) {
-      if (r === region) btn.classList.add("active");
-      else btn.classList.remove("active");
-    }
+    if (btn) btn.classList.toggle("active", r === region);
   });
   renderSpots();
 }
 
 function renderSpots() {
   const container = document.getElementById("spots-container");
+  if (!container) return;
   const list = spotFilter === "all"
     ? SPOTS_DATA
     : SPOTS_DATA.filter(s => s.region === spotFilter);
@@ -3727,8 +3804,10 @@ function toggleCheckItem(id) {
 
 function renderChecklist() {
   const container = document.getElementById("checklist-box");
+  if (!container) return;
   const doneCount = CHECKLIST_ITEMS.filter(i => checklistState[i.id]).length;
-  document.getElementById("header-progress").textContent = `已完成 ${doneCount} / ${CHECKLIST_ITEMS.length} 項行前準備`;
+  const prog = document.getElementById("header-progress");
+  if (prog) prog.textContent = `已完成 ${doneCount} / ${CHECKLIST_ITEMS.length} 項行前準備`;
 
   container.innerHTML = CHECKLIST_ITEMS.map(item => {
     const done = !!checklistState[item.id];
@@ -3741,16 +3820,82 @@ function renderChecklist() {
   }).join("");
 }
 
+// Setup Mobile Touch Swipe & Desktop Keyboard Shortcuts
+function setupZeroScrollInteractions() {
+  const detailPane = document.getElementById("cockpit-detail-pane");
+  if (detailPane) {
+    let sx = 0;
+    let sy = 0;
+    detailPane.addEventListener("touchstart", e => {
+      if (e.touches && e.touches.length === 1) {
+        sx = e.touches[0].clientX;
+        sy = e.touches[0].clientY;
+      }
+    }, { passive: true });
+    detailPane.addEventListener("touchend", e => {
+      if (e.changedTouches && e.changedTouches.length === 1) {
+        const dx = e.changedTouches[0].clientX - sx;
+        const dy = e.changedTouches[0].clientY - sy;
+        if (Math.abs(dx) > 42 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+          stepHotel(dx < 0 ? 1 : -1);
+        }
+      }
+    }, { passive: true });
+  }
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+      closeHotelDetailModal();
+      return;
+    }
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
+    if (tag === "input" || tag === "select" || tag === "textarea") return;
+    if (currentTab === "hotels" || currentTab === "metro") {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        stepHotel(-1);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        stepHotel(1);
+      }
+    }
+  });
+}
+
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
+  try {
+    const savedHotel = sessionStorage.getItem("nagoya2027_hotel");
+    if (savedHotel && HOTELS_DATA.some(h => h.id === savedHotel)) {
+      selectedHotelId = savedHotel;
+      if (HOTELS_DATA.find(h => h.id === savedHotel).city === "nagoya") {
+        metroHotelId = savedHotel;
+      }
+    }
+  } catch (e) {}
+
   renderDaySelector();
   renderDayCards();
-  initMetroControls();
-  renderMetroPanel();
-  renderHotelsGlobalOverview();
+  renderHotelsCockpit(false);
   renderHotelsList();
-  renderMapPane();
+  renderMetroPanel();
   updateSearchHelper();
   renderSpots();
   renderChecklist();
+  setupZeroScrollInteractions();
+
+  const validTabs = ["itinerary", "hotels", "metro", "apps", "spots"];
+  const hashTab = (window.location && window.location.hash) ? window.location.hash.replace("#", "") : "";
+  let initTab = "itinerary";
+  if (validTabs.includes(hashTab)) {
+    initTab = hashTab;
+  } else {
+    try {
+      const sTab = sessionStorage.getItem("nagoya2027_tab");
+      if (validTabs.includes(sTab)) initTab = sTab;
+    } catch (e) {}
+  }
+  if (initTab !== "itinerary") {
+    switchTab(initTab);
+  }
 });

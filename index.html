@@ -44,11 +44,11 @@
       <button id="dnav-itinerary" class="desktop-nav-btn active" onclick="switchTab('itinerary')">
         🗓️ 每日行程＆動向
       </button>
-      <button id="dnav-metro" class="desktop-nav-btn" onclick="switchTab('metro')">
-        🚇 全地鐵＆景點大地圖
-      </button>
       <button id="dnav-hotels" class="desktop-nav-btn" onclick="switchTab('hotels')">
-        🏨 住宿推薦(19間)＆街區圖
+        🏨 19間選房＆大地圖 (一屏秒切)
+      </button>
+      <button id="dnav-metro" class="desktop-nav-btn" onclick="switchTab('metro')">
+        🚇 景點地鐵時間模擬
       </button>
       <button id="dnav-apps" class="desktop-nav-btn" onclick="switchTab('apps')">
         💰 比價App最優惠攻略
@@ -64,11 +64,16 @@
         <div class="section-header">
           <div>
             <h2 class="section-title">每日行程與交通動向</h2>
-            <p class="section-desc">前 3 晚已整合「ESLEAD HOTEL 大阪鶴橋」實際地鐵動線；名古屋行程可一鍵跳看「全地鐵大地圖」動畫路線</p>
+            <p class="section-desc">前 3 晚已整合「ESLEAD HOTEL 大阪鶴橋」動線；名古屋 4 晚可進入「19間選房＆大地圖」一屏免捲動秒切比較！</p>
           </div>
-          <button id="btn-toggle-all-days" type="button" class="btn-outline" onclick="toggleAllDays()">
-            展開全部 8 天總覽
-          </button>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <button type="button" class="btn-primary" onclick="switchTab('hotels')">
+              ⚡ 進入 19 間住宿一屏秒切＋大地圖
+            </button>
+            <button id="btn-toggle-all-days" type="button" class="btn-outline" onclick="toggleAllDays()">
+              展開全部 8 天總覽
+            </button>
+          </div>
         </div>
 
         <div class="itinerary-layout">
@@ -79,302 +84,227 @@
         </div>
       </section>
 
-      <!-- ==================== PANEL 1.5 (NEW): NAGOYA FULL METRO + SPOTS + HOTEL LINKED BIG MAP ==================== -->
-      <section id="panel-metro" class="tab-panel">
-        <div class="card" style="margin-bottom: 16px;">
-          <div class="section-header" style="margin-bottom: 10px;">
-            <div>
-              <div class="trip-meta-row" style="margin-bottom: 4px;">
-                <span class="chip chip-brand">🚇 宏觀全區地鐵圖 ⇄ 微觀住宿超商圖 雙向聯動</span>
-                <span class="chip chip-green">🎯 已標記本次 8 大必去行程 ＋ 3 大熱門順遊地標</span>
-              </div>
-              <h2 class="section-title">名古屋全地鐵＆必去景點交通動畫大地圖</h2>
-              <p class="section-desc">
-                <strong>超簡單用法：</strong>① 選我們想住的飯店 ➔ ② 點選下方或地圖上的景點，立即用動畫跑出<strong>「住這間怎麼搭地鐵去景點」</strong>，並同步顯示<strong>「出站怎麼走回飯店＆順路超商」</strong>！
-              </p>
-            </div>
-          </div>
-
-          <!-- Step 1: Select Starting Hotel -->
-          <div class="metro-controls-box">
-            <div class="metro-hotel-picker-row">
-              <label for="metro-hotel-select" class="metro-step-badge">① 起點住宿：</label>
-              <select id="metro-hotel-select" class="metro-select" onchange="selectMetroHotel(this.value)"></select>
-              <div class="map-prev-next">
-                <button type="button" class="btn-mini-nav" onclick="stepMetroHotel(-1)">◀ 上間住宿</button>
-                <button type="button" class="btn-mini-nav" onclick="stepMetroHotel(1)">下間住宿 ▶</button>
-              </div>
-            </div>
-
-            <!-- Step 2: Select Daily Direction or Target Attraction -->
-            <div style="margin-top: 10px;">
-              <div style="font-size: 12.5px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">
-                ② 點選「每日行程方向」或「單一景點」（大地圖已同時標出全部 ①～⑲ 住宿圓圈，可直接點擊！）：
-              </div>
-              <div id="metro-spot-pills" class="metro-spot-pills"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Macro Big Metro Map + Linked Micro Hotel Street Map -->
-        <div class="metro-split-layout">
-          <!-- Left: Big Nagoya Subway & Attractions Map + Route Breakdown -->
-          <div class="card">
-            <div class="metro-legend-bar">
-              <div class="metro-legend-items">
-                <span class="leg-dot"><i style="background:#f59e0b;"></i>東山線</span>
-                <span class="leg-dot"><i style="background:#e11d48;"></i>櫻通線</span>
-                <span class="leg-dot"><i style="background:#7c3aed;"></i>名城・名港線</span>
-                <span class="leg-dot"><i style="background:#2563eb;"></i>鶴舞・Linimo線</span>
-                <span class="leg-dot"><i style="background:#0f766e;"></i>名鐵・JR・直達巴士</span>
-              </div>
-              <button id="btn-metro-zoom" type="button" class="btn-mini-nav" onclick="toggleMetroZoom()">
-                🔍 手機放大滑動檢視
-              </button>
-            </div>
-
-            <div id="metro-svg-scroll" class="metro-canvas-scroll">
-              <div id="metro-big-svg-holder" class="metro-canvas-inner"></div>
-            </div>
-
-            <!-- Live Animated Transit Breakdown Card -->
-            <div id="metro-route-card" class="metro-route-summary-box"></div>
-          </div>
-
-          <!-- Right: Synchronized Micro Hotel Neighborhood Map (Exit + 2nd Subway + Konbini) -->
-          <aside class="sticky-pane">
-            <div class="card">
-              <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
-                <span class="chip chip-brand">🔗 聯動微觀街區圖（最後 1～5 分鐘怎麼走）</span>
-              </div>
-              <h3 id="metro-micro-title" style="margin: 0; font-size: 16px; font-weight: 800; line-height: 1.35;">載入中...</h3>
-              <p id="metro-micro-sub" style="margin: 3px 0 10px; font-size: 12px; color: var(--text-secondary);"></p>
-
-              <div class="schematic-box">
-                <div class="schematic-summary-bar">
-                  <span id="metro-micro-exit" class="exit-sign-inline">出口載入中</span>
-                  <span id="metro-micro-walk" class="total-walk-badge">步行載入中</span>
-                </div>
-                <div id="metro-micro-subbar" class="sub-station-bar">🥈 次近地鐵載入中...</div>
-                <div id="metro-micro-svg"></div>
-              </div>
-
-              <div id="metro-micro-konbini" class="konbini-highlight" style="margin-top: 10px; margin-bottom: 10px;"></div>
-
-              <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                <button type="button" class="btn-primary" style="flex: 1;" onclick="jumpToHotelFromMetro()">
-                  🏨 查看此間房價＆訂房連結
-                </button>
-                <a id="metro-micro-walk-btn" class="btn-outline" href="#" target="_blank" rel="noopener noreferrer">
-                  🚶 Google 步行導航
-                </a>
-              </div>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <!-- ==================== PANEL 2: HOTELS & GLOBAL + STREET MAPS ==================== -->
+      <!-- ==================== PANEL 2: ZERO-SCROLL 19-HOTEL + LIVE BIG MAP COCKPIT ==================== -->
       <section id="panel-hotels" class="tab-panel">
-        <!-- NEW: Full-Width Global Subway System + All 19 Hotels + Daily Itinerary Directions Overview -->
-        <div class="card" style="margin-bottom: 16px;">
-          <div class="section-header" style="margin-bottom: 8px;">
+        <!-- Compact Top Bar: Mode Hint + View Switcher -->
+        <div class="cockpit-top-bar">
+          <div class="cockpit-top-hint">
+            ⚡ <strong>免捲動秒切：</strong>點 ①～⑲（或左右滑動卡片／按鍵盤 ← →），大地圖與房價同步更新
+          </div>
+          <div class="view-switch-group" role="tablist" aria-label="檢視模式切換">
+            <button id="vbtn-cockpit" type="button" class="view-switch-btn active" onclick="setHotelsViewMode('cockpit')">
+              ⚡ 一屏秒切
+            </button>
+            <button id="vbtn-list" type="button" class="view-switch-btn" onclick="setHotelsViewMode('list')">
+              📋 展開清單
+            </button>
+          </div>
+        </div>
+
+        <!-- ===== VIEW A (DEFAULT): ZERO-SCROLL APP COCKPIT (FITS 1 SCREEN ON PHONE & DESKTOP) ===== -->
+        <div id="hotels-cockpit-view" class="hotels-cockpit">
+          <!-- Block 1 (Mobile Top / Desktop Right): Live Instant-Updating Big Map Stage -->
+          <div id="cockpit-map-pane" class="cockpit-surface cockpit-map-pane">
             <div>
-              <div class="trip-meta-row" style="margin-bottom: 4px;">
-                <span class="chip chip-brand">🌐 名古屋全局地鐵相對位置總覽（①～⑲ 全部標示）</span>
-                <span class="chip chip-green">🧭 結合 Day 4～Day 8 每日行程出發方向</span>
+              <div class="cockpit-map-header">
+                <div class="cockpit-mode-tabs" role="tablist">
+                  <button id="cmode-global" type="button" class="cmode-btn active" onclick="setCockpitMapMode('global')">
+                    🌐 全局地鐵大地圖
+                  </button>
+                  <button id="cmode-schematic" type="button" class="cmode-btn" onclick="setCockpitMapMode('schematic')">
+                    ✨ 周邊出口＆超商
+                  </button>
+                  <button id="cmode-gmap" type="button" class="cmode-btn" onclick="setCockpitMapMode('gmap')">
+                    🗺️ Google街圖
+                  </button>
+                </div>
+
+                <!-- 6-Button Zero-Horizontal-Scroll Daily Itinerary Direction Bar -->
+                <div id="cockpit-dir-bar" class="cockpit-dir-grid" aria-label="每日行程出發方向"></div>
               </div>
-              <h2 class="section-title">19 間推薦住宿在名古屋地鐵系統的哪裡？選哪站最方便？</h2>
-              <p class="section-desc">
-                點擊圖中任一<strong>圓圈編號 ①～⑲</strong> 即可切換下方住宿卡與右側超商街區圖；點擊<strong>「Day 4～Day 8 動線」</strong>可看每天往哪個方向跑！
-              </p>
+
+              <!-- Height-Clamped Map Stage (Never forces page scroll!) -->
+              <div class="cockpit-stage-wrap">
+                <!-- Mode 1: Global Nagoya Subway + All 19 Numbered Pins -->
+                <div id="cockpit-global-stage" class="cockpit-svg-fit"></div>
+
+                <!-- Mode 2: Street-Level Exit + 2nd Subway + Konbini Animated Diagram -->
+                <div id="cockpit-schematic-stage" style="display: none;">
+                  <div class="cockpit-micro-bar">
+                    <span id="cmicro-exit" class="exit-sign-inline">出口載入中</span>
+                    <span id="cmicro-walk" class="total-walk-badge">步行載入中</span>
+                  </div>
+                  <div id="cmicro-svg" class="cockpit-svg-fit"></div>
+                </div>
+
+                <!-- Mode 3: Interactive Google Maps Embed (Lazy-loaded on demand) -->
+                <div id="cockpit-gmap-stage" class="cockpit-gmap-fit" style="display: none;">
+                  <iframe
+                    id="cockpit-gmap-iframe"
+                    title="住宿位置 Google 地圖"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="about:blank"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
             </div>
-            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-              <button id="btn-hglobal-zoom" type="button" class="btn-mini-nav" onclick="toggleHotelsGlobalZoom()">
-                🔍 手機放大滑動
-              </button>
-              <button id="btn-hglobal-collapse" type="button" class="btn-outline" onclick="toggleHotelsGlobalCollapse()">
-                🔼 收合全局大地圖
-              </button>
+
+            <div>
+              <!-- 1-Line Live Direction Verdict + Quick Map Mode Toggle -->
+              <div class="cockpit-verdict-bar">
+                <div id="cockpit-verdict-text" class="cockpit-verdict-text">載入地鐵方向評估中...</div>
+                <button id="cockpit-quick-toggle-btn" type="button" class="btn-mini-nav" onclick="quickToggleGlobalAndStreet()">
+                  ✨ 出口超商圖
+                </button>
+              </div>
+
+              <!-- Desktop Bonus Strip: Station -> Konbini -> Hotel Step Flow -->
+              <div id="cockpit-desktop-walk" class="desktop-walk-strip"></div>
             </div>
           </div>
 
-          <div id="hotels-global-body">
-            <!-- Daily Direction Pills -->
-            <div style="margin-bottom: 10px;">
-              <div id="hotels-day-dir-pills" class="metro-spot-pills"></div>
-            </div>
-
-            <!-- Legend -->
-            <div class="metro-legend-bar" style="margin-bottom: 8px;">
-              <div class="metro-legend-items">
-                <span class="leg-dot"><i style="background:#f59e0b;"></i>東山線(黃)</span>
-                <span class="leg-dot"><i style="background:#e11d48;"></i>櫻通線(紅)</span>
-                <span class="leg-dot"><i style="background:#7c3aed;"></i>名城・名港線(紫)</span>
-                <span class="leg-dot"><i style="background:#2563eb;"></i>鶴舞・Linimo線(藍)</span>
-                <span class="leg-dot"><i style="background:#0f766e;"></i>JR・名鐵・巴士</span>
+          <!-- Block 2 (Mobile Middle / Desktop Top-Left): 5x4 Zero-Scroll 20-Hotel Instant Keypad -->
+          <div id="cockpit-keypad-pane" class="cockpit-surface cockpit-keypad-pane">
+            <div class="keypad-filter-bar">
+              <div class="kzone-pills" role="group" aria-label="車站區域篩選">
+                <button id="kzone-nagoya" type="button" class="kzone-btn active" onclick="setHotelFilter('nagoya')">全部</button>
+                <button id="kzone-taiko_core" type="button" class="kzone-btn" onclick="setHotelFilter('taiko_core')">太閤①-⑦</button>
+                <button id="kzone-sakura" type="button" class="kzone-btn" onclick="setHotelFilter('sakura')">櫻通⑧-⑫</button>
+                <button id="kzone-sakae" type="button" class="kzone-btn" onclick="setHotelFilter('sakae')">榮/伏見</button>
+                <button id="kzone-apartment" type="button" class="kzone-btn" onclick="setHotelFilter('apartment')">公寓包棟</button>
+                <button id="kzone-osaka" type="button" class="kzone-btn" onclick="setHotelFilter('osaka')">大阪</button>
               </div>
-              <span style="font-size: 11.8px; font-weight: 800; color: #dc2626;">🔴 紅框發光圓圈 ＝ 目前選中查看的住宿</span>
+              <select id="cockpit-sort-select" class="ksort-select" aria-label="排序方式" onchange="setHotelSort(this.value)">
+                <option value="rec">推薦</option>
+                <option value="price">價格↑</option>
+                <option value="walk">距離↑</option>
+              </select>
             </div>
 
-            <!-- Full-Width Global Subway SVG with all 19 Hotel Pins -->
-            <div id="hotels-global-svg-scroll" class="metro-canvas-scroll">
-              <div id="hotels-global-svg-holder" class="metro-canvas-inner"></div>
+            <div id="cockpit-keypad-grid" class="hotel-keypad-grid" aria-label="19間推薦住宿快速切換鍵盤"></div>
+          </div>
+
+          <!-- Block 3 (Mobile Bottom / Desktop Bottom-Left): Focused Swipeable Active Hotel Card -->
+          <div id="cockpit-detail-pane" class="cockpit-surface cockpit-detail-pane">
+            <div id="cockpit-detail-content"></div>
+          </div>
+        </div>
+
+        <!-- ===== VIEW B (OPTIONAL): FULL DOCUMENT COMPARISON LIST ===== -->
+        <div id="hotels-full-list-view" style="display: none;">
+          <div class="card" style="margin-bottom: 14px;">
+            <div class="section-header" style="margin-bottom: 8px;">
+              <div>
+                <h2 class="section-title">🧭 四大地鐵站區域優缺點總整理 ＆ 19 間完整圖文清單</h2>
+                <p class="section-desc">點選任一住宿卡片可直接切回「⚡ 一屏秒切大地圖」定位查看！</p>
+              </div>
+              <button type="button" class="btn-primary" onclick="setHotelsViewMode('cockpit')">
+                ⚡ 返回一屏秒切大地圖
+              </button>
             </div>
 
-            <!-- Live Selected Hotel + Day Direction Takeaway -->
-            <div id="hotels-global-status" class="metro-route-summary-box" style="margin-top: 10px; padding: 11px 14px;"></div>
-
-            <!-- 4 Station Zones Quick Decision Guide -->
-            <div class="zone-decision-grid">
-              <div class="zone-decision-card" onclick="setHotelFilter('taiko')">
-                <div class="zone-dec-title">🏆 首推最省力：JR名古屋站【太閤通口】<span class="zone-nums">①②③④⑤⑥ (及⑦龜島)</span></div>
-                <p class="zone-dec-desc"><strong>優勢：</strong>D4 新幹線下車 3–5 分放行李、<strong>D5 往北牧歌之里巴士就在樓下</strong>、D8 往南搭機場特急免換車！去各景點搭東山線／櫻通線皆 3–9 分鐘。</p>
+            <div class="zone-decision-grid" style="margin-bottom: 14px;">
+              <div class="zone-decision-card" onclick="setHotelFilter('taiko_core')">
+                <div class="zone-dec-title">🏆 首推最省力：JR名古屋站【太閤通口】<span class="zone-nums">①～⑥ (及⑦龜島)</span></div>
+                <p class="zone-dec-desc"><strong>優勢：</strong>D4 新幹線下車 3–5 分放行李、<strong>D5 往北牧歌之里巴士就在樓下</strong>、D8 往南搭機場特急免換車！</p>
               </div>
               <div class="zone-decision-card" onclick="setHotelFilter('apartment')">
                 <div class="zone-dec-title">🏡 大空間附廚洗：櫻通線【太閤通站】<span class="zone-nums">⑰GRAND BASE・⑱獨棟</span></div>
-                <p class="zone-dec-desc"><strong>優勢：</strong>離 JR 太閤通口走路也僅 7–8 分！門口搭櫻通線<strong>免換車直達 KAKO 吐司(國際中心)＆久屋大通(轉1站名古屋城)</strong>。</p>
+                <p class="zone-dec-desc"><strong>優勢：</strong>離 JR 太閤通口走路僅 7–8 分！門口搭櫻通線<strong>免換車直達國際中心(吐司)＆久屋大通</strong>。</p>
               </div>
               <div class="zone-decision-card" onclick="setHotelFilter('sakura')">
-                <div class="zone-dec-title">🚇 地下街避風＋近吐司：【櫻通口・國際中心】<span class="zone-nums">⑧⑨⑩⑪⑫</span></div>
-                <p class="zone-dec-desc"><strong>優勢：</strong>全程走 Unimall 地下街不怕冷風，<strong>D7 早餐散步 3–5 分吃 KAKO 花車本店</strong>，離 D6 吉卜力巴士總站＆名鐵機場線最近！</p>
+                <div class="zone-dec-title">🚇 地下街避風＋近吐司：【櫻通口・國際中心】<span class="zone-nums">⑧～⑫</span></div>
+                <p class="zone-dec-desc"><strong>優勢：</strong>全程走 Unimall 地下街不怕冷風，<strong>D7 早餐散步 3–5 分吃 KAKO 花車本店</strong>，近吉卜力巴士站！</p>
               </div>
               <div class="zone-decision-card" onclick="setHotelFilter('sakae')">
-                <div class="zone-dec-title">🛍️ 樓下超商＋逛街王：【榮・久屋大通・伏見】<span class="zone-nums">⑬⑭⑮⑯</span></div>
-                <p class="zone-dec-desc"><strong>優勢：</strong>⑬⑭ 1F就是超商，去<strong>北邊名古屋城、南邊名古屋港、東邊吉卜力轉乘全免換線</strong>；⑮⑯走路就到 D8 科學館！（惟 D4/D8 扛行李需多坐1–2站地鐵）</p>
+                <div class="zone-dec-title">🛍️ 樓下超商＋逛街王：【榮・久屋大通・伏見】<span class="zone-nums">⑬～⑯</span></div>
+                <p class="zone-dec-desc"><strong>優勢：</strong>⑬⑭ 1F就是超商，去<strong>北邊名古屋城、南邊名古屋港、東邊吉卜力轉乘全免換線</strong>；⑮⑯走路到科學館！</p>
+              </div>
+            </div>
+
+            <div class="filter-row">
+              <button id="hfilter-nagoya" type="button" class="filter-pill active" onclick="setHotelFilter('nagoya')">🔥 名古屋全部 (19間)</button>
+              <button id="hfilter-taiko_core" type="button" class="filter-pill" onclick="setHotelFilter('taiko_core')">🚄 名駅太閤通口 (7間)</button>
+              <button id="hfilter-sakura" type="button" class="filter-pill" onclick="setHotelFilter('sakura')">🚇 櫻通口・國際中心 (5間)</button>
+              <button id="hfilter-sakae" type="button" class="filter-pill" onclick="setHotelFilter('sakae')">🛍️ 伏見・榮・久屋大通 (4間)</button>
+              <button id="hfilter-apartment" type="button" class="filter-pill" onclick="setHotelFilter('apartment')">🏡 公寓 / 獨棟包棟 (3間)</button>
+              <button id="hfilter-osaka" type="button" class="filter-pill" onclick="setHotelFilter('osaka')">✅ 大阪已訂：ESLEAD</button>
+            </div>
+
+            <div class="sort-toolbar">
+              <div id="hotels-count-label" class="sort-count-text">載入住宿清單中...</div>
+              <div class="sort-control-group">
+                <label for="hotel-sort-select" class="sort-label">排序方式：</label>
+                <select id="hotel-sort-select" class="sort-select" onchange="setHotelSort(this.value)">
+                  <option value="rec">✨ 綜合推薦 CP 值</option>
+                  <option value="price">💰 預估房價：由低到高</option>
+                  <option value="walk">🚶 最近車站步行：由近到遠</option>
+                </select>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Area Filter & Sort Card -->
-        <div class="card" style="margin-bottom: 16px;">
-          <div class="section-header" style="margin-bottom: 10px;">
-            <div>
-              <h2 class="section-title">名古屋 4 晚（1/19–1/23）19 間實惠住宿清單 ＆ 周邊街區地圖</h2>
-              <p class="section-desc">
-                點選任一住宿卡片，上方「全局地鐵圖」與右側「周邊雙車站＆超商小圖」會同步定位高亮！
-              </p>
-            </div>
-          </div>
-
-          <div class="filter-row">
-            <button id="hfilter-nagoya" type="button" class="filter-pill active" onclick="setHotelFilter('nagoya')">
-              🔥 名古屋全部 (19間)
-            </button>
-            <button id="hfilter-taiko" type="button" class="filter-pill" onclick="setHotelFilter('taiko')">
-              🚄 名駅太閤通口・太閤通站 (10間)
-            </button>
-            <button id="hfilter-sakura" type="button" class="filter-pill" onclick="setHotelFilter('sakura')">
-              🚇 名駅櫻通口・國際中心站 (5間)
-            </button>
-            <button id="hfilter-sakae" type="button" class="filter-pill" onclick="setHotelFilter('sakae')">
-              🛍️ 伏見・榮・久屋大通 (4間)
-            </button>
-            <button id="hfilter-apartment" type="button" class="filter-pill" onclick="setHotelFilter('apartment')">
-              🏡 公寓 / 獨棟包棟 (3間)
-            </button>
-            <button id="hfilter-osaka" type="button" class="filter-pill" onclick="setHotelFilter('osaka')">
-              ✅ 大阪已訂：ESLEAD
-            </button>
-          </div>
-
-          <div class="sort-toolbar">
-            <div id="hotels-count-label" class="sort-count-text">載入住宿清單中...</div>
-            <div class="sort-control-group">
-              <label for="hotel-sort-select" class="sort-label">排序方式：</label>
-              <select id="hotel-sort-select" class="sort-select" onchange="setHotelSort(this.value)">
-                <option value="rec">✨ 綜合推薦 CP 值</option>
-                <option value="price">💰 預估房價：由低到高</option>
-                <option value="walk">🚶 最近車站步行：由近到遠</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="hotels-map-layout">
-          <!-- Left: Hotel Cards -->
           <div id="hotels-cards-container"></div>
+        </div>
+      </section>
 
-          <!-- Right (Top on Mobile): Sticky Schematic Animated Map + Global Mini + Google Map Toggle -->
-          <aside id="hotel-map-card" class="sticky-pane map-card-mobile-first">
-            <div class="card">
-              <!-- Quick Hotel Switcher Pills -->
-              <div id="map-quick-pills" class="quick-hotel-pills" aria-label="快速切換住宿地圖"></div>
-
-              <div class="map-header-nav">
-                <div style="min-width: 0; flex: 1;">
-                  <h3 id="map-hotel-title" style="margin: 0; font-size: 16.5px; font-weight: 800; line-height: 1.3;">載入中...</h3>
-                  <p id="map-hotel-sub" style="margin: 3px 0 0; font-size: 12px; color: var(--text-secondary);"></p>
-                </div>
-                <div class="map-prev-next">
-                  <button type="button" class="btn-mini-nav" onclick="stepHotel(-1)" title="上一間住宿">◀ 上一間</button>
-                  <button type="button" class="btn-mini-nav" onclick="stepHotel(1)" title="下一間住宿">下一間 ▶</button>
-                </div>
+      <!-- ==================== PANEL 2.5: SINGLE-SPOT TRANSIT SIMULATOR (COMPACT ZERO-SCROLL) ==================== -->
+      <section id="panel-metro" class="tab-panel">
+        <div class="metro-compact-grid">
+          <!-- Left: Compact Spot Selector + Height-Clamped Subway Map -->
+          <div class="cockpit-surface" style="display: flex; flex-direction: column; justify-content: space-between; gap: 6px;">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 5px;">
+                <span style="font-size: 12.2px; font-weight: 800; color: var(--brand);">① 點選起點住宿 ①～⑲：</span>
+                <span id="metro-cur-hotel-tag" style="font-size: 11.8px; font-weight: 800; color: var(--text-primary);"></span>
               </div>
+              <div id="metro-quick-num-grid" class="metro-num-strip" style="margin-bottom: 7px;"></div>
 
-              <!-- 3-Mode Switcher: Street Schematic vs Global Metro Position vs Detailed Google Maps -->
-              <div class="map-mode-tabs map-mode-tabs-3" role="tablist">
-                <button id="btn-mode-schematic" type="button" class="map-mode-btn active" onclick="setMapMode('schematic')">
-                  ✨ 周邊出口＆超商
-                </button>
-                <button id="btn-mode-global" type="button" class="map-mode-btn" onclick="setMapMode('global')">
-                  🌐 全局地鐵位置
-                </button>
-                <button id="btn-mode-gmap" type="button" class="map-mode-btn" onclick="setMapMode('gmap')">
-                  🗺️ Google街道圖
-                </button>
+              <div style="font-size: 11.8px; font-weight: 800; color: var(--text-secondary); margin-bottom: 4px;">
+                ② 點選單一景點或整日方向（免捲動即時跑動畫）：
               </div>
+              <div id="metro-spot-pills" class="metro-spot-pills" style="margin-bottom: 6px;"></div>
 
-              <!-- Mode 1: Animated Schematic Diagram (Default) -->
-              <div id="schematic-map-wrap" class="schematic-box">
-                <div class="schematic-summary-bar">
-                  <span id="schematic-exit-badge" class="exit-sign-inline">出口載入中</span>
-                  <span id="schematic-total-walk" class="total-walk-badge">步行時間載入中</span>
-                </div>
-                <div id="schematic-sub-stations" class="sub-station-bar">🥈 次近地鐵載入中...</div>
-                <div id="schematic-svg-holder"></div>
-              </div>
-
-              <!-- Mode 1.5: Global Metro 19-Hotel Position Inside Sticky Card -->
-              <div id="global-mini-map-wrap" class="schematic-box" style="display: none;">
-                <div class="sub-station-bar" style="background: #eff6ff; color: #1e3a8a;">
-                  🌐 此住宿在整個名古屋地鐵網的位置（紅圈發光處，點其他數字可切換）：
-                </div>
-                <div id="global-mini-svg-holder"></div>
-              </div>
-
-              <!-- Mode 2: Detailed Google Maps Embed (Hidden until toggled) -->
-              <div id="google-map-wrap" class="map-frame-wrap" style="display: none;">
-                <iframe
-                  id="google-map-iframe"
-                  title="住宿位置 Google 地圖"
-                  loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade"
-                  src="https://www.google.com/maps/embed?hl=zh-TW&origin=mfe&pb=!1m3!2m1!1sComfort+Hotel+Nagoya+Shinkansenguchi!6i16"
-                  allowfullscreen
-                ></iframe>
-              </div>
-
-              <!-- Station -> Konbini -> Hotel Step Strip -->
-              <div style="margin-top: 12px; font-size: 12.5px; font-weight: 700; color: var(--text-primary);">
-                🚶 分段步行距離與順路超商一覽：
-              </div>
-              <div id="walk-strip-box" class="walk-route-strip"></div>
-
-              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
-                <button id="btn-jump-metro-from-map" type="button" class="btn-primary" style="flex: 1;" onclick="openHotelInMetroMap(selectedHotelId)">
-                  🚇 看去單一景點詳細搭車時間
-                </button>
-                <a id="map-open-walk-btn" class="btn-outline" href="#" target="_blank" rel="noopener noreferrer">
-                  🚶 步行導航
-                </a>
-                <button id="btn-toggle-detail-bottom" type="button" class="btn-outline" onclick="toggleMapMode()">
-                  🗺️ 看 Google 仔細地圖
-                </button>
+              <div class="cockpit-stage-wrap">
+                <div id="metro-big-svg-holder" class="cockpit-svg-fit"></div>
               </div>
             </div>
-          </aside>
+
+            <div class="metro-legend-items" style="font-size: 11.2px; padding-top: 2px;">
+              <span class="leg-dot"><i style="background:#f59e0b;"></i>東山線</span>
+              <span class="leg-dot"><i style="background:#e11d48;"></i>櫻通線</span>
+              <span class="leg-dot"><i style="background:#7c3aed;"></i>名城・名港線</span>
+              <span class="leg-dot"><i style="background:#2563eb;"></i>鶴舞・Linimo</span>
+              <span class="leg-dot"><i style="background:#0f766e;"></i>JR・名鐵・巴士</span>
+            </div>
+          </div>
+
+          <!-- Right: Live Route Steps + Synchronized Micro Street Exit Map -->
+          <div class="cockpit-surface" style="display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
+            <div id="metro-route-card" class="metro-route-summary-box" style="margin-top: 0; padding: 10px 12px;"></div>
+
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 5px;">
+                <span class="chip chip-brand">🔗 此住宿周邊雙車站＆順路超商</span>
+                <span id="metro-micro-walk" class="total-walk-badge">步行載入中</span>
+              </div>
+              <div class="cockpit-stage-wrap" style="margin-top: 0;">
+                <div id="metro-micro-svg" class="cockpit-svg-fit"></div>
+              </div>
+              <div id="metro-micro-konbini" class="cdetail-konbini-line" style="margin-top: 6px;"></div>
+            </div>
+
+            <div style="display: flex; gap: 6px;">
+              <button type="button" class="cact-btn cact-primary" onclick="jumpToHotelFromMetro()">
+                🏨 回選房面板看房價＆比價
+              </button>
+              <a id="metro-micro-walk-btn" class="cact-btn" href="#" target="_blank" rel="noopener noreferrer">
+                🚶 步行導航
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -497,19 +427,26 @@
 
   </div>
 
+  <!-- Slide-Up Full Detail & OTA Price Comparison Modal Sheet (Zero Page Scroll Loss!) -->
+  <div id="hotel-detail-modal" class="hotel-modal-backdrop" role="dialog" aria-modal="true" aria-label="住宿完整資訊與比價" onclick="closeHotelDetailModal(event)">
+    <div class="hotel-modal-sheet" onclick="event.stopPropagation()">
+      <div id="hotel-modal-body"></div>
+    </div>
+  </div>
+
   <!-- Mobile Bottom Navigation Bar -->
   <nav class="mobile-bottom-nav" aria-label="手機版主選單">
     <button id="mnav-itinerary" type="button" class="mobile-nav-btn active" onclick="switchTab('itinerary')">
       <span class="nav-icon">🗓️</span>
       <span>每日動向</span>
     </button>
-    <button id="mnav-metro" type="button" class="mobile-nav-btn" onclick="switchTab('metro')">
-      <span class="nav-icon">🚇</span>
-      <span>全地鐵圖</span>
-    </button>
     <button id="mnav-hotels" type="button" class="mobile-nav-btn" onclick="switchTab('hotels')">
       <span class="nav-icon">🏨</span>
-      <span>19間住宿</span>
+      <span>19間選房</span>
+    </button>
+    <button id="mnav-metro" type="button" class="mobile-nav-btn" onclick="switchTab('metro')">
+      <span class="nav-icon">🚇</span>
+      <span>景點交通</span>
     </button>
     <button id="mnav-apps" type="button" class="mobile-nav-btn" onclick="switchTab('apps')">
       <span class="nav-icon">💰</span>
