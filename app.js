@@ -2051,22 +2051,952 @@ function saveChecklist() {
   } catch (e) {}
 }
 
+// ==================== 名古屋全地鐵＋必去景點＋住宿聯動大地圖引擎 ====================
+let metroHotelId = "comfort";
+let metroSpotId = "castle";
+let metroZoomed = false;
+
+const DAY_TO_METRO_SPOT = {
+  4: "castle",
+  5: "bokka",
+  6: "ghibli",
+  7: "port",
+  8: "science"
+};
+
+const METRO_COORDS = {
+  shinosaka: [36, 175],
+  bokka: [195, 44],
+  nakamura: [58, 120],
+  kamejima: [132, 120],
+  taikodori: [106, 175],
+  meieki: [195, 175],
+  kokusai: [274, 175],
+  marunouchi: [338, 175],
+  hisaya: [420, 175],
+  castle: [420, 84],
+  fushimi: [338, 248],
+  sakae: [420, 248],
+  fujigaoka: [554, 248],
+  ghibli: [662, 248],
+  osu: [338, 318],
+  kamimaezu: [420, 318],
+  kanayama: [420, 374],
+  atsuta: [512, 374],
+  legoland: [195, 434],
+  port: [420, 434],
+  airport: [622, 434]
+};
+
+const METRO_SPOTS = [
+  { id: "castle", pill: "🏯 D4 名古屋城・矢場豬排", name: "名古屋城 ＆ 矢場味噌豬排（金鯱橫丁）", dayTag: "Day 4 必去", mustGo: true, node: "castle" },
+  { id: "sakae", pill: "✨ D4/7 綠洲21・榮商圈", name: "綠洲21 水之宇宙船 ＆ 榮商圈逛街", dayTag: "Day 4 & 7 必去", mustGo: true, node: "sakae" },
+  { id: "bokka", pill: "❄️ D5 牧歌之里(玩雪)", name: "牧歌之里 冰雪樂園（太閤通口搭直達巴士）", dayTag: "Day 5 必去", mustGo: true, node: "bokka" },
+  { id: "ghibli", pill: "🌱 D6 吉卜力公園", name: "吉卜力公園（愛・地球博記念公園）", dayTag: "Day 6 必去", mustGo: true, node: "ghibli" },
+  { id: "kako", pill: "🍞 D7 KAKO花車吐司", name: "KAKO 花車本店（四色果醬紅豆鮮奶油吐司）", dayTag: "Day 7 早餐必去", mustGo: true, node: "kokusai" },
+  { id: "port", pill: "⚓ D7 海洋博物館・破冰船", name: "名古屋海洋博物館 ＆ 南極破冰船富士號", dayTag: "Day 7 必去", mustGo: true, node: "port" },
+  { id: "science", pill: "🔬 D8 名古屋市科學館", name: "名古屋市科學館（世界最大星象儀・小學生免費）", dayTag: "Day 8 必去", mustGo: true, node: "fushimi" },
+  { id: "airport", pill: "✈️ D8 中部國際機場", name: "中部國際機場 新特麗亞 (NGO)", dayTag: "Day 8 返台", mustGo: true, node: "airport" },
+  { id: "osu", pill: "🏮 順遊：大須觀音商店街", name: "大須觀音 ＆ 大須拱廊商店街（雨天備案首選）", dayTag: "熱門大景點", mustGo: false, node: "osu" },
+  { id: "atsuta", pill: "⛩️ 順遊：熱田神宮", name: "熱田神宮（日本三大神宮・蓬萊軒鰻魚飯）", dayTag: "熱門大景點", mustGo: false, node: "atsuta" },
+  { id: "legoland", pill: "🧱 順遊：樂高樂園・磁浮館", name: "日本樂高樂園 Legoland ＆ 磁浮鐵道館", dayTag: "熱門大景點", mustGo: false, node: "legoland" },
+  { id: "all", pill: "🌟 全地鐵＆全景點總覽", name: "名古屋全地鐵路線與所有景點總覽", dayTag: "全圖亮燈", mustGo: true, node: "meieki" }
+];
+
+const HOTEL_METRO_HUB = {
+  "comfort": { hub: "meieki_taiko", stNode: "meieki", stLabel: "名古屋站(太閤通口)", walk: 5 },
+  "chisun": { hub: "meieki_taiko", stNode: "meieki", stLabel: "名古屋站(太閤通口)", walk: 4 },
+  "toyoko-shinkansen": { hub: "meieki_taiko", stNode: "meieki", stLabel: "名古屋站(太閤通口)", walk: 4 },
+  "sotetsu-shinkansen": { hub: "meieki_taiko", stNode: "meieki", stLabel: "名古屋站(太閤通口)", walk: 4 },
+  "daiwa-shinkansen": { hub: "meieki_taiko", stNode: "meieki", stLabel: "名古屋站(太閤通口)", walk: 3 },
+  "daiwa-taiko": { hub: "meieki_taiko", stNode: "meieki", stLabel: "名古屋站(太閤通口)", walk: 4 },
+  "richmond-shinkansen": { hub: "kamejima", stNode: "kamejima", stLabel: "龜島站(或走7分至JR名駅)", walk: 5 },
+  "vessel-campana": { hub: "meieki_sakura", stNode: "meieki", stLabel: "地鐵名古屋站(1號口)", walk: 4 },
+  "cypress-ekimae": { hub: "meieki_sakura", stNode: "meieki", stLabel: "地鐵/JR名古屋站", walk: 3 },
+  "sotetsu-sakura": { hub: "meieki_sakura", stNode: "meieki", stLabel: "名古屋站(櫻通口)", walk: 4 },
+  "toyoko-sakura": { hub: "meieki_sakura", stNode: "meieki", stLabel: "名古屋站(櫻通口)", walk: 4 },
+  "comfort-era": { hub: "kokusai", stNode: "kokusai", stLabel: "國際中心站(或名駅8分)", walk: 6 },
+  "vessel-sakae": { hub: "sakae", stNode: "sakae", stLabel: "榮站(2分) / 久屋大通站(3分)", walk: 2 },
+  "comfort-sakae": { hub: "sakae", stNode: "sakae", stLabel: "榮站(1分) / 久屋大通站(4分)", walk: 1 },
+  "comfort-fushimi": { hub: "fushimi", stNode: "fushimi", stLabel: "伏見站(3號口)", walk: 4 },
+  "delstyle-nayabashi": { hub: "fushimi", stNode: "fushimi", stLabel: "伏見站(6號口)", walk: 7 },
+  "grandbase": { hub: "taikodori", stNode: "taikodori", stLabel: "太閤通站(4分) / JR名駅(8分)", walk: 4 },
+  "samurai-house3": { hub: "taikodori", stNode: "taikodori", stLabel: "太閤通站(3分) / JR名駅(7分)", walk: 3 },
+  "central-res": { hub: "nakamura", stNode: "nakamura", stLabel: "中村公園站(2號口)", walk: 2 }
+};
+
+function ptsToPath(nodeKeys) {
+  return nodeKeys.map((k, idx) => {
+    const [x, y] = METRO_COORDS[k];
+    return `${idx === 0 ? "M" : "L"} ${x} ${y}`;
+  }).join(" ");
+}
+
+function computeMetroRoute(hotelId, spotId) {
+  const h = HOTELS_DATA.find(x => x.id === hotelId && x.city === "nagoya") || HOTELS_DATA[0];
+  const info = HOTEL_METRO_HUB[h.id] || HOTEL_METRO_HUB["comfort"];
+  const w = info.walk;
+  const hub = info.hub;
+  const shortH = h.name.split("（")[0];
+
+  if (spotId === "all") {
+    return {
+      isAll: true,
+      path: "",
+      color: "#1d4ed8",
+      transferNode: null,
+      badge: "🌟 全路線亮燈模式",
+      totalMinText: `起點已定位於：${info.stLabel}`,
+      steps: [`🏨 起點：${shortH}`, `🚇 最近站：${info.stLabel} (走${w}分)`, "👆 點選上方或圖中任一景點，立即播放專屬搭車動畫！"],
+      tip: "地圖上實心色塊為「本次旅遊計畫確定必去 8 大景點」，虛線框為「名古屋熱門順遊大景點」；點選任一景點方塊即可互動！"
+    };
+  }
+
+  // 1. 名古屋城 ＆ 矢場豬排 (castle)
+  if (spotId === "castle") {
+    if (hub === "sakae") {
+      return {
+        path: ptsToPath(["sakae", "hisaya", "castle"]),
+        color: "#7c3aed",
+        transferNode: null,
+        badge: "🟢 免轉車一班直達！",
+        totalMinText: `⏱️ 全程約 ${w + 9} 分鐘（飯店走 ${w} 分 ＋ 名城線 4 分 ＋ 出站走 5 分）`,
+        steps: [`🏨 ${shortH} (走${w}分)`, "🟣 榮站 / 久屋大通站", "🟣 名城線北上 (1–2站・4分)", "🏯 名古屋城站 7號口 (走5分)"],
+        tip: "住榮商圈去名古屋城無敵近！逛完本丸御殿出正門就是「金鯱橫丁」吃矢場味噌豬排。"
+      };
+    }
+    if (hub === "fushimi") {
+      return {
+        path: ptsToPath(["fushimi", "sakae", "hisaya", "castle"]),
+        color: "#7c3aed",
+        transferNode: "sakae",
+        badge: "🔄 榮站同站轉乘 1 次",
+        totalMinText: `⏱️ 全程約 ${w + 15} 分鐘（飯店走 ${w} 分 ＋ 地鐵約 10 分）`,
+        steps: [`🏨 ${shortH} (走${w}分)`, "🟡 伏見站 (東山線1站)", "🔄 榮站轉乘", "🟣 名城線 (2站・4分)", "🏯 名古屋城站 7號口"],
+        tip: "伏見搭東山線 2 分鐘到榮站轉名城線即達，帶 5 個小朋友轉乘指標非常清楚！"
+      };
+    }
+    if (hub === "kamejima" || hub === "nakamura") {
+      const startNodes = hub === "nakamura" ? ["nakamura", "kamejima", "meieki"] : ["kamejima", "meieki"];
+      return {
+        path: ptsToPath([...startNodes, "kokusai", "marunouchi", "hisaya", "castle"]),
+        color: "#7c3aed",
+        transferNode: "meieki",
+        badge: "🔄 轉乘地鐵前往",
+        totalMinText: `⏱️ 全程約 ${w + 19} 分鐘`,
+        steps: [`🏨 ${shortH} (走${w}分)`, `🟡 ${info.stLabel}`, "🔴 櫻通線至久屋大通", "🟣 名城線 1 站", "🏯 名古屋城站 7號口"],
+        tip: "若住 Richmond 新幹線口，也可直接散步 7 分鐘到名古屋站搭櫻通線！"
+      };
+    }
+    const startChain = hub === "taikodori"
+      ? ["taikodori", "meieki", "kokusai", "marunouchi", "hisaya", "castle"]
+      : hub === "kokusai"
+      ? ["kokusai", "marunouchi", "hisaya", "castle"]
+      : ["meieki", "kokusai", "marunouchi", "hisaya", "castle"];
+    const rideMin = hub === "taikodori" ? 11 : hub === "kokusai" ? 7 : 9;
+    return {
+      path: ptsToPath(startChain),
+      color: "#e11d48",
+      transferNode: "hisaya",
+      badge: "🔄 久屋大通站輕鬆轉 1 站",
+      totalMinText: `⏱️ 全程約 ${w + rideMin + 5} 分鐘（飯店走 ${w} 分 ＋ 地鐵 ${rideMin} 分 ＋ 出站走 5 分）`,
+      steps: [`🏨 ${shortH} (走${w}分)`, `🔴 ${info.stLabel} 搭櫻通線`, "🔄 久屋大通站轉乘", "🟣 名城線僅 1 站 (2分)", "🏯 名古屋城站 7號口"],
+      tip: "在「久屋大通站」轉乘比在名古屋站人潮少很多！小學生刷兒童 IC 卡單程僅約 ¥120。"
+    };
+  }
+
+  // 2. 綠洲21 ＆ 榮商圈 (sakae)
+  if (spotId === "sakae") {
+    if (hub === "sakae") {
+      return {
+        path: ptsToPath(["hisaya", "sakae"]),
+        color: "#10b981",
+        transferNode: null,
+        badge: "🚶 不用搭車！下樓散步秒到",
+        totalMinText: `⏱️ 步行僅 2～3 分鐘即達綠洲21・唐吉訶德・松坂屋！`,
+        steps: [`🏨 ${shortH}`, "🚶 下樓散步 2–3 分鐘", "✨ 綠洲21 水之宇宙船 ＆ 榮商圈"],
+        tip: "住榮商圈最大優勢：晚上看完綠洲21夜景、逛完唐吉訶德買大包小包，走 2 分鐘直接回房間！"
+      };
+    }
+    if (hub === "fushimi") {
+      return {
+        path: ptsToPath(["fushimi", "sakae"]),
+        color: "#f59e0b",
+        transferNode: null,
+        badge: "🟢 東山線 1 站（2分鐘）直達！",
+        totalMinText: `⏱️ 全程約 ${w + 3} 分鐘（或直接逛街散步 8 分鐘就到！）`,
+        steps: [`🏨 ${shortH} (走${w}分)`, "🟡 伏見站 搭東山線 (1站・2分)", "✨ 榮站 4A出口直通綠洲21"],
+        tip: "只有 1 站距離，天氣好邊逛邊走也只要 8–10 分鐘！"
+      };
+    }
+    if (hub === "taikodori" || hub === "kokusai") {
+      const chain = hub === "taikodori"
+        ? ["taikodori", "meieki", "kokusai", "marunouchi", "hisaya", "sakae"]
+        : ["kokusai", "marunouchi", "hisaya", "sakae"];
+      const rMin = hub === "taikodori" ? 7 : 4;
+      return {
+        path: ptsToPath(chain),
+        color: "#e11d48",
+        transferNode: null,
+        badge: "🟢 櫻通線免轉車直達久屋大通（綠洲21旁）！",
+        totalMinText: `⏱️ 全程約 ${w + rMin + 3} 分鐘（免轉車直達！）`,
+        steps: [`🏨 ${shortH} (走${w}分)`, `🔴 ${info.stLabel} 搭櫻通線 (${rMin}分)`, "✨ 久屋大通站出站走 3 分即達綠洲21"],
+        tip: "櫻通線「久屋大通站」跟「榮站」地下街完全相連，免換車直接走到綠洲21超省力！"
+      };
+    }
+    const yChain = hub === "nakamura"
+      ? ["nakamura", "kamejima", "meieki", "fushimi", "sakae"]
+      : hub === "kamejima"
+      ? ["kamejima", "meieki", "fushimi", "sakae"]
+      : ["meieki", "fushimi", "sakae"];
+    const rMin = hub === "nakamura" ? 12 : hub === "kamejima" ? 7 : 5;
+    return {
+      path: ptsToPath(yChain),
+      color: "#f59e0b",
+      transferNode: null,
+      badge: "🟢 東山線免轉車一班直達！",
+      totalMinText: `⏱️ 全程約 ${w + rMin} 分鐘（東山線 ${rMin} 分直達榮站 4A 出口）`,
+      steps: [`🏨 ${shortH} (走${w}分)`, `🟡 ${info.stLabel} 搭東山線 (${rMin}分)`, "✨ 榮站 4A出口直通綠洲21"],
+      tip: "東山線班次極密（每 2–4 分鐘一班），完全不用看時刻表！"
+    };
+  }
+
+  // 3. 牧歌之里 (bokka)
+  if (spotId === "bokka") {
+    if (hub === "meieki_taiko") {
+      return {
+        path: ptsToPath(["meieki", "bokka"]),
+        color: "#0f766e",
+        transferNode: null,
+        badge: "🏆 早上集合無敵神位！下樓走 3–5 分即上車",
+        totalMinText: `⏱️ 飯店走 ${w} 分即達太閤通口集合點 ＋ 專車約 120 分抵牧歌之里`,
+        steps: [`🏨 ${shortH}`, `🚶 平路走 ${w} 分到 JR太閤通口`, "🚌 搭一日遊巴士免換車", "❄️ 牧歌之里玩雪一整天"],
+        tip: "Day 5 玩雪巴士 08:00 前後在「太閤通口」集合，住太閤通口這幾間早上可以多睡 20 分鐘！"
+      };
+    }
+    if (hub === "taikodori" || hub === "kamejima" || hub === "meieki_sakura") {
+      const walkToTaiko = hub === "meieki_sakura" ? 8 : 7;
+      const startN = hub === "taikodori" ? ["taikodori", "meieki", "bokka"] : hub === "kamejima" ? ["kamejima", "meieki", "bokka"] : ["meieki", "bokka"];
+      return {
+        path: ptsToPath(startN),
+        color: "#0f766e",
+        transferNode: null,
+        badge: "🚶 步行 7–8 分直達太閤通口集合點",
+        totalMinText: `⏱️ 步行約 ${walkToTaiko} 分鐘抵達太閤通口巴士集合處 ＋ 專車約 120 分`,
+        steps: [`🏨 ${shortH}`, `🚶 散步 ${walkToTaiko} 分至 JR名古屋站太閤通口`, "🚌 搭直達巴士出發", "❄️ 牧歌之里冰雪樂園"],
+        tip: "早上不用擠上班尖峰地鐵，直接走平面道路去太閤通口買超商熱飲上巴士超輕鬆！"
+      };
+    }
+    const preChain = hub === "sakae"
+      ? ["sakae", "fushimi", "meieki", "bokka"]
+      : hub === "fushimi"
+      ? ["fushimi", "meieki", "bokka"]
+      : hub === "kokusai"
+      ? ["kokusai", "meieki", "bokka"]
+      : ["nakamura", "kamejima", "meieki", "bokka"];
+    return {
+      path: ptsToPath(preChain),
+      color: "#0f766e",
+      transferNode: "meieki",
+      badge: "🚇 搭地鐵 1–3 站至名古屋站轉巴士",
+      totalMinText: `⏱️ 飯店出發約 15–18 分抵太閤通口集合點 ＋ 巴士約 120 分`,
+      steps: [`🏨 ${shortH} (走${w}分)`, `🚇 搭地鐵至名古屋站`, "🔄 穿過車站至太閤通口", "🚌 搭專車往 ❄️ 牧歌之里"],
+      tip: "名古屋站很大，從地鐵月台走到太閤通口（新幹線西口）建議預留 7–8 分鐘步行時間喔！"
+    };
+  }
+
+  // 4. 吉卜力公園 (ghibli)
+  if (spotId === "ghibli") {
+    if (hub === "sakae" || hub === "fushimi") {
+      const startC = hub === "sakae" ? ["sakae", "fujigaoka", "ghibli"] : ["fushimi", "sakae", "fujigaoka", "ghibli"];
+      return {
+        path: ptsToPath(startC),
+        color: "#0284c7",
+        transferNode: "fujigaoka",
+        badge: "🚝 東山線直達藤が丘 ➔ 體驗日本磁浮列車 Linimo！",
+        totalMinText: `⏱️ 全程約 ${w + 46} 分鐘（東山線約 26 分 ＋ Linimo 磁浮線 17 分）`,
+        steps: [`🏨 ${shortH} (走${w}分)`, "🟡 東山線直達終點藤が丘站", "🔄 轉乘 🔵 Linimo 磁浮列車 (17分)", "🌱 愛・地球博記念公園站(出站即達)"],
+        tip: "6–10 歲小朋友超愛搭懸浮在軌道上的 Linimo 磁浮列車，車頭第一排視野超棒！"
+      };
+    }
+    const toMeieki = hub === "taikodori" ? ["taikodori", "meieki"] : hub === "kokusai" ? ["kokusai", "meieki"] : hub === "kamejima" ? ["kamejima", "meieki"] : hub === "nakamura" ? ["nakamura", "kamejima", "meieki"] : ["meieki"];
+    return {
+      path: ptsToPath([...toMeieki, "fushimi", "sakae", "fujigaoka", "ghibli"]),
+      color: "#0284c7",
+      transferNode: "fujigaoka",
+      badge: "🚌 名鐵巴士中心一班直達 或 🚝 東山線＋Linimo磁浮線",
+      totalMinText: `⏱️ 直達巴士約 40 分免換車 ／ 地鐵＋磁浮線約 50 分鐘`,
+      steps: [`🏨 ${shortH}`, "🅰️ 名鐵巴士中心搭直達巴士 (40分免轉車)", "🅱️ 或搭 🟡東山線至藤が丘 ➔ 🔵磁浮線Linimo", "🌱 吉卜力公園"],
+      tip: "住名古屋站周邊享雙重選擇：早上想輕鬆坐著睡選「直達巴士」；回程想帶孩子體驗磁浮列車選「Linimo＋東山線」！"
+    };
+  }
+
+  // 5. KAKO 花車本店吐司 (kako @ kokusai)
+  if (spotId === "kako") {
+    if (hub === "kokusai") {
+      return {
+        path: ptsToPath(["kokusai"]),
+        color: "#10b981",
+        transferNode: null,
+        badge: "🚶 下樓散步 3 分鐘就到 KAKO 花車本店！",
+        totalMinText: "⏱️ 不用搭車！飯店步行 3 分鐘直達排隊名店",
+        steps: [`🏨 ${shortH}`, "🚶 散步 3 分鐘", "🍞 KAKO 花車本店（四色果醬吐司）"],
+        tip: "住這間去吃 Day 7 早餐堪稱外掛級地利，大人可先去登記候位！"
+      };
+    }
+    if (hub === "meieki_sakura" || hub === "meieki_taiko") {
+      const walkMin = hub === "meieki_sakura" ? 5 : 10;
+      return {
+        path: ptsToPath(["meieki", "kokusai"]),
+        color: "#e11d48",
+        transferNode: null,
+        badge: `🚶 散步 ${walkMin} 分鐘直達（或走 Unimall 地下街到國際中心站）`,
+        totalMinText: `⏱️ 散步約 ${walkMin} 分鐘（或櫻通線 1 站 2 分鐘至國際中心站）`,
+        steps: [`🏨 ${shortH}`, `🚶 沿地下街／平面散步 ${walkMin} 分鐘`, "🍞 KAKO 花車本店（或3分旁柳橋店）"],
+        tip: "冬天早上走 Unimall 地下街一路溫暖無風，從 U14 出口上來走 2 分鐘就是花車本店！"
+      };
+    }
+    if (hub === "taikodori") {
+      return {
+        path: ptsToPath(["taikodori", "meieki", "kokusai"]),
+        color: "#e11d48",
+        transferNode: null,
+        badge: "🟢 櫻通線免轉車 2 站（4分鐘）直達！",
+        totalMinText: `⏱️ 全程約 ${w + 8} 分鐘（櫻通線 4 分 ＋ 國際中心站走 4 分）`,
+        steps: [`🏨 ${shortH} (走${w}分)`, "🔴 太閤通站 搭櫻通線 (2站・4分)", "🚇 國際中心站 3號口 (走4分)", "🍞 KAKO 花車本店"],
+        tip: "太閤通站搭櫻通線 2 站直達國際中心站，完全不用換車！"
+      };
+    }
+    if (hub === "fushimi") {
+      return {
+        path: ptsToPath(["fushimi", "meieki", "kokusai"]),
+        color: "#f59e0b",
+        transferNode: null,
+        badge: "🚶 散步 6–9 分鐘直達（免搭車）！",
+        totalMinText: "⏱️ 直接散步約 6–9 分鐘抵達花車本店",
+        steps: [`🏨 ${shortH}`, "🚶 沿堀川納屋橋散步 6–9 分鐘", "🍞 KAKO 花車本店"],
+        tip: "DEL style 納屋橋走到 KAKO 花車本店僅約 6 分鐘，吃完再搭地鐵去名古屋港超順！"
+      };
+    }
+    if (hub === "sakae") {
+      return {
+        path: ptsToPath(["sakae", "hisaya", "marunouchi", "kokusai"]),
+        color: "#e11d48",
+        transferNode: null,
+        badge: "🟢 久屋大通搭櫻通線 2 站（3分鐘）直達！",
+        totalMinText: `⏱️ 全程約 ${w + 9} 分鐘`,
+        steps: [`🏨 ${shortH} (走3分至久屋大通)`, "🔴 櫻通線西行 (2站・3分)", "🚇 國際中心站 (走4分)", "🍞 KAKO 花車本店"],
+        tip: "吃完吐司後可直接從國際中心／榮轉往名古屋港海洋博物館！"
+      };
+    }
+    return {
+      path: ptsToPath([info.stNode, "meieki", "kokusai"]),
+      color: "#e11d48",
+      transferNode: "meieki",
+      badge: "🚇 經名古屋站 1 站即達國際中心",
+      totalMinText: `⏱️ 全程約 ${w + 12} 分鐘`,
+      steps: [`🏨 ${shortH} (走${w}分)`, "🟡 東山線至名古屋站", "🚶 走地下街或轉1站至國際中心", "🍞 KAKO 花車本店"],
+      tip: "若花車本店客滿，走路 3 分鐘的「KAKO 柳橋店」座位更多更適合 9 人！"
+    };
+  }
+
+  // 6. 名古屋海洋博物館 ＆ 南極破冰船 (port)
+  if (spotId === "port") {
+    if (hub === "sakae") {
+      return {
+        path: ptsToPath(["sakae", "kamimaezu", "kanayama", "port"]),
+        color: "#7c3aed",
+        transferNode: null,
+        badge: "🟢 榮站搭名港線免轉車直達終點名古屋港！",
+        totalMinText: `⏱️ 全程約 ${w + 24} 分鐘（一班車坐到底約 19 分 ＋ 出站走 5 分）`,
+        steps: [`🏨 ${shortH} (走${w}分)`, "🟣 榮站（搭往『名古屋港』方向列車）", "⚓ 名古屋港站 3號口 (走5分即達)"],
+        tip: "回程傍晚一樣一班車直達「榮站」逛街採買，完全符合您 Day 7 行程動線！"
+      };
+    }
+    if (hub === "fushimi") {
+      return {
+        path: ptsToPath(["fushimi", "sakae", "kamimaezu", "kanayama", "port"]),
+        color: "#7c3aed",
+        transferNode: "sakae",
+        badge: "🔄 搭 1 站至榮站轉名港線直達",
+        totalMinText: `⏱️ 全程約 ${w + 27} 分鐘`,
+        steps: [`🏨 ${shortH} (走${w}分)`, "🟡 伏見站 1 站至榮站", "🔄 轉乘 🟣 名港線直達", "⚓ 名古屋港站 (海洋博物館)"],
+        tip: "買 4 設施共通券（大人¥710／小學生¥400）可一次玩海洋博物館操船模擬器＋南極破冰船＋展望室！"
+      };
+    }
+    const startToMeieki = hub === "taikodori" ? ["taikodori", "meieki"] : hub === "kokusai" ? ["kokusai", "meieki"] : hub === "kamejima" ? ["kamejima", "meieki"] : hub === "nakamura" ? ["nakamura", "kamejima", "meieki"] : ["meieki"];
+    return {
+      path: ptsToPath([...startToMeieki, "kanayama", "port"]),
+      color: "#7c3aed",
+      transferNode: "kanayama",
+      badge: "🔄 金山站輕鬆轉乘名港線直達終點",
+      totalMinText: `⏱️ 全程約 ${w + 23} 分鐘（JR/名鐵 4 分至金山 ＋ 名港線 11 分至名古屋港）`,
+      steps: [`🏨 ${shortH} (走${w}分)`, "🚆 名古屋站搭 JR/名鐵 (1站・4分) 或東山線至榮", "🔄 金山站轉乘 🟣 名港線 (11分)", "⚓ 名古屋港站 3號口"],
+      tip: "Day 7 傍晚從名古屋港離開時，直接搭名港線免換車就能直達「榮站」逛街吃晚餐！"
+    };
+  }
+
+  // 7. 名古屋市科學館 (science @ fushimi)
+  if (spotId === "science") {
+    if (hub === "fushimi") {
+      return {
+        path: ptsToPath(["fushimi"]),
+        color: "#10b981",
+        transferNode: null,
+        badge: "🏆 下樓散步 6～9 分鐘直接到科學館大球體！",
+        totalMinText: "⏱️ 不用搭地鐵！散步 6～9 分鐘直達白川公園科學館",
+        steps: [`🏨 ${shortH} 寄放行李`, "🚶 散步 6–9 分鐘", "🔬 名古屋市科學館（小學生免門票！）"],
+        tip: "Day 8 回台前住伏見超爽：早上退房把大行李寄放櫃檯，走路去玩完科學館再回來拿行李！"
+      };
+    }
+    if (hub === "sakae") {
+      return {
+        path: ptsToPath(["sakae", "fushimi"]),
+        color: "#f59e0b",
+        transferNode: null,
+        badge: "🟢 東山線僅 1 站（2分鐘）即達伏見站！",
+        totalMinText: `⏱️ 全程約 ${w + 7} 分鐘（地鐵 2 分 ＋ 伏見 5號口走 5 分）`,
+        steps: [`🏨 ${shortH} (走${w}分)`, "🟡 榮站搭東山線 (1站・2分)", "🔬 伏見站 5號口走 5 分即達科學館"],
+        tip: "小學生展示室與世界最大星象儀全部「免費入場」，記得一早先去抽星象儀場次！"
+      };
+    }
+    if (hub === "taikodori" || hub === "kokusai") {
+      const c = hub === "taikodori" ? ["taikodori", "meieki", "fushimi"] : ["kokusai", "marunouchi", "fushimi"];
+      const tr = hub === "taikodori" ? "meieki" : "marunouchi";
+      return {
+        path: ptsToPath(c),
+        color: "#2563eb",
+        transferNode: tr,
+        badge: hub === "kokusai" ? "🚶 散步 12 分或搭地鐵 2 站即達" : "🔄 轉乘 1 次僅 2 站即達伏見",
+        totalMinText: `⏱️ 全程約 ${w + 12} 分鐘`,
+        steps: [`🏨 ${shortH} (走${w}分)`, `🔴 ${info.stLabel}`, `🔄 轉乘至伏見站`, "🔬 伏見站 5號口走 5 分即達科學館"],
+        tip: "Day 8 早上可先把行李寄放在飯店或名古屋站置物櫃，一身輕便帶孩子去玩龍捲風實驗！"
+      };
+    }
+    const yC = hub === "nakamura" ? ["nakamura", "kamejima", "meieki", "fushimi"] : hub === "kamejima" ? ["kamejima", "meieki", "fushimi"] : ["meieki", "fushimi"];
+    const rM = hub === "nakamura" ? 10 : hub === "kamejima" ? 5 : 3;
+    return {
+      path: ptsToPath(yC),
+      color: "#f59e0b",
+      transferNode: null,
+      badge: `🟢 東山線免轉車直達伏見站（車程僅 ${rM} 分鐘！）`,
+      totalMinText: `⏱️ 全程約 ${w + rM + 5} 分鐘（東山線 ${rM} 分 ＋ 出站走 5 分）`,
+      steps: [`🏨 ${shortH} (走${w}分)`, `🟡 ${info.stLabel} 搭東山線 (${rM}分)`, "🔬 伏見站 5號口走 5 分即達科學館"],
+      tip: "從名古屋站搭東山線只要 1 站（3分鐘）！玩完坐 1 站回名古屋站領行李搭 μ-SKY 去機場超順暢！"
+    };
+  }
+
+  // 8. 中部國際機場 (airport)
+  if (spotId === "airport") {
+    if (hub === "sakae" || hub === "fushimi") {
+      const c = hub === "sakae" ? ["sakae", "kamimaezu", "kanayama", "airport"] : ["fushimi", "sakae", "kamimaezu", "kanayama", "airport"];
+      return {
+        path: ptsToPath(c),
+        color: "#0369a1",
+        transferNode: "kanayama",
+        badge: "🔄 搭至金山站或名古屋站轉乘「名鐵 μ-SKY 特急」直達航廈！",
+        totalMinText: `⏱️ 全程約 ${w + 35} 分鐘（地鐵至金山站 ＋ μ-SKY 特急 24 分直達機場）`,
+        steps: [`🏨 ${shortH} 領行李`, "🟣 地鐵至金山站 (或東山線至名古屋站)", "🔄 轉乘 ✈️ 名鐵 μ-SKY 全車對號座 (24分)", "✈️ 中部國際機場"],
+        tip: "金山站的名鐵月台與地鐵轉乘距離比名古屋站更短、電梯大，推大行李轉機場特急超輕鬆！"
+      };
+    }
+    const pre = hub === "taikodori" ? ["taikodori", "meieki"] : hub === "kokusai" ? ["kokusai", "meieki"] : hub === "kamejima" ? ["kamejima", "meieki"] : hub === "nakamura" ? ["nakamura", "kamejima", "meieki"] : ["meieki"];
+    return {
+      path: ptsToPath([...pre, "kanayama", "airport"]),
+      color: "#0369a1",
+      transferNode: pre.length > 1 ? "meieki" : null,
+      badge: pre.length === 1 ? "🏆 名鐵名古屋站一班車 28 分鐘直達航廈！" : "🚇 至名鐵名古屋站搭 μ-SKY 特急 28 分直達",
+      totalMinText: `⏱️ 飯店出發約 ${w + (pre.length > 1 ? 8 : 0) + 28} 分鐘抵達中部國際機場`,
+      steps: [`🏨 ${shortH} 領行李`, "🚆 名鐵名古屋站", "✈️ 搭全車對號座『μ-SKY 特急』(28分)", "✈️ 中部國際機場第1航廈"],
+      tip: "9 人返台行李多，強烈推薦提前在手機買好「μ-SKY 對號座」，保證全團人人有位子＋專屬大型行李架！"
+    };
+  }
+
+  // 9. 順遊：大須觀音商店街 (osu)
+  if (spotId === "osu") {
+    if (hub === "fushimi") {
+      return {
+        path: ptsToPath(["fushimi", "osu"]),
+        color: "#2563eb",
+        transferNode: null,
+        badge: "🟢 伏見站搭鶴舞線僅 1 站（2分鐘）直達！",
+        totalMinText: `⏱️ 全程約 ${w + 4} 分鐘（或從科學館散步 8 分鐘就到！）`,
+        steps: [`🏨 ${shortH} (走${w}分)`, "🔵 伏見站搭鶴舞線 (1站・2分)", "🏮 大須觀音站 2號口直通商店街"],
+        tip: "大須商店街全長有遮雨棚，炸雞、鯛魚燒、二手玩具與扭蛋超多，很適合當雨天或晚上順遊點！"
+      };
+    }
+    if (hub === "sakae") {
+      return {
+        path: ptsToPath(["sakae", "kamimaezu", "osu"]),
+        color: "#7c3aed",
+        transferNode: null,
+        badge: "🟢 榮站搭名城線 2 站（3分鐘）至上前津即達大須商圈！",
+        totalMinText: `⏱️ 全程約 ${w + 5} 分鐘`,
+        steps: [`🏨 ${shortH} (走${w}分)`, "🟣 榮站搭名城線南下 (2站・3分)", "🏮 上前津站出站就是大須商店街"],
+        tip: "從榮商圈沿久屋大通公園散步過去也只要約 12–15 分鐘！"
+      };
+    }
+    const startN = hub === "taikodori" ? ["taikodori", "meieki", "kokusai", "marunouchi", "fushimi", "osu"]
+      : hub === "kokusai" ? ["kokusai", "marunouchi", "fushimi", "osu"]
+      : hub === "nakamura" ? ["nakamura", "kamejima", "meieki", "fushimi", "osu"]
+      : hub === "kamejima" ? ["kamejima", "meieki", "fushimi", "osu"]
+      : ["meieki", "fushimi", "osu"];
+    const trN = (hub === "taikodori" || hub === "kokusai") ? "marunouchi" : "fushimi";
+    return {
+      path: ptsToPath(startN),
+      color: "#2563eb",
+      transferNode: trN,
+      badge: "🔄 轉乘鶴舞線 1 站即達大須觀音",
+      totalMinText: `⏱️ 全程約 ${w + 11} 分鐘`,
+      steps: [`🏨 ${shortH} (走${w}分)`, `🚇 搭至${trN === "fushimi" ? "伏見站" : "丸之內站"}`, "🔵 轉鶴舞線 (2–4分)", "🏮 大須觀音站 2號口"],
+      tip: "大須觀音廣場可以餵鴿子，商店街裡有著名的「水曜日的愛麗絲」小門入口，小朋友超喜歡！"
+    };
+  }
+
+  // 10. 順遊：熱田神宮 (atsuta)
+  if (spotId === "atsuta") {
+    if (hub === "sakae" || hub === "fushimi") {
+      const c = hub === "sakae" ? ["sakae", "kamimaezu", "kanayama", "atsuta"] : ["fushimi", "sakae", "kamimaezu", "kanayama", "atsuta"];
+      return {
+        path: ptsToPath(c),
+        color: "#7c3aed",
+        transferNode: hub === "fushimi" ? "sakae" : null,
+        badge: hub === "sakae" ? "🟢 榮站搭名城線免轉車直達熱田神宮西站！" : "🔄 榮站轉名城線直達熱田神宮",
+        totalMinText: `⏱️ 全程約 ${w + 15} 分鐘`,
+        steps: [`🏨 ${shortH} (走${w}分)`, "🟣 名城線南下經金山", "⛩️ 熱田神宮西站 2號口 (走5分)"],
+        tip: "神宮旁邊就是百年名店「あつた蓬萊軒 神宮店」鰻魚飯三吃，抽完號碼牌剛好進神宮參拜！"
+      };
+    }
+    const pre = hub === "taikodori" ? ["taikodori", "meieki"] : hub === "kokusai" ? ["kokusai", "meieki"] : hub === "kamejima" ? ["kamejima", "meieki"] : hub === "nakamura" ? ["nakamura", "kamejima", "meieki"] : ["meieki"];
+    return {
+      path: ptsToPath([...pre, "kanayama", "atsuta"]),
+      color: "#0f766e",
+      transferNode: pre.length > 1 ? "meieki" : null,
+      badge: "🚆 名鐵／JR 名古屋站直達神宮前站（僅 7 分鐘！）",
+      totalMinText: `⏱️ 全程約 ${w + 12} 分鐘`,
+      steps: [`🏨 ${shortH}`, "🚆 名鐵名古屋站搭本線 (2站・7分)", "⛩️ 神宮前站出站走 3 分即達熱田神宮東門"],
+      tip: "神苑內有免費開放的刀劍館體驗區（草薙館可試拿真刀重量），男孩子們會超興奮！"
+    };
+  }
+
+  // 11. 順遊：樂高樂園・磁浮鐵道館 (legoland)
+  const preL = hub === "sakae" ? ["sakae", "fushimi", "meieki"]
+    : hub === "fushimi" ? ["fushimi", "meieki"]
+    : hub === "taikodori" ? ["taikodori", "meieki"]
+    : hub === "kokusai" ? ["kokusai", "meieki"]
+    : hub === "kamejima" ? ["kamejima", "meieki"]
+    : hub === "nakamura" ? ["nakamura", "kamejima", "meieki"]
+    : ["meieki"];
+  return {
+    path: ptsToPath([...preL, "legoland"]),
+    color: "#0d9488",
+    transferNode: preL.length > 1 ? "meieki" : null,
+    badge: preL.length === 1 ? "🟢 名古屋站搭青波線（Aonami）24 分鐘免轉車直達終點！" : "🔄 至名古屋站轉青波線 24 分直達",
+    totalMinText: `⏱️ 全程約 ${w + (preL.length > 1 ? 8 : 0) + 24} 分鐘`,
+    steps: [`🏨 ${shortH}`, "🟢 名古屋站（太閤通口側）青波線月台", "🚆 一班車直達終點金城ふ頭站 (24分)", "🧱 樂高樂園 ＆ JR磁浮鐵道館"],
+    tip: "青波線月台就在「名古屋站太閤通口（新幹線口）」旁邊，住太閤通口走過去最近！"
+  };
+}
+
+function buildNagoyaMetroBigSvg(hotelId, spotId) {
+  const h = HOTELS_DATA.find(x => x.id === hotelId && x.city === "nagoya") || HOTELS_DATA[0];
+  const hubInfo = HOTEL_METRO_HUB[h.id] || HOTEL_METRO_HUB["comfort"];
+  const route = computeMetroRoute(h.id, spotId);
+  const dimOp = route.isAll ? "0.9" : "0.28";
+  const [hx, hy] = METRO_COORDS[hubInfo.stNode];
+  const spotObj = METRO_SPOTS.find(s => s.id === spotId) || METRO_SPOTS[0];
+  const [tx, ty] = METRO_COORDS[spotObj.node];
+  const trCoord = route.transferNode ? METRO_COORDS[route.transferNode] : null;
+
+  const isTarget = id => spotId === id;
+  const spotStroke = (id, defColor) => isTarget(id) ? "#1d4ed8" : defColor;
+  const spotWidth = id => isTarget(id) ? "2.6" : "1.5";
+
+  return `
+    <svg viewBox="0 0 720 468" width="100%" height="auto" role="img" aria-label="名古屋全地鐵與必去景點路線動畫大地圖">
+      <!-- Subtle Background Grid & Compass -->
+      <rect x="0" y="0" width="720" height="468" fill="#f8fafc" />
+      <g transform="translate(686, 28)">
+        <circle cx="0" cy="0" r="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+        <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="800" fill="#334155">↑北</text>
+      </g>
+      <text x="20" y="26" font-size="11.5" font-weight="800" fill="#475569">🧭 點擊圖中任一「景點卡片」即可切換動畫路線</text>
+
+      <!-- ==================== BASE SUBWAY & RAIL NETWORK ==================== -->
+      <g opacity="${dimOp}">
+        <!-- Inbound Shinkansen from Shin-Osaka -->
+        <line x1="36" y1="175" x2="195" y2="175" stroke="#64748b" stroke-width="5" stroke-dasharray="7 5" />
+        <!-- North Highway Bus to Bokka no Sato -->
+        <line x1="195" y1="175" x2="195" y2="44" stroke="#0f766e" stroke-width="4.5" stroke-dasharray="6 5" />
+        <!-- Aonami Line South to Legoland -->
+        <line x1="195" y1="175" x2="195" y2="434" stroke="#0d9488" stroke-width="5" />
+        <!-- Meitetsu / JR Diagonal to Kanayama & Airport -->
+        <path d="M 195 175 L 420 374 L 622 434" fill="none" stroke="#0369a1" stroke-width="5" stroke-dasharray="8 4" />
+        <line x1="420" y1="374" x2="512" y2="374" stroke="#7c3aed" stroke-width="5" />
+
+        <!-- Meijo Loop Eastern Half (Subtle Context Loop) -->
+        <path d="M 420 84 L 502 84 L 502 374 L 420 374" fill="none" stroke="#c4b5fd" stroke-width="4" stroke-dasharray="5 5" />
+
+        <!-- Purple Line: Meijo & Meiko (Castle -> Hisaya -> Sakae -> Kamimaezu -> Kanayama -> Port) -->
+        <line x1="420" y1="84" x2="420" y2="434" stroke="#7c3aed" stroke-width="6.5" stroke-linecap="round" />
+
+        <!-- Red Line: Sakura-dori (Taiko-dori -> Meieki -> Kokusai -> Marunouchi -> Hisaya) -->
+        <line x1="106" y1="175" x2="462" y2="175" stroke="#e11d48" stroke-width="6.5" stroke-linecap="round" />
+
+        <!-- Blue Line: Tsurumai (Marunouchi -> Fushimi -> Osu -> Kamimaezu) -->
+        <path d="M 338 145 L 338 318 L 420 318" fill="none" stroke="#2563eb" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+        <!-- Yellow Line: Higashiyama (Nakamura -> Kamejima -> Meieki -> Fushimi -> Sakae -> Fujigaoka) -->
+        <path d="M 58 120 L 132 120 L 195 175 L 338 248 L 554 248" fill="none" stroke="#f59e0b" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+
+        <!-- Light Blue Line: Linimo Maglev (Fujigaoka -> Ghibli Park) -->
+        <line x1="554" y1="248" x2="662" y2="248" stroke="#0284c7" stroke-width="6" stroke-linecap="round" />
+        <!-- Direct Bus Hint Curve Meieki -> Ghibli -->
+        <path d="M 195 175 Q 445 112 662 248" fill="none" stroke="#0ea5e9" stroke-width="2.2" stroke-dasharray="4 5" />
+      </g>
+
+      <!-- ==================== ACTIVE ANIMATED ROUTE HIGHLIGHT ==================== -->
+      ${!route.isAll && route.path ? `
+        <path d="${route.path}" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.92" />
+        <path d="${route.path}" fill="none" stroke="${route.color}" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" class="anim-metro-route" />
+        ${route.path.includes("L") ? `
+          <circle r="7.5" fill="${route.color}" stroke="#ffffff" stroke-width="2.6">
+            <animateMotion dur="2.9s" repeatCount="indefinite" path="${route.path}" />
+          </circle>
+        ` : ""}
+      ` : ""}
+
+      <!-- ==================== STATION DOTS & LABELS ==================== -->
+      <!-- Shin-Osaka Inbound Badge -->
+      <rect x="10" y="156" width="58" height="36" rx="6" fill="#334155" />
+      <text x="39" y="171" text-anchor="middle" font-size="9.5" font-weight="800" fill="#ffffff">🚄新大阪</text>
+      <text x="39" y="184" text-anchor="middle" font-size="8.8" font-weight="700" fill="#cbd5e1">50分直達</text>
+
+      <!-- Nakamura Koen -->
+      <circle cx="58" cy="120" r="6" fill="#ffffff" stroke="#f59e0b" stroke-width="3" />
+      <text x="58" y="106" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">中村公園</text>
+
+      <!-- Kamejima -->
+      <circle cx="132" cy="120" r="6" fill="#ffffff" stroke="#f59e0b" stroke-width="3" />
+      <text x="132" y="106" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">龜島站</text>
+
+      <!-- Taiko-dori -->
+      <circle cx="106" cy="175" r="6.5" fill="#ffffff" stroke="#e11d48" stroke-width="3" />
+      <rect x="74" y="186" width="64" height="20" rx="5" fill="#fff1f2" stroke="#fda4af" />
+      <text x="106" y="200" text-anchor="middle" font-size="10.5" font-weight="800" fill="#9f1239">太閤通站</text>
+
+      <!-- NAGOYA STATION MAIN HUB -->
+      <circle cx="195" cy="175" r="10.5" fill="#0f172a" stroke="#ffffff" stroke-width="3" />
+      <rect x="152" y="140" width="86" height="23" rx="6" fill="#0f172a" />
+      <text x="195" y="155.5" text-anchor="middle" font-size="11.5" font-weight="800" fill="#ffffff">🚉 名古屋站</text>
+
+      <!-- Kokusai Center -->
+      <circle cx="274" cy="175" r="6" fill="#ffffff" stroke="#e11d48" stroke-width="3" />
+      <text x="274" y="194" text-anchor="middle" font-size="10.2" font-weight="800" fill="#334155">國際中心</text>
+
+      <!-- Marunouchi -->
+      <circle cx="338" cy="175" r="6" fill="#ffffff" stroke="#475569" stroke-width="2.8" />
+      <text x="366" y="164" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">丸之內</text>
+
+      <!-- Hisaya-odori -->
+      <circle cx="420" cy="175" r="6.5" fill="#ffffff" stroke="#7c3aed" stroke-width="3" />
+      <text x="462" y="179" text-anchor="middle" font-size="10.5" font-weight="800" fill="#4c1d95">久屋大通</text>
+
+      <!-- Fushimi -->
+      <circle cx="338" cy="248" r="7" fill="#ffffff" stroke="#f59e0b" stroke-width="3" />
+      <text x="358" y="268" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">伏見站</text>
+
+      <!-- Sakae -->
+      <circle cx="420" cy="248" r="8" fill="#0f172a" stroke="#f59e0b" stroke-width="3" />
+      <text x="444" y="266" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">榮站</text>
+
+      <!-- Fujigaoka -->
+      <circle cx="554" cy="248" r="6" fill="#ffffff" stroke="#0284c7" stroke-width="3" />
+      <text x="554" y="268" text-anchor="middle" font-size="10.2" font-weight="800" fill="#0369a1">藤が丘(轉磁浮)</text>
+
+      <!-- Kamimaezu -->
+      <circle cx="420" cy="318" r="5.5" fill="#ffffff" stroke="#7c3aed" stroke-width="2.8" />
+      <text x="450" y="322" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">上前津</text>
+
+      <!-- Kanayama -->
+      <circle cx="420" cy="374" r="7.5" fill="#0f172a" stroke="#ffffff" stroke-width="2.5" />
+      <text x="384" y="378" text-anchor="middle" font-size="10.8" font-weight="800" fill="#0f172a">金山站</text>
+
+      <!-- ==================== CLICKABLE ATTRACTION CARDS (8 MUST-GO + 3 OPTIONAL) ==================== -->
+      <!-- 1. D5 Bokka no Sato -->
+      <g class="metro-click-target" onclick="selectMetroSpot('bokka')">
+        <rect x="114" y="14" width="162" height="40" rx="9" fill="${isTarget('bokka') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('bokka', '#0f766e')}" stroke-width="${spotWidth('bokka')}" />
+        <text x="195" y="31" text-anchor="middle" font-size="11.2" font-weight="800" fill="#0f172a">❄️ D5 牧歌之里 (玩雪)</text>
+        <text x="195" y="46" text-anchor="middle" font-size="9.6" font-weight="700" fill="#0f766e">太閤通口直達巴士約 2h</text>
+      </g>
+
+      <!-- 2. D4 Nagoya Castle & Yabaton -->
+      <g class="metro-click-target" onclick="selectMetroSpot('castle')">
+        <circle cx="420" cy="84" r="7" fill="#7c3aed" stroke="#ffffff" stroke-width="2.5" />
+        <rect x="332" y="36" width="176" height="40" rx="9" fill="${isTarget('castle') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('castle', '#7c3aed')}" stroke-width="${spotWidth('castle')}" />
+        <text x="420" y="53" text-anchor="middle" font-size="11.2" font-weight="800" fill="#0f172a">🏯 D4 名古屋城＋矢場豬排</text>
+        <text x="420" y="68" text-anchor="middle" font-size="9.6" font-weight="700" fill="#6d28d9">名城線【名古屋城站】7號口</text>
+      </g>
+
+      <!-- 3. D7 KAKO Toast -->
+      <g class="metro-click-target" onclick="selectMetroSpot('kako')">
+        <rect x="214" y="102" width="136" height="36" rx="8" fill="${isTarget('kako') ? '#eff6ff' : '#fffbeb'}" stroke="${spotStroke('kako', '#f59e0b')}" stroke-width="${spotWidth('kako')}" />
+        <text x="282" y="118" text-anchor="middle" font-size="10.8" font-weight="800" fill="#78350f">🍞 D7 KAKO花車吐司</text>
+        <text x="282" y="131" text-anchor="middle" font-size="9.4" font-weight="700" fill="#b45309">國際中心走4分/名駅走9分</text>
+        <line x1="274" y1="138" x2="274" y2="168" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="3 3" />
+      </g>
+
+      <!-- 4. D4 & D7 Oasis 21 & Sakae -->
+      <g class="metro-click-target" onclick="selectMetroSpot('sakae')">
+        <rect x="434" y="196" width="142" height="38" rx="8" fill="${isTarget('sakae') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('sakae', '#d97706')}" stroke-width="${spotWidth('sakae')}" />
+        <text x="505" y="213" text-anchor="middle" font-size="10.8" font-weight="800" fill="#0f172a">✨ D4/7 綠洲21・榮商圈</text>
+        <text x="505" y="227" text-anchor="middle" font-size="9.4" font-weight="700" fill="#b45309">榮站4A直通・久屋大通旁</text>
+      </g>
+
+      <!-- 5. D6 Ghibli Park -->
+      <g class="metro-click-target" onclick="selectMetroSpot('ghibli')">
+        <circle cx="662" cy="248" r="7" fill="#0284c7" stroke="#ffffff" stroke-width="2.5" />
+        <rect x="580" y="186" width="130" height="42" rx="9" fill="${isTarget('ghibli') ? '#eff6ff' : '#f0fdf4'}" stroke="${spotStroke('ghibli', '#16a34a')}" stroke-width="${spotWidth('ghibli')}" />
+        <text x="645" y="204" text-anchor="middle" font-size="11.2" font-weight="800" fill="#14532d">🌱 D6 吉卜力公園</text>
+        <text x="645" y="219" text-anchor="middle" font-size="9.4" font-weight="700" fill="#15803d">磁浮線Linimo / 直達巴士</text>
+      </g>
+
+      <!-- 6. D8 Nagoya City Science Museum -->
+      <g class="metro-click-target" onclick="selectMetroSpot('science')">
+        <rect x="202" y="228" width="124" height="38" rx="8" fill="${isTarget('science') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('science', '#2563eb')}" stroke-width="${spotWidth('science')}" />
+        <text x="264" y="245" text-anchor="middle" font-size="10.8" font-weight="800" fill="#0f172a">🔬 D8 名古屋市科學館</text>
+        <text x="264" y="259" text-anchor="middle" font-size="9.4" font-weight="700" fill="#1d4ed8">伏見站走5分・小學生免費</text>
+      </g>
+
+      <!-- 7. Optional: Osu Kannon -->
+      <g class="metro-click-target" onclick="selectMetroSpot('osu')">
+        <circle cx="338" cy="318" r="6" fill="#2563eb" stroke="#ffffff" stroke-width="2" />
+        <rect x="202" y="299" width="124" height="36" rx="8" fill="${isTarget('osu') ? '#eff6ff' : '#f8fafc'}" stroke="${spotStroke('osu', '#94a3b8')}" stroke-width="${spotWidth('osu')}" stroke-dasharray="${isTarget('osu') ? 'none' : '4 3'}" />
+        <text x="264" y="315" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">🏮 順遊：大須觀音商圈</text>
+        <text x="264" y="328" text-anchor="middle" font-size="9.2" font-weight="700" fill="#64748b">鶴舞線大須觀音/上前津</text>
+      </g>
+
+      <!-- 8. Optional: Atsuta Shrine -->
+      <g class="metro-click-target" onclick="selectMetroSpot('atsuta')">
+        <circle cx="512" cy="374" r="6" fill="#7c3aed" stroke="#ffffff" stroke-width="2" />
+        <rect x="522" y="352" width="136" height="36" rx="8" fill="${isTarget('atsuta') ? '#eff6ff' : '#f8fafc'}" stroke="${spotStroke('atsuta', '#94a3b8')}" stroke-width="${spotWidth('atsuta')}" stroke-dasharray="${isTarget('atsuta') ? 'none' : '4 3'}" />
+        <text x="590" y="368" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">⛩️ 順遊：熱田神宮</text>
+        <text x="590" y="381" text-anchor="middle" font-size="9.2" font-weight="700" fill="#64748b">神宮前站・蓬萊軒鰻魚飯</text>
+      </g>
+
+      <!-- 9. Optional: Legoland -->
+      <g class="metro-click-target" onclick="selectMetroSpot('legoland')">
+        <circle cx="195" cy="434" r="6.5" fill="#0d9488" stroke="#ffffff" stroke-width="2" />
+        <rect x="92" y="414" width="156" height="38" rx="8" fill="${isTarget('legoland') ? '#eff6ff' : '#f8fafc'}" stroke="${spotStroke('legoland', '#94a3b8')}" stroke-width="${spotWidth('legoland')}" stroke-dasharray="${isTarget('legoland') ? 'none' : '4 3'}" />
+        <text x="170" y="431" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155">🧱 順遊：樂高樂園・磁浮館</text>
+        <text x="170" y="444" text-anchor="middle" font-size="9.2" font-weight="700" fill="#0f766e">青波線金城ふ頭直達24分</text>
+      </g>
+
+      <!-- 10. D7 Nagoya Maritime Museum & Port -->
+      <g class="metro-click-target" onclick="selectMetroSpot('port')">
+        <circle cx="420" cy="434" r="7" fill="#7c3aed" stroke="#ffffff" stroke-width="2.5" />
+        <rect x="304" y="414" width="194" height="40" rx="9" fill="${isTarget('port') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('port', '#7c3aed')}" stroke-width="${spotWidth('port')}" />
+        <text x="401" y="431" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">⚓ D7 名古屋海洋博物館・破冰船</text>
+        <text x="401" y="446" text-anchor="middle" font-size="9.5" font-weight="700" fill="#6d28d9">名港線終點【名古屋港站】旁水族館</text>
+      </g>
+
+      <!-- 11. D8 Chubu Centrair Airport -->
+      <g class="metro-click-target" onclick="selectMetroSpot('airport')">
+        <circle cx="622" cy="434" r="7" fill="#0369a1" stroke="#ffffff" stroke-width="2.5" />
+        <rect x="530" y="414" width="176" height="40" rx="9" fill="${isTarget('airport') ? '#eff6ff' : '#ffffff'}" stroke="${spotStroke('airport', '#0369a1')}" stroke-width="${spotWidth('airport')}" />
+        <text x="618" y="431" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">✈️ D8 中部國際機場 (NGO)</text>
+        <text x="618" y="446" text-anchor="middle" font-size="9.5" font-weight="700" fill="#0369a1">名鐵 μ-SKY 特急 28 分直達</text>
+      </g>
+
+      <!-- ==================== TRANSFER RING & ORIGIN / TARGET PULSING PINS ==================== -->
+      ${trCoord ? `
+        <g transform="translate(${trCoord[0]}, ${trCoord[1]})">
+          <circle r="12" fill="none" stroke="#f59e0b" stroke-width="3" />
+          <rect x="-26" y="-27" width="52" height="16" rx="8" fill="#fef08a" stroke="#eab308" stroke-width="1.2" />
+          <text x="0" y="-16" text-anchor="middle" font-size="9.2" font-weight="800" fill="#713f12">🔄 轉乘</text>
+        </g>
+      ` : ""}
+
+      <!-- Selected Hotel Origin Pin -->
+      <g transform="translate(${hx}, ${hy})">
+        <circle r="14" fill="#2563eb" class="anim-pulse-circle" />
+        <circle r="9.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="2.5" />
+        <text x="0" y="3.5" text-anchor="middle" font-size="9.5" font-weight="800" fill="#ffffff">🏨</text>
+        <rect x="-56" y="13" width="112" height="19" rx="9.5" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.5" />
+        <text x="0" y="26" text-anchor="middle" font-size="9.6" font-weight="800" fill="#ffffff">起點(走${hubInfo.walk}分進站)</text>
+      </g>
+
+      <!-- Target Destination Halo -->
+      ${!route.isAll ? `
+        <g transform="translate(${tx}, ${ty})">
+          <circle r="14" fill="${route.color}" class="anim-pulse-circle" />
+        </g>
+      ` : ""}
+    </svg>
+  `;
+}
+
+function initMetroControls() {
+  const sel = document.getElementById("metro-hotel-select");
+  if (!sel) return;
+  const groups = [
+    { label: "🚄 名古屋站・太閤通口／太閤通站區 (10間)", zone: "taiko" },
+    { label: "🚇 名古屋站・櫻通口／國際中心站區 (5間)", zone: "sakura" },
+    { label: "🛍️ 伏見（科學館）・榮・久屋大通區 (4間)", zone: "sakae" }
+  ];
+  sel.innerHTML = groups.map(g => {
+    const items = HOTELS_DATA.filter(h => h.city === "nagoya" && h.zone === g.zone)
+      .sort((a, b) => a.recOrder - b.recOrder);
+    return `<optgroup label="${g.label}">` + items.map(h =>
+      `<option value="${h.id}">${h.name}（${h.stationInfo.split("｜")[0].replace("🥇", "")}）</option>`
+    ).join("") + `</optgroup>`;
+  }).join("");
+}
+
+function renderMetroPanel() {
+  const nagoyaHotels = HOTELS_DATA.filter(h => h.city === "nagoya");
+  if (!nagoyaHotels.some(h => h.id === metroHotelId)) {
+    metroHotelId = "comfort";
+  }
+  const h = nagoyaHotels.find(x => x.id === metroHotelId) || nagoyaHotels[0];
+  const spec = SCHEMATIC_MAP_SPECS[h.id] || SCHEMATIC_MAP_SPECS["comfort"];
+
+  const sel = document.getElementById("metro-hotel-select");
+  if (sel) sel.value = h.id;
+
+  const pillsWrap = document.getElementById("metro-spot-pills");
+  if (pillsWrap) {
+    pillsWrap.innerHTML = METRO_SPOTS.map(sp => {
+      const cls = [
+        "spot-pill",
+        !sp.mustGo ? "spot-optional" : "",
+        sp.id === metroSpotId ? "active" : ""
+      ].filter(Boolean).join(" ");
+      return `<button type="button" class="${cls}" onclick="selectMetroSpot('${sp.id}')">${sp.pill}</button>`;
+    }).join("");
+  }
+
+  // Render Macro Big Metro SVG
+  const svgHolder = document.getElementById("metro-big-svg-holder");
+  if (svgHolder) {
+    svgHolder.innerHTML = buildNagoyaMetroBigSvg(h.id, metroSpotId);
+  }
+
+  // Render Route Breakdown Card
+  const route = computeMetroRoute(h.id, metroSpotId);
+  const spotObj = METRO_SPOTS.find(s => s.id === metroSpotId) || METRO_SPOTS[0];
+  const routeCard = document.getElementById("metro-route-card");
+  if (routeCard) {
+    routeCard.innerHTML = `
+      <div class="metro-route-top">
+        <div class="metro-route-headline">🎯 目的地：${spotObj.name}</div>
+        <span class="chip chip-green">${route.badge}</span>
+      </div>
+      <div style="font-size: 13.5px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">
+        ${route.totalMinText}
+      </div>
+      <div class="metro-step-flow">
+        ${route.steps.map((st, idx) =>
+          `<span class="m-step-chip">${st}</span>${idx < route.steps.length - 1 ? '<span class="m-step-arrow">➔</span>' : ''}`
+        ).join("")}
+      </div>
+      <div style="font-size: 12.8px; color: #1e3a8a; background: rgba(255,255,255,0.72); border-radius: 8px; padding: 8px 11px;">
+        💡 <strong>雙家庭動線小撇步：</strong>${route.tip}
+      </div>
+    `;
+  }
+
+  // Render Synchronized Micro Hotel Neighborhood Map on Right Pane
+  const mTitle = document.getElementById("metro-micro-title");
+  if (mTitle) {
+    mTitle.textContent = h.name;
+    document.getElementById("metro-micro-sub").textContent = `${h.priceRange}`;
+    document.getElementById("metro-micro-exit").textContent = spec.exitBadge;
+    document.getElementById("metro-micro-walk").textContent = spec.totalWalk;
+    document.getElementById("metro-micro-subbar").textContent = spec.subStationsBar;
+    document.getElementById("metro-micro-svg").innerHTML = buildSchematicSvg(h.id);
+    document.getElementById("metro-micro-konbini").innerHTML = `🏪 <strong>順路超商：</strong>${h.konbiniRoute}`;
+    document.getElementById("metro-micro-walk-btn").href = h.walkMapUrl;
+  }
+}
+
+function selectMetroHotel(hId) {
+  metroHotelId = hId;
+  selectedHotelId = hId;
+  renderMetroPanel();
+  renderHotelsList();
+  renderMapPane();
+}
+
+function stepMetroHotel(delta) {
+  const list = HOTELS_DATA.filter(h => h.city === "nagoya").sort((a, b) => a.recOrder - b.recOrder);
+  const idx = list.findIndex(h => h.id === metroHotelId);
+  const next = list[(idx + delta + list.length) % list.length];
+  selectMetroHotel(next.id);
+}
+
+function selectMetroSpot(spotId) {
+  metroSpotId = spotId;
+  renderMetroPanel();
+}
+
+function toggleMetroZoom() {
+  metroZoomed = !metroZoomed;
+  const sc = document.getElementById("metro-svg-scroll");
+  const btn = document.getElementById("btn-metro-zoom");
+  if (sc) sc.classList.toggle("zoomed", metroZoomed);
+  if (btn) btn.textContent = metroZoomed ? "📐 縮回符合螢幕寬度" : "🔍 手機放大滑動檢視";
+}
+
+function openHotelInMetroMap(hotelId) {
+  const target = HOTELS_DATA.find(h => h.id === hotelId && h.city === "nagoya");
+  if (target) {
+    metroHotelId = target.id;
+  }
+  renderMetroPanel();
+  switchTab("metro");
+}
+
+function openSpotInMetroMap(spotId) {
+  metroSpotId = spotId;
+  renderMetroPanel();
+  switchTab("metro");
+}
+
+function jumpToHotelFromMetro() {
+  if (hotelFilter === "osaka") {
+    setHotelFilter("nagoya");
+  } else {
+    const filtered = getFilteredHotels();
+    if (!filtered.some(h => h.id === metroHotelId)) {
+      setHotelFilter("nagoya");
+    }
+  }
+  selectedHotelId = metroHotelId;
+  renderHotelsList();
+  renderMapPane();
+  switchTab("hotels");
+}
+
 // Tab Switching
 function switchTab(tabId) {
   currentTab = tabId;
-  const tabs = ["itinerary", "hotels", "apps", "spots"];
+  const tabs = ["itinerary", "metro", "hotels", "apps", "spots"];
   tabs.forEach(t => {
     const panel = document.getElementById(`panel-${t}`);
     const dBtn = document.getElementById(`dnav-${t}`);
     const mBtn = document.getElementById(`mnav-${t}`);
-    if (t === tabId) {
-      panel.classList.add("active");
-      if (dBtn) dBtn.classList.add("active");
-      if (mBtn) mBtn.classList.add("active");
-    } else {
-      panel.classList.remove("active");
-      if (dBtn) dBtn.classList.remove("active");
-      if (mBtn) mBtn.classList.remove("active");
+    if (panel) {
+      if (t === tabId) panel.classList.add("active");
+      else panel.classList.remove("active");
+    }
+    if (dBtn) {
+      if (t === tabId) dBtn.classList.add("active");
+      else dBtn.classList.remove("active");
+    }
+    if (mBtn) {
+      if (t === tabId) mBtn.classList.add("active");
+      else mBtn.classList.remove("active");
     }
   });
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -2109,43 +3039,53 @@ function renderDayCards() {
     ? ITINERARY_DATA
     : ITINERARY_DATA.filter(d => d.day === selectedDay);
 
-  container.innerHTML = list.map(d => `
-    <article class="card" style="margin-bottom: 14px;">
-      <div class="trip-meta-row">
-        <span class="chip chip-brand">Day ${d.day}・${d.date}</span>
-        <span class="chip">📍 ${d.city}</span>
-      </div>
-      <h2 class="section-title" style="font-size: 19px; margin-top: 4px;">${d.title}</h2>
-      <p style="margin: 6px 0 10px; font-size: 13px; color: var(--green); font-weight: 600;">
-        ${d.stay}
-      </p>
-      <p style="margin: 0; font-size: 14.5px; color: var(--text-primary);">
-        ${d.highlight}
-      </p>
-
-      <div class="stop-list">
-        ${d.stops.map(s => `
-          <div class="stop-item">
-            <div>
-              <div>
-                <span class="stop-time">${s.time}</span>
-                <span class="stop-name">${s.name}</span>
-              </div>
-              <p class="stop-desc">${s.desc}</p>
-            </div>
-            <a class="btn-outline" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.mapQuery)}" target="_blank" rel="noopener noreferrer">
-              📍 Google 地圖
-            </a>
+  container.innerHTML = list.map(d => {
+    const metroSpot = DAY_TO_METRO_SPOT[d.day];
+    return `
+      <article class="card" style="margin-bottom: 14px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;">
+          <div class="trip-meta-row" style="margin-bottom: 0;">
+            <span class="chip chip-brand">Day ${d.day}・${d.date}</span>
+            <span class="chip">📍 ${d.city}</span>
           </div>
-        `).join("")}
-      </div>
+          ${metroSpot ? `
+            <button type="button" class="btn-outline" onclick="openSpotInMetroMap('${metroSpot}')">
+              🚇 在名古屋全地鐵圖看本日動畫路線
+            </button>
+          ` : ""}
+        </div>
+        <h2 class="section-title" style="font-size: 19px; margin-top: 8px;">${d.title}</h2>
+        <p style="margin: 6px 0 10px; font-size: 13px; color: var(--green); font-weight: 600;">
+          ${d.stay}
+        </p>
+        <p style="margin: 0; font-size: 14.5px; color: var(--text-primary);">
+          ${d.highlight}
+        </p>
 
-      <div class="notice-bar">
-        <span>💡</span>
-        <div><strong>同行提醒：</strong>${d.note}</div>
-      </div>
-    </article>
-  `).join("");
+        <div class="stop-list">
+          ${d.stops.map(s => `
+            <div class="stop-item">
+              <div>
+                <div>
+                  <span class="stop-time">${s.time}</span>
+                  <span class="stop-name">${s.name}</span>
+                </div>
+                <p class="stop-desc">${s.desc}</p>
+              </div>
+              <a class="btn-outline" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.mapQuery)}" target="_blank" rel="noopener noreferrer">
+                📍 Google 地圖
+              </a>
+            </div>
+          `).join("")}
+        </div>
+
+        <div class="notice-bar">
+          <span>💡</span>
+          <div><strong>同行提醒：</strong>${d.note}</div>
+        </div>
+      </article>
+    `;
+  }).join("");
 }
 
 // ==================== 住宿篩選、排序與雙模式地圖渲染 ====================
@@ -2214,6 +3154,10 @@ function stepHotel(delta) {
 
 function selectHotelOnMap(hotelId, scrollMapOnMobile) {
   selectedHotelId = hotelId;
+  if (HOTELS_DATA.some(h => h.id === hotelId && h.city === "nagoya")) {
+    metroHotelId = hotelId;
+    renderMetroPanel();
+  }
   renderHotelsList();
   renderMapPane();
   if (scrollMapOnMobile && window.innerWidth < 980) {
@@ -2227,7 +3171,7 @@ function renderHotelsList() {
   const list = getFilteredHotels();
   const countLabel = document.getElementById("hotels-count-label");
   if (countLabel) {
-    countLabel.textContent = `📋 目前顯示 ${list.length} 間符合條件住宿（點選卡片即可在右側／上方動畫圖查看周邊雙車站＆超商）`;
+    countLabel.textContent = `📋 目前顯示 ${list.length} 間符合條件住宿（點選卡片可切換街區小圖，或點「🚇 看去各景點地鐵動畫」跳至全區大地圖）`;
   }
 
   container.innerHTML = list.map(h => {
@@ -2261,8 +3205,13 @@ function renderHotelsList() {
 
         <div class="ota-btn-row" onclick="event.stopPropagation()">
           <button type="button" class="ota-chip-link best-ota" onclick="selectHotelOnMap('${h.id}', true)">
-            🗺️ 在動畫圖顯示此間
+            🗺️ 顯示周邊街區小圖
           </button>
+          ${!isOsaka ? `
+            <button type="button" class="ota-chip-link best-ota" onclick="openHotelInMetroMap('${h.id}')">
+              🚇 看去各景點地鐵動畫
+            </button>
+          ` : ""}
           <a class="ota-chip-link" href="${h.walkMapUrl}" target="_blank" rel="noopener noreferrer">
             🚶 車站➔超商➔飯店導航
           </a>
@@ -2376,6 +3325,10 @@ function renderMapPane() {
   `;
 
   document.getElementById("map-open-walk-btn").href = h.walkMapUrl;
+  const jumpMetroBtn = document.getElementById("btn-jump-metro-from-map");
+  if (jumpMetroBtn) {
+    jumpMetroBtn.style.display = h.city === "nagoya" ? "inline-flex" : "none";
+  }
 }
 
 // Price Comparison App Booking Calculator
@@ -2478,6 +3431,8 @@ function renderChecklist() {
 document.addEventListener("DOMContentLoaded", () => {
   renderDaySelector();
   renderDayCards();
+  initMetroControls();
+  renderMetroPanel();
   renderHotelsList();
   renderMapPane();
   updateSearchHelper();

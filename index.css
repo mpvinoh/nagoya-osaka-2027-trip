@@ -174,7 +174,7 @@ body {
 @media (min-width: 900px) {
   .desktop-nav {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 
@@ -182,17 +182,18 @@ body {
   border: none;
   background: transparent;
   color: var(--text-secondary);
-  font-size: 14.5px;
-  font-weight: 600;
-  padding: 11px 14px;
+  font-size: 13.8px;
+  font-weight: 700;
+  padding: 11px 10px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background-color 0.16s ease, color 0.16s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   font-family: inherit;
+  white-space: nowrap;
 }
 
 .desktop-nav-btn:hover {
@@ -216,8 +217,8 @@ body {
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--border-light);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  grid-template-columns: repeat(5, 1fr);
+  padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -4px 16px rgba(16, 24, 40, 0.06);
 }
 
@@ -231,14 +232,14 @@ body {
   border: none;
   background: transparent;
   color: var(--text-muted);
-  padding: 6px 4px;
+  padding: 5px 2px;
   border-radius: var(--radius-sm);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  font-size: 11.5px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   cursor: pointer;
   font-family: inherit;
 }
@@ -990,4 +991,214 @@ body {
 .check-row.done span {
   text-decoration: line-through;
   color: var(--text-muted);
+}
+
+/* ==================== NAGOYA FULL METRO + SPOTS + HOTEL LINKED BIG MAP ==================== */
+.metro-controls-box {
+  background: var(--bg-page);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.metro-hotel-picker-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.metro-step-badge {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--brand);
+  white-space: nowrap;
+}
+
+.metro-select {
+  flex: 1;
+  min-width: 220px;
+  padding: 8px 11px;
+  border-radius: 9px;
+  border: 1.5px solid #93c5fd;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 13.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.metro-spot-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.spot-pill {
+  border: 1px solid var(--border-strong);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 12.2px;
+  font-weight: 700;
+  padding: 6px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.14s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.spot-pill:hover {
+  border-color: var(--brand);
+  background: var(--bg-accent-soft);
+}
+
+.spot-pill.spot-optional {
+  border-style: dashed;
+  color: var(--text-secondary);
+}
+
+.spot-pill.active {
+  background: var(--brand);
+  color: #ffffff;
+  border-color: var(--brand);
+  border-style: solid;
+  box-shadow: 0 2px 8px rgba(29, 78, 216, 0.24);
+}
+
+.metro-split-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+@media (min-width: 1020px) {
+  .metro-split-layout {
+    grid-template-columns: 1.38fr 0.82fr;
+    align-items: start;
+  }
+}
+
+.metro-legend-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.metro-legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.leg-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.leg-dot i {
+  display: inline-block;
+  width: 14px;
+  height: 5px;
+  border-radius: 99px;
+}
+
+.metro-canvas-scroll {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-light);
+  background: #f8fafc;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.metro-canvas-inner {
+  width: 100%;
+  min-width: 0;
+  transition: min-width 0.2s ease;
+}
+
+.metro-canvas-scroll.zoomed .metro-canvas-inner {
+  min-width: 640px;
+}
+
+@keyframes metroRouteDash {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
+.anim-metro-route {
+  stroke-dasharray: 10 6;
+  animation: metroRouteDash 0.85s linear infinite;
+}
+
+.metro-click-target {
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.metro-click-target:hover {
+  filter: brightness(0.95);
+}
+
+.metro-route-summary-box {
+  margin-top: 14px;
+  background: var(--bg-accent-soft);
+  border: 1.5px solid #bfdbfe;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.metro-route-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.metro-route-headline {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+
+.metro-step-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 10px;
+}
+
+.m-step-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.m-step-arrow {
+  font-weight: 800;
+  color: var(--brand);
+  font-size: 13px;
 }

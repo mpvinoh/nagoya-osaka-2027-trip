@@ -44,8 +44,11 @@
       <button id="dnav-itinerary" class="desktop-nav-btn active" onclick="switchTab('itinerary')">
         🗓️ 每日行程＆動向
       </button>
+      <button id="dnav-metro" class="desktop-nav-btn" onclick="switchTab('metro')">
+        🚇 全地鐵＆景點大地圖
+      </button>
       <button id="dnav-hotels" class="desktop-nav-btn" onclick="switchTab('hotels')">
-        🗺️ 住宿推薦(19間)＆地圖
+        🏨 住宿推薦(19間)＆街區圖
       </button>
       <button id="dnav-apps" class="desktop-nav-btn" onclick="switchTab('apps')">
         💰 比價App最優惠攻略
@@ -61,7 +64,7 @@
         <div class="section-header">
           <div>
             <h2 class="section-title">每日行程與交通動向</h2>
-            <p class="section-desc">前 3 晚已整合「ESLEAD HOTEL 大阪鶴橋」實際地鐵動線；點選日期即可切換</p>
+            <p class="section-desc">前 3 晚已整合「ESLEAD HOTEL 大阪鶴橋」實際地鐵動線；名古屋行程可一鍵跳看「全地鐵大地圖」動畫路線</p>
           </div>
           <button id="btn-toggle-all-days" type="button" class="btn-outline" onclick="toggleAllDays()">
             展開全部 8 天總覽
@@ -73,6 +76,101 @@
             <div id="day-selector" class="day-selector"></div>
           </aside>
           <div id="itinerary-cards"></div>
+        </div>
+      </section>
+
+      <!-- ==================== PANEL 1.5 (NEW): NAGOYA FULL METRO + SPOTS + HOTEL LINKED BIG MAP ==================== -->
+      <section id="panel-metro" class="tab-panel">
+        <div class="card" style="margin-bottom: 16px;">
+          <div class="section-header" style="margin-bottom: 10px;">
+            <div>
+              <div class="trip-meta-row" style="margin-bottom: 4px;">
+                <span class="chip chip-brand">🚇 宏觀全區地鐵圖 ⇄ 微觀住宿超商圖 雙向聯動</span>
+                <span class="chip chip-green">🎯 已標記本次 8 大必去行程 ＋ 3 大熱門順遊地標</span>
+              </div>
+              <h2 class="section-title">名古屋全地鐵＆必去景點交通動畫大地圖</h2>
+              <p class="section-desc">
+                <strong>超簡單用法：</strong>① 選我們想住的飯店 ➔ ② 點選下方或地圖上的景點，立即用動畫跑出<strong>「住這間怎麼搭地鐵去景點」</strong>，並同步顯示<strong>「出站怎麼走回飯店＆順路超商」</strong>！
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 1: Select Starting Hotel -->
+          <div class="metro-controls-box">
+            <div class="metro-hotel-picker-row">
+              <label for="metro-hotel-select" class="metro-step-badge">① 起點住宿：</label>
+              <select id="metro-hotel-select" class="metro-select" onchange="selectMetroHotel(this.value)"></select>
+              <div class="map-prev-next">
+                <button type="button" class="btn-mini-nav" onclick="stepMetroHotel(-1)">◀ 上間住宿</button>
+                <button type="button" class="btn-mini-nav" onclick="stepMetroHotel(1)">下間住宿 ▶</button>
+              </div>
+            </div>
+
+            <!-- Step 2: Select Target Attraction -->
+            <div style="margin-top: 10px;">
+              <div style="font-size: 12.5px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">
+                ② 點選想去的景點（或直接點下方大地圖上的景點方塊）：
+              </div>
+              <div id="metro-spot-pills" class="metro-spot-pills"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Macro Big Metro Map + Linked Micro Hotel Street Map -->
+        <div class="metro-split-layout">
+          <!-- Left: Big Nagoya Subway & Attractions Map + Route Breakdown -->
+          <div class="card">
+            <div class="metro-legend-bar">
+              <div class="metro-legend-items">
+                <span class="leg-dot"><i style="background:#f59e0b;"></i>東山線</span>
+                <span class="leg-dot"><i style="background:#e11d48;"></i>櫻通線</span>
+                <span class="leg-dot"><i style="background:#7c3aed;"></i>名城・名港線</span>
+                <span class="leg-dot"><i style="background:#2563eb;"></i>鶴舞・Linimo線</span>
+                <span class="leg-dot"><i style="background:#0f766e;"></i>名鐵・JR・直達巴士</span>
+              </div>
+              <button id="btn-metro-zoom" type="button" class="btn-mini-nav" onclick="toggleMetroZoom()">
+                🔍 手機放大滑動檢視
+              </button>
+            </div>
+
+            <div id="metro-svg-scroll" class="metro-canvas-scroll">
+              <div id="metro-big-svg-holder" class="metro-canvas-inner"></div>
+            </div>
+
+            <!-- Live Animated Transit Breakdown Card -->
+            <div id="metro-route-card" class="metro-route-summary-box"></div>
+          </div>
+
+          <!-- Right: Synchronized Micro Hotel Neighborhood Map (Exit + 2nd Subway + Konbini) -->
+          <aside class="sticky-pane">
+            <div class="card">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
+                <span class="chip chip-brand">🔗 聯動微觀街區圖（最後 1～5 分鐘怎麼走）</span>
+              </div>
+              <h3 id="metro-micro-title" style="margin: 0; font-size: 16px; font-weight: 800; line-height: 1.35;">載入中...</h3>
+              <p id="metro-micro-sub" style="margin: 3px 0 10px; font-size: 12px; color: var(--text-secondary);"></p>
+
+              <div class="schematic-box">
+                <div class="schematic-summary-bar">
+                  <span id="metro-micro-exit" class="exit-sign-inline">出口載入中</span>
+                  <span id="metro-micro-walk" class="total-walk-badge">步行載入中</span>
+                </div>
+                <div id="metro-micro-subbar" class="sub-station-bar">🥈 次近地鐵載入中...</div>
+                <div id="metro-micro-svg"></div>
+              </div>
+
+              <div id="metro-micro-konbini" class="konbini-highlight" style="margin-top: 10px; margin-bottom: 10px;"></div>
+
+              <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                <button type="button" class="btn-primary" style="flex: 1;" onclick="jumpToHotelFromMetro()">
+                  🏨 查看此間房價＆訂房連結
+                </button>
+                <a id="metro-micro-walk-btn" class="btn-outline" href="#" target="_blank" rel="noopener noreferrer">
+                  🚶 Google 步行導航
+                </a>
+              </div>
+            </div>
+          </aside>
         </div>
       </section>
 
@@ -182,8 +280,11 @@
               <div id="walk-strip-box" class="walk-route-strip"></div>
 
               <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
-                <a id="map-open-walk-btn" class="btn-primary" style="flex: 1;" href="#" target="_blank" rel="noopener noreferrer">
-                  🚶 開啟 Google 步行路線導航
+                <button id="btn-jump-metro-from-map" type="button" class="btn-primary" style="flex: 1;" onclick="openHotelInMetroMap(selectedHotelId)">
+                  🚇 看這間去各景點的地鐵動畫
+                </button>
+                <a id="map-open-walk-btn" class="btn-outline" href="#" target="_blank" rel="noopener noreferrer">
+                  🚶 步行導航
                 </a>
                 <button id="btn-toggle-detail-bottom" type="button" class="btn-outline" onclick="toggleMapMode()">
                   🗺️ 看 Google 仔細地圖
@@ -319,9 +420,13 @@
       <span class="nav-icon">🗓️</span>
       <span>每日動向</span>
     </button>
+    <button id="mnav-metro" type="button" class="mobile-nav-btn" onclick="switchTab('metro')">
+      <span class="nav-icon">🚇</span>
+      <span>全地鐵圖</span>
+    </button>
     <button id="mnav-hotels" type="button" class="mobile-nav-btn" onclick="switchTab('hotels')">
-      <span class="nav-icon">🗺️</span>
-      <span>住宿＆地圖</span>
+      <span class="nav-icon">🏨</span>
+      <span>19間住宿</span>
     </button>
     <button id="mnav-apps" type="button" class="mobile-nav-btn" onclick="switchTab('apps')">
       <span class="nav-icon">💰</span>
@@ -329,7 +434,7 @@
     </button>
     <button id="mnav-spots" type="button" class="mobile-nav-btn" onclick="switchTab('spots')">
       <span class="nav-icon">🏯</span>
-      <span>景點＆待辦</span>
+      <span>景點待辦</span>
     </button>
   </nav>
 
