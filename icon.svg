@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="42" fill="#1d4ed8"/>
+  <circle cx="146" cy="46" r="16" fill="#93c5fd" opacity="0.45"/>
+  <text x="96" y="86" text-anchor="middle" font-family="sans-serif" font-size="52">❄️</text>
+  <text x="96" y="136" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="28" fill="#ffffff">2027</text>
+  <text x="96" y="164" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="18" fill="#dbeafe">大阪・名古屋</text>
+</svg>

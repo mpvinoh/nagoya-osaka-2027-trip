@@ -1,0 +1,17 @@
+{
+  "name": "2027 大阪・名古屋 雙家庭冬日旅",
+  "short_name": "2027阪名旅",
+  "description": "2027/1/16–1/23 大阪與名古屋雙家庭行程、住宿地圖與比價手冊",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f7f7f5",
+  "theme_color": "#1d4ed8",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2027 大阪・名古屋 雙家庭冬日旅｜行程・住宿地圖・比價手冊</title>
+  <meta name="description" content="2027年1月16日至1月23日大阪與名古屋8天7夜雙家庭（4大5小）旅遊計畫、住宿Google地圖定位、順路超商動線與訂房比價App全攻略。" />
+  <meta name="theme-color" content="#1d4ed8" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="2027阪名旅" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./index.css" />
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- Top Header -->
+    <header class="hero-header">
+      <div class="hero-top">
+        <div>
+          <div class="trip-meta-row">
+            <span class="chip chip-brand">❄️ 2027/01/16 (六) – 01/23 (六)｜8天7夜</span>
+            <span class="chip chip-green">✅ 大阪3晚已訂：ESLEAD 鶴橋</span>
+            <span class="chip chip-amber">🔍 名古屋4晚：實惠比價中</span>
+          </div>
+          <h1 class="hero-title">2027 大阪・名古屋 雙家庭冬日旅</h1>
+          <p class="hero-subtitle">
+            同行成員：2 個家庭（4 位大人 ＋ 5 位 6～10 歲小朋友，共 9 人）｜手機與電腦雙端友善介面
+          </p>
+        </div>
+        <div class="status-box">
+          <div class="status-box-title">📋 團隊準備進度</div>
+          <div id="header-progress" style="color: var(--text-secondary);">載入中...</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Desktop Navigation -->
+    <nav class="desktop-nav" aria-label="電腦版主選單">
+      <button id="dnav-itinerary" class="desktop-nav-btn active" onclick="switchTab('itinerary')">
+        🗓️ 每日行程＆動向
+      </button>
+      <button id="dnav-hotels" class="desktop-nav-btn" onclick="switchTab('hotels')">
+        🗺️ 住宿推薦＆Google地圖
+      </button>
+      <button id="dnav-apps" class="desktop-nav-btn" onclick="switchTab('apps')">
+        💰 比價App最優惠攻略
+      </button>
+      <button id="dnav-spots" class="desktop-nav-btn" onclick="switchTab('spots')">
+        🏯 景點介紹＆待辦清單
+      </button>
+    </nav>
+
+    <!-- ==================== PANEL 1: ITINERARY ==================== -->
+    <main>
+      <section id="panel-itinerary" class="tab-panel active">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">每日行程與交通動向</h2>
+            <p class="section-desc">前 3 晚已整合「ESLEAD HOTEL 大阪鶴橋」實際地鐵動線；點選日期即可切換</p>
+          </div>
+          <button id="btn-toggle-all-days" type="button" class="btn-outline" onclick="toggleAllDays()">
+            展開全部 8 天總覽
+          </button>
+        </div>
+
+        <div class="itinerary-layout">
+          <aside class="sticky-pane">
+            <div id="day-selector" class="day-selector"></div>
+          </aside>
+          <div id="itinerary-cards"></div>
+        </div>
+      </section>
+
+      <!-- ==================== PANEL 2: HOTELS & GOOGLE MAP ==================== -->
+      <section id="panel-hotels" class="tab-panel">
+        <div class="card" style="margin-bottom: 16px;">
+          <div class="section-header" style="margin-bottom: 10px;">
+            <div>
+              <h2 class="section-title">名古屋 4 晚（1/19–1/23）實惠住宿精選 ＆ 順路超商地圖</h2>
+              <p class="section-desc">
+                針對「4 大 ＋ 5 位 6～10 歲小學生（當作 1～2 位佔床計價、其餘享兒童免費同床）」嚴選車站近、順路有超商的高 CP 值名單
+              </p>
+            </div>
+          </div>
+
+          <div class="filter-row">
+            <button id="hfilter-all" type="button" class="filter-pill active" onclick="setHotelFilter('all')">
+              全部住宿 (含大阪已訂)
+            </button>
+            <button id="hfilter-hotel" type="button" class="filter-pill" onclick="setHotelFilter('hotel')">
+              🏆 名古屋連鎖飯店 (兒童免費最省)
+            </button>
+            <button id="hfilter-apartment" type="button" class="filter-pill" onclick="setHotelFilter('apartment')">
+              🏡 名古屋公寓 / 包層 (附廚房洗衣機)
+            </button>
+            <button id="hfilter-osaka" type="button" class="filter-pill" onclick="setHotelFilter('osaka')">
+              ✅ 大阪已訂：ESLEAD 鶴橋
+            </button>
+          </div>
+        </div>
+
+        <div class="hotels-map-layout">
+          <!-- Left: Hotel Cards -->
+          <div id="hotels-cards-container"></div>
+
+          <!-- Right: Sticky Live Google Map + Walking Konbini Strip -->
+          <aside id="hotel-map-card" class="sticky-pane">
+            <div class="card">
+              <div style="margin-bottom: 10px;">
+                <span class="chip chip-brand" style="margin-bottom: 6px;">📍 Google Maps 即時位置預覽</span>
+                <h3 id="map-hotel-title" style="margin: 0; font-size: 17px; font-weight: 800;">載入中...</h3>
+                <p id="map-hotel-sub" style="margin: 3px 0 0; font-size: 12.5px; color: var(--text-secondary);"></p>
+              </div>
+
+              <div class="map-frame-wrap">
+                <iframe
+                  id="google-map-iframe"
+                  title="住宿位置 Google 地圖"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  src="https://www.google.com/maps/embed?hl=zh-TW&origin=mfe&pb=!1m3!2m1!1sComfort+Hotel+Nagoya+Shinkansenguchi!6i16"
+                  allowfullscreen
+                ></iframe>
+              </div>
+
+              <!-- Station -> Konbini -> Hotel Diagram -->
+              <div style="margin-top: 12px; font-size: 12.5px; font-weight: 700; color: var(--text-primary);">
+                🚶 下車回飯店順路買超商動線：
+              </div>
+              <div id="walk-strip-box" class="walk-route-strip"></div>
+
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
+                <a id="map-open-walk-btn" class="btn-primary" style="flex: 1;" href="#" target="_blank" rel="noopener noreferrer">
+                  🚶 開啟「車站➔超商➔飯店」步行導航
+                </a>
+                <a id="map-open-place-btn" class="btn-outline" href="#" target="_blank" rel="noopener noreferrer">
+                  🗺️ 大地圖查看
+                </a>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ==================== PANEL 3: PRICE COMPARISON APPS ==================== -->
+      <section id="panel-apps" class="tab-panel">
+        <!-- Interactive Search Input Helper -->
+        <div class="card" style="margin-bottom: 16px;">
+          <div class="section-header" style="margin-bottom: 8px;">
+            <div>
+              <span class="chip chip-amber" style="margin-bottom: 6px;">⚠️ 90% 家庭訂日本房最常踩的比價陷阱</span>
+              <h2 class="section-title">「4 大 ＋ 5 位 6～10 歲小孩」比價 App 正確搜尋法</h2>
+              <p class="section-desc">
+                若在 Agoda / Booking 直接輸「4大5小」，系統會把 6–10 歲全算成大人價而貴一倍！請選下方飯店查看最省輸入法：
+              </p>
+            </div>
+          </div>
+
+          <div style="margin: 12px 0;">
+            <label for="helper-hotel-select" style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">
+              選擇您想比價的名古屋住宿類型：
+            </label>
+            <select
+              id="helper-hotel-select"
+              onchange="updateSearchHelper()"
+              style="width: 100%; max-width: 460px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-strong); font-size: 14px; font-family: inherit; background: var(--bg-surface);"
+            >
+              <option value="comfort">🥇 Comfort Hotel 名古屋新幹線口（小6以下同床免費＋免費早餐）</option>
+              <option value="vessel">🥈 Vessel 系列：Campana 名古屋 / 榮站前（18歲以下不限人數免費）</option>
+              <option value="daiwa">🥉 Daiwa Roynet 名古屋太閤通口（小學生每床免費帶1名）</option>
+              <option value="apartment">🏡 GRAND BASE 駅西 / Central Nagoya 包層（公寓式計價）</option>
+            </select>
+          </div>
+
+          <div id="helper-output" style="background: var(--bg-accent-soft); border: 1px solid #bfdbfe; border-radius: 12px; padding: 14px 16px; font-size: 13.5px; color: #1e3a8a;"></div>
+        </div>
+
+        <!-- Step-by-step App Comparison Matrix -->
+        <div class="card" style="margin-bottom: 16px;">
+          <h2 class="section-title" style="margin-bottom: 4px;">📱 各大訂房與比價 App 實測優惠評比（2027/1/19–1/23 適用）</h2>
+          <p class="section-desc" style="margin-bottom: 16px;">
+            先用「跨網比價 App」抓底價，再用對應「最優惠結帳管道」領券下單：
+          </p>
+
+          <div class="app-compare-grid">
+            <div class="stop-item" style="flex-direction: column; align-items: flex-start;">
+              <span class="chip chip-brand">第 1 步：跨平台比價首選</span>
+              <div class="stop-name">1. Google Maps / Google 飯店比價</div>
+              <p class="stop-desc">
+                <strong>最大優勢：</strong>無廣告干擾、可一鍵切換「含稅總價」，而且<strong>從 Google Maps 點進 Agoda / Trip.com 常會出現「Google 導流專屬隱藏折扣價」</strong>，比直接打開 Agoda App 便宜 5%～12%！
+              </p>
+            </div>
+
+            <div class="stop-item" style="flex-direction: column; align-items: flex-start;">
+              <span class="chip chip-brand">第 1 步：日本在地底價神物</span>
+              <div class="stop-name">2. Travelko（トラベルコ App）</div>
+              <p class="stop-desc">
+                <strong>最大優勢：</strong>日本最強比價 App（有繁中介面）！唯一同時搜尋<strong>「日本國內訂房網（樂天、Jalan、一休、JTB、日本旅行）」＋「國際訂房網」</strong>，找 Comfort、Daiwa Roynet 常挖出日本限定超低連泊價。
+              </p>
+            </div>
+
+            <div class="stop-item" style="flex-direction: column; align-items: flex-start;">
+              <span class="chip chip-green">🏆 訂 Vessel / Comfort 結帳冠軍</span>
+              <div class="stop-name">3. 飯店日本官方網站（免費加入會員）</div>
+              <p class="stop-desc">
+                <strong>為什麼最省：</strong><strong>Vessel 官網</strong>有最低價保證＋新會員現送 1,000 點（直接折 ¥1,000）＋最高 10% 回饋，且官網直接內建「小學生添い寝 ¥0」欄位，不怕國際網算錯錢！<strong>Comfort 官網</strong>會員每晚現折且含免費早餐。
+              </p>
+            </div>
+
+            <div class="stop-item" style="flex-direction: column; align-items: flex-start;">
+              <span class="chip chip-amber">🔥 近期最大促銷檔期（12/4 開跑！）</span>
+              <div class="stop-name">4. 樂天旅遊 App（Rakuten Travel）</div>
+              <p class="stop-desc">
+                <strong>黃金時機：</strong>樂天每季一次最大檔<strong>「Super SALE」固定於 12 月 4 日開跑</strong>！會釋出半價方案與 10%～20% 高額折價券，台灣版樂天旅遊還能疊加 JCB／樂天／富邦等信用卡折扣（最高約 8 折）。
+              </p>
+            </div>
+
+            <div class="stop-item" style="flex-direction: column; align-items: flex-start;">
+              <span class="chip">訂 GRAND BASE 公寓最便宜</span>
+              <div class="stop-name">5. Booking.com App ＆ Agoda App</div>
+              <p class="stop-desc">
+                <strong>省錢秘訣：</strong>無人公寓（GRAND BASE）在 <strong>Booking.com 手機版</strong>有 Genius Lv.2/3 折扣＋「手機專屬價」且免費取消最彈性；用 <strong>Agoda</strong> 務必走 Google Maps 隱藏價或 LINE 旅遊導購，並選<strong>「立即以日幣刷卡」</strong>（選延後付款會被多收約 5% 匯率加成！）。
+              </p>
+            </div>
+
+            <div class="stop-item" style="flex-direction: column; align-items: flex-start;">
+              <span class="chip">買新幹線＋訂房一站搞定</span>
+              <div class="stop-name">6. Trip.com App</div>
+              <p class="stop-desc">
+                <strong>最大優勢：</strong>標價清楚含稅、台灣信用卡週週有滿額現折碼，且<strong>24 小時中文電話客服秒通</strong>（若需要請客服幫兩個家庭備註安排「同樓層相鄰房」非常給力！）。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== PANEL 4: SPOTS & CHECKLIST ==================== -->
+      <section id="panel-spots" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">景點＆美食小百科（給同行友人輕鬆看）</h2>
+            <p class="section-desc">整理好每個景點的交通站名與 6～10 歲小朋友體驗重點</p>
+          </div>
+          <div class="filter-row">
+            <button id="sfilter-all" type="button" class="filter-pill active" onclick="setSpotFilter('all')">全部</button>
+            <button id="sfilter-osaka" type="button" class="filter-pill" onclick="setSpotFilter('osaka')">大阪・京都</button>
+            <button id="sfilter-nagoya" type="button" class="filter-pill" onclick="setSpotFilter('nagoya')">名古屋・岐阜</button>
+          </div>
+        </div>
+
+        <div id="spots-container" class="spots-grid" style="margin-bottom: 20px;"></div>
+
+        <!-- Shared Checklist -->
+        <div class="card">
+          <h2 class="section-title" style="margin-bottom: 4px;">✅ 雙家庭行前確認清單（自動儲存進度）</h2>
+          <p class="section-desc" style="margin-bottom: 14px;">勾選後會自動保存在瀏覽器中，方便隨時追蹤訂票與打包狀態</p>
+          <div id="checklist-box"></div>
+        </div>
+      </section>
+    </main>
+
+  </div>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav" aria-label="手機版主選單">
+    <button id="mnav-itinerary" type="button" class="mobile-nav-btn active" onclick="switchTab('itinerary')">
+      <span class="nav-icon">🗓️</span>
+      <span>每日動向</span>
+    </button>
+    <button id="mnav-hotels" type="button" class="mobile-nav-btn" onclick="switchTab('hotels')">
+      <span class="nav-icon">🗺️</span>
+      <span>住宿＆地圖</span>
+    </button>
+    <button id="mnav-apps" type="button" class="mobile-nav-btn" onclick="switchTab('apps')">
+      <span class="nav-icon">💰</span>
+      <span>比價攻略</span>
+    </button>
+    <button id="mnav-spots" type="button" class="mobile-nav-btn" onclick="switchTab('spots')">
+      <span class="nav-icon">🏯</span>
+      <span>景點＆待辦</span>
+    </button>
+  </nav>
+
+  <script src="./app.js"></script>
+</body>
+</html>
